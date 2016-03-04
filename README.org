@@ -1,0 +1,214 @@
+* ReDFST
+Region-based Dynamic Frequency Scaling Toolset
+** Dependencies
+- gcc 5.1.1 or above
+- libcpupower or libcpufreq
+** Installation
+Edit config.h to your liking, then compile with:
+
+#+BEGIN_SRC sh
+make
+make install
+#+END_SRC
+** Usage
+*** Changing the frequency
+#+BEGIN_SRC C
+#include <stdlib.h>
+#include <unistd.h>
+#include <redfst.h>
+
+int main(int argc, char **argv){
+  int n;
+  int x;
+  int i;
+
+  n = argc>1?atoi(argv[1]):1024*1024;
+
+  redfst_reset(); // zero energy counters to skip initialization stuff
+#pragma omp parallel for reduction(+:x)
+  for(i = 0; i < n; ++i){
+    redfst_region(1); // change code region of current thread
+    for(j = 0; j < n; ++j){
+      x ^= i^j;
+    }
+  }
+  redfst_print(); // print energy counters
+  
+  redfst_reset(); // reset energy counters
+  redfst_region_all(2); // change code region of all threads
+  usleep(3000000);
+  redfst_exit(); // print energy counters and exit
+  
+  return x;
+}
+#+END_SRC
+
+Compile with:
+
+#+BEGIN_SRC sh
+gcc example.c -fopenmp -lredfst -lcpupower
+#+END_SRC
+or
+#+BEGIN_SRC sh
+gcc example.c -fopenmp -lredfst -lcpufreq
+#+END_SRC
+
+Let's run the code region /1/ at 2.0GHz frequency and the code region
+/2/ at the 1.5GHz:
+
+#+BEGIN_SRC sh
+export REDFST_HIGH=2000000
+export REDFST_LOW=1500000
+export REDFST_FASTREGIONS=2
+export REDFST_SLOWREGIONS=4
+export OMP_PROC_BIND=TRUE
+./a.out
+#+END_SRC
+
+The frequency for the *fast* regions is given by the variable
+*~REDFST_HIGH~*. Likewise, the frequency to be used in the *slow*
+regions is given by the variable *~REDFST_LOW~*. The set of *fast*
+(*slow*) regions is given by *~REDFST_FASTREGIONS~*
+(*~REDFST_SLOWREGIONS~*). The regions are encoded as a bitmask where a
+value of 1 for the *n*-th bit means region *n* is part of the set. For
+example, we set *~REDFST_SLOWREGIONS~* to 4 (0100 in binary), which
+means the set is contains the region 2 (2^2 = 4). In the same manner,
+*~REDFST_SLOWREGIONS~* contains the region *1* (2^1 = 2).  The use of
+*~OMP_PROC_BIND~* to bind the threads to cores is obligatory.
+
+For ReDFST to change the frequency it requires permissions and the use
+of the userspace governor. You can see which governor you're using with:
+
+#+BEGIN_SRC sh
+cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+#+END_SRC
+or
+#+BEGIN_SRC sh
+cpufreq-info
+#+END_SRC
+or
+#+BEGIN_SRC sh
+cpupower frequency-info
+#+END_SRC
+
+The governor can be changed with:
+#+BEGIN_SRC sh
+echo userspace | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+#+END_SRC
+or, for every CPU,
+#+BEGIN_SRC sh
+sudo cpufreq-set -c CPU -g userspace
+#+END_SRC
+or
+#+BEGIN_SRC sh
+sudo cpupower frequency-set -c all -g userspace
+#+END_SRC
+
+Besides using the userspace governor you also need read/write
+permissions to /sys/devices/system/cpu/cpu*/cpufreq/scaling_setspeed.
+*** Measuring energy consumption
+The binary /redfst/ measures energy consumption of the package, power
+plane 0 and DRAM of one or more processors. It uses the Intel RAPL
+interface, which is not available on all processors. Furthermore, it
+requires the msr module, which can be loaded with:
+
+#+BEGIN_SRC sh
+sudo modprobe msr
+#+END_SRC
+
+You will also need read/write permissions for /dev/cpu/*/msr.
+
+usage: ./install/bin/redfst [-c CORE...] [PROGRAM] [ARGS]
+  Outputs energy consumption for the package, pp0 and dram of each of the given COREs.
+
+The following commands are accepted from the stdin:
+-  reset :: zeroes energy counters
+-  print :: outputs to stderr the current value of the counters
+-  exit  :: terminates execution
+
+Arguments:
+- -c CORE :: measures energy consumption of CORE
+- PROGRAM :: if given, executes program with ARGS and terminates
+     execution when PROGRAM finishes
+
+
+If PROGRAM is given, this tool calls PROGRAM with ARGS. When PROGRAM
+exits, "exit" is read from the stdin, or it receives SIGINT, the
+energy consumption is printed and the tool exits.
+
+Data is printed using the following format:
+#+BEGIN_EXAMPLE
+pkg.n  X.X # energy consumption of the package of cpu n since last reset
+pp0.n  X.X # energy consumption of the power plane 0 of cpu n since last reset
+dram.n X.X # energy consumption of the dram of cpu n since last reset
+...
+pkg.m  X.X # energy consumption of the package of cpu m since last reset
+pp0.m  X.X # energy consumption of the power plane 0 of cpu m since last reset
+dram.m X.X # energy consumption of the dram of cpu m since last reset
+pkg    X.X # total energy consumption of the package of cpus n..m since last reset
+pp0    X.X # total energy consumption of the power plane 0 of cpus n..m since last reset
+dram   X.X # total energy consumption of the dram of cpus n..m since last reset
+time   X.X # execution time
+#+END_EXAMPLE
+
+To use it:
+#+BEGIN_SRC sh
+sudo redfst PROGRAM
+#+END_SRC
+
+If the target program uses the functions *redfst_print*,
+*redfst_reset* or *redfst_exit*, those must be passed through the
+stdin. To skip buffering we will use stdbuf:
+#+BEGIN_SRC sh
+stdbuf -o0 PROGRAM | stdbuf -i0 -o0 grep ENERGY | stdbuf -i0 -o0 sed s/.*ENERGY\ //g | sudo stdbuf -i0 redfst
+#+END_SRC
+
+
+** API
+- ~energy_region(int id)~ :: Sets the code region of the calling core
+     to "id". May trigger a frequency change.
+- ~energy_region_all(int id)~ :: Sets the code region of all cores to
+     "id". May trigger a frequency change on all cores.
+- ~energy_monitor_set_status(int n)~ :: Sets the value of a variable
+     used by the execution monitor, which is explained in the
+     Environment Variables section
+- ~energy_reset()~ :: Tells the redfst binary to reset the energy
+     counters.
+- ~energy_print()~ :: Tells the redfst binary to print the energy
+     counters.
+- ~energy_print()~ :: Tells the redfst binary to print the energy
+     counters and terminate.
+** Environment Variables
+The following variables are accepted by libredfst. Besides them,
+~OMP_PROC_BIND~ must be set to true.
+
+- ~REDFST_LOW~  :: Frequency to use on slow regions. Example: 1500000
+     (for 1.5GHz)
+- ~REDFST_HIGH~ :: Frequency for the fast regions. Example: 2000000 (for
+     2.0GHz)
+- ~REDFST_SLOWREGIONS~ :: Set of regions which will trigger the low
+     frequency. This variable is a bitmask *s* such that its *n*-th
+     bit is 1 if the region *n* is part of the set or 0
+     otherwise. Example: "6" will trigger the low frequency for
+     regions 1 and 2 since (1<<1)&6 is 0010 (binary) and (1<<2)&6
+     is 0100. The 0th region corresponds to the idle function. The
+     63th region is entered when the program finishes. The other
+     regions are user-defined.
+- ~REDFST_FASTREGIONS~ :: Regions which will trigger the high
+     frequency. See ~REDFST_SLOWREGIONS~.
+- ~REDFST_MONITOR~ :: If defined to anything other than "0", "F" or
+     "f", dumps some execution information to the file
+     "monitor.csv". This file contains a table with the following
+     columns:
+  - time :: When the data was measured. This is sort of a guess, and
+       depends on usleep not screwing up too much. If you want
+       something less imprecise you'll have to change the function
+       energy_monitor_loop on the file monitor.c.
+  - status :: Integer you can manually set by calling the function
+       energy_monitor_set_status(int n). You can, for instance, set it
+       to 0 on the portions of the code you're not interested in.
+  - freqN :: Frequency of the *N*-th core.
+  - regionN :: Current region of the *N*-th thread, which corresponds
+       to the *n*-th core.
+  - events :: Hardware counters. The defaults are last level cache
+       (LLC) references, LLC misses, cycles, instructions.
