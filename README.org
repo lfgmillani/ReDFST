@@ -72,7 +72,7 @@ regions is given by the variable =REDFST_LOW=. The set of *fast*
 (=REDFST_SLOWREGIONS=). The regions are encoded as a bitmask where a
 value of 1 for the *n*-th bit means region *n* is part of the set. For
 example, we set =REDFST_SLOWREGIONS= to 4 (0100 in binary), which
-means the set is contains the region 2 (2^2 = 4). In the same manner,
+means the set contains the region 2 (2^2 = 4). In the same manner,
 =REDFST_SLOWREGIONS= contains the region *1* (2^1 = 2).  The use of
 =OMP_PROC_BIND= to bind the threads to cores is obligatory.
 
