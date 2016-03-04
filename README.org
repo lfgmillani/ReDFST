@@ -66,15 +66,15 @@ export OMP_PROC_BIND=TRUE
 #+END_SRC
 
 The frequency for the *fast* regions is given by the variable
-*~REDFST_HIGH~*. Likewise, the frequency to be used in the *slow*
-regions is given by the variable *~REDFST_LOW~*. The set of *fast*
-(*slow*) regions is given by *~REDFST_FASTREGIONS~*
-(*~REDFST_SLOWREGIONS~*). The regions are encoded as a bitmask where a
+=REDFST_HIGH=. Likewise, the frequency to be used in the *slow*
+regions is given by the variable =REDFST_LOW=. The set of *fast*
+(*slow*) regions is given by =REDFST_FASTREGIONS=
+(=REDFST_SLOWREGIONS=). The regions are encoded as a bitmask where a
 value of 1 for the *n*-th bit means region *n* is part of the set. For
-example, we set *~REDFST_SLOWREGIONS~* to 4 (0100 in binary), which
+example, we set =REDFST_SLOWREGIONS= to 4 (0100 in binary), which
 means the set is contains the region 2 (2^2 = 4). In the same manner,
-*~REDFST_SLOWREGIONS~* contains the region *1* (2^1 = 2).  The use of
-*~OMP_PROC_BIND~* to bind the threads to cores is obligatory.
+=REDFST_SLOWREGIONS= contains the region *1* (2^1 = 2).  The use of
+=OMP_PROC_BIND= to bind the threads to cores is obligatory.
 
 For ReDFST to change the frequency it requires permissions and the use
 of the userspace governor. You can see which governor you're using with:
