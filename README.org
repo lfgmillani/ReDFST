@@ -118,8 +118,10 @@ sudo modprobe msr
 
 You will also need read/write permissions for /dev/cpu/*/msr.
 
+#+BEGIN_SRC sh
 usage: ./install/bin/redfst [-c CORE...] [PROGRAM] [ARGS]
   Outputs energy consumption for the package, pp0 and dram of each of the given COREs.
+#+END_SRC
 
 The following commands are accepted from the stdin:
 -  reset :: zeroes energy counters
