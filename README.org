@@ -163,7 +163,6 @@ stdin. To skip buffering we will use stdbuf:
 stdbuf -o0 PROGRAM | stdbuf -i0 -o0 grep ENERGY | stdbuf -i0 -o0 sed s/.*ENERGY\ //g | sudo stdbuf -i0 redfst
 #+END_SRC
 
-
 ** API
 - ~energy_region(int id)~ :: Sets the code region of the calling core
      to "id". May trigger a frequency change.
