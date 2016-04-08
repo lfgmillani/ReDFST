@@ -101,7 +101,9 @@ redfst_init(){
 	gFreq[0] = gFreq[1] = 0;
 	from_env();
 	redfst_perf_init();
+#ifdef REDFST_OMP
 	redfst_omp_init();
+#endif
 	redfst_profile_load();
 	if(gCfg.monitor)
 		redfst_monitor_init();
