@@ -1,9 +1,14 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <limits.h>
+#include <unistd.h>
 #include <cpufreq.h>
+#include <sched.h>
+#include <sys/types.h>
+#include <sys/syscall.h>
 #include <macros.h>
 #include "global.h"
 #include "perf.h"
@@ -112,6 +117,13 @@ redfst_init(){
 void redfst_thread_init(int cpu){
 /* must be called by every thread at the beginning of execution exactly once */
   uint64_t timeNow;
+#ifndef REDFST_OMP
+  cpu_set_t set;
+
+  CPU_ZERO(&set);
+  CPU_SET(cpu, &set);
+  sched_setaffinity(syscall(SYS_gettid), sizeof(set), &set);
+#endif
   timeNow = time_now();
   tRedfstCpu = cpu;
   tRedfstPrevId = 0;
