@@ -147,7 +147,6 @@ void redfst_thread_init(int cpu){
 void __attribute__((destructor))
 redfst_close(){
 /* must be called at the end of execution */
-
 	redfst_region_final();
 
 	if(gCfg.monitor){
