@@ -100,19 +100,15 @@ void redfst_exit() { redfst_impl("exit" ); }
 
 #ifdef REDFSTLIB_OMP
 #include <omp.h>
-#endif
 #ifdef REDFSTLIB_STATIC
 static
 #endif
 void redfst_region_all(int id){
 	int nthreads;
 	int i;
-#ifdef REDFSTLIB_OMP
 	nthreads = omp_get_max_threads();
 #pragma omp parallel for num_threads(nthreads)
-#else
-	REDFSTLIB_OMP should be defined
-#endif
 	for(i=0; i < nthreads; ++i)
 		redfst_region(id);
 }
+#endif
