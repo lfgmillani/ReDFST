@@ -167,18 +167,18 @@ stdbuf -o0 PROGRAM | stdbuf -i0 -o0 grep ENERGY | stdbuf -i0 -o0 sed s/.*ENERGY\
 #+END_SRC
 
 ** API
-- ~energy_region(int id)~ :: Sets the code region of the calling core
+- ~redfst_region(int id)~ :: Sets the code region of the calling core
      to "id". May trigger a frequency change.
-- ~energy_region_all(int id)~ :: Sets the code region of all cores to
+- ~redfst_region_all(int id)~ :: Sets the code region of all cores to
      "id". May trigger a frequency change on all cores.
-- ~energy_monitor_set_status(int n)~ :: Sets the value of a variable
+- ~redfst_monitor_set_status(int n)~ :: Sets the value of a variable
      used by the execution monitor, which is explained in the
      Environment Variables section
-- ~energy_reset()~ :: Tells the redfst binary to reset the energy
+- ~redfst_reset()~ :: Tells the redfst binary to reset the energy
      counters.
-- ~energy_print()~ :: Tells the redfst binary to print the energy
+- ~redfst_print()~ :: Tells the redfst binary to print the energy
      counters.
-- ~energy_print()~ :: Tells the redfst binary to print the energy
+- ~redfst_print()~ :: Tells the redfst binary to print the energy
      counters and terminate.
 ** Environment Variables
 The following variables are accepted by libredfst. Besides them,
@@ -205,9 +205,9 @@ The following variables are accepted by libredfst. Besides them,
   - time :: When the data was measured. This is sort of a guess, and
        depends on usleep not screwing up too much. If you want
        something less imprecise you'll have to change the function
-       energy_monitor_loop on the file monitor.c.
+       =redfst_monitor_loop= on the file monitor.c.
   - status :: Integer you can manually set by calling the function
-       energy_monitor_set_status(int n). You can, for instance, set it
+       =redfst_monitor_set_status(int n)=. You can, for instance, set it
        to 0 on the portions of the code you're not interested in.
   - freqN :: Frequency of the *N*-th core.
   - regionN :: Current region of the *N*-th thread, which corresponds
