@@ -3,7 +3,7 @@
 #ifdef __cplusplus
 extern "C"{
 #endif
-#include "libredfst_config.h"
+
 void redfst_monitor_set_status(int n);
 
 void redfst_region(int id);
