@@ -4,7 +4,11 @@ Region-based Dynamic Frequency Scaling Toolset
 - gcc 5.1.1 or above
 - libcpupower or libcpufreq
 ** Installation
-Edit config.h to your liking, then compile with:
+Default options should be enough. If you want to hack and understand
+what you are doing, start customization in files
+=src/libredfst/CMakeLists.txt= and =src/redfst/CMakeLists.txt=. This
+should get improved in the future, with user options available in the
+command-line or through =ccmake=.
 
 #+BEGIN_SRC sh
 mkdir build; cd build; cmake ..; make;
