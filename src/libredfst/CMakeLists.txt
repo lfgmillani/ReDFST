@@ -45,14 +45,17 @@ set(REDFSTLIB_CPU0 0)
 set(REDFSTLIB_CPU1 1)
 
 include_directories(${CMAKE_BINARY_DIR})
-add_library(libredfst_static STATIC ${LIBREDFST_SOURCES})
-set_target_properties(libredfst_static PROPERTIES OUTPUT_NAME redfst)
+if(REDFST_STATIC)
+  add_library(libredfst_static STATIC ${LIBREDFST_SOURCES})
+  set_target_properties(libredfst_static PROPERTIES OUTPUT_NAME redfst)
+  install(TARGETS libredfst_static DESTINATION lib)
+endif(REDFST_STATIC)
 
 add_library(libredfst_dynamic SHARED ${LIBREDFST_SOURCES})
 set_target_properties(libredfst_dynamic PROPERTIES OUTPUT_NAME redfst)
 target_link_libraries(libredfst_dynamic cpufreq)
 
-install(TARGETS libredfst_static DESTINATION lib)
+
 install(TARGETS libredfst_dynamic DESTINATION lib)
 install(FILES ${LIBREDFST_HEADERS} DESTINATION include)
 
