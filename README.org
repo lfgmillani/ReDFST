@@ -7,8 +7,8 @@ Region-based Dynamic Frequency Scaling Toolset
 Edit config.h to your liking, then compile with:
 
 #+BEGIN_SRC sh
-make
-make install
+mkdir build; cd build; cmake ..; make;
+sudo make install
 #+END_SRC
 ** Usage
 *** Changing the frequency
