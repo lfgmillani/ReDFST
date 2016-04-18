@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
-#include "config.h"
+#include "libredfst_config.h"
 #include "perf.h"
 #include "region.h"
 #include "global.h"

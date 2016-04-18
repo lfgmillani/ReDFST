@@ -3,7 +3,7 @@
 #ifdef __cplusplus
 extern "C"{
 #endif
-#include "redfst/config.h"
+#include "libredfst_config.h"
 void redfst_monitor_set_status(int n);
 
 #ifndef REDFSTLIB_STATIC

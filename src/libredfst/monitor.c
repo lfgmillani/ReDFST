@@ -4,10 +4,10 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <pthread.h>
-#include <macros.h>
+#include "macros.h"
 #include "perf.h"
 #include "global.h"
-#include "config.h"
+#include "libredfst_config.h"
 #include "monitor.h"
 
 #define REDFST_MONITOR_PERIOD (1000000 / REDFSTLIB_MONITOR_FREQUENCY)

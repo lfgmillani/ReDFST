@@ -1,7 +1,3 @@
-#include <string.h>
-#include <stdint.h>
-#include "region.h"
-#include "config.h"
 #include "global.h"
 __thread int tRedfstCpu;
 __thread int tRedfstPrevId;

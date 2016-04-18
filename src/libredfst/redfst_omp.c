@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <omp.h>
-#include <macros.h>
-#include "config.h"
+#include "macros.h"
+#include "libredfst_config.h"
 #include "init.h"
 #include "global.h"
 #include "redfst_omp.h"

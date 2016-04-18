@@ -3,12 +3,12 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include <cpufreq.h>
-#include "redfst/macros.h"
-#include "redfst/region.h"
-#include "redfst/perf.h"
-#include "redfst/util.h"
-#include "redfst/global.h"
-#include "redfst/config.h"
+#include "macros.h"
+#include "region.h"
+#include "perf.h"
+#include "util.h"
+#include "global.h"
+#include "libredfst_config.h"
 static inline redfst_region_t * region_get(int cpu, int id){
 	return &gRedfstRegion[cpu][id];
 }

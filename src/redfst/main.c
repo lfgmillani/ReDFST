@@ -13,7 +13,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <math.h>
-#include "config.h"
+#include "redfst_config.h"
 #include "launch.h"
 
 #define MSR_RAPL_POWER_UNIT    0x606
