@@ -11,7 +11,7 @@ int main(){
 #pragma omp parallel for reduction(+:x)
 	for(i=0;i<n/10;++i)
 		for(j=0;j<10;++j)
-			x=x*i+j; // nonsense
+			x=x*i+j; // some arithmetic operation
 	redfst_print(); // print counters
 	redfst_reset(); // zero counters
 	redfst_region_all(2); // enter region 2
