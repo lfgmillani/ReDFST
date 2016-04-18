@@ -1,5 +1,5 @@
 #include <unistd.h>
-#include "redfst.h"
+#include <redfst.h>
 
 int main(){
 	int n = 1024*1024*1024;
