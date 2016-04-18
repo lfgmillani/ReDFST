@@ -13,8 +13,8 @@
 # You should have received a copy of the GNU Public License
 # along with ReDFST. If not, see <http://www.gnu.org/licenses/>.
 cmake_minimum_required(VERSION 2.8)
-project(redfst)
-find_package(OpenMP)
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-add_subdirectory(src)
-add_subdirectory(examples)
+
+include_directories(${CMAKE_SOURCE_DIR}/src/libredfst)
+link_directories(${CMAKE_BINARY_DIR}/src/libredfst)
+add_executable(redfst_example example.c)
+target_link_libraries(redfst_example redfst)

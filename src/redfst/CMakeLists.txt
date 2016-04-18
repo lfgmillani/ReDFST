@@ -27,8 +27,10 @@ set(REDFSTBIN_MAX_CORES 64)
 set(REDFSTBIN_POLLING_FREQUENCY 100)
 
 include_directories(${CMAKE_BINARY_DIR})
-add_executable(redfst ${REDFST_SOURCES})
-target_link_libraries(redfst m)
+add_executable(redfstbin ${REDFST_SOURCES})
+set_target_properties(redfstbin PROPERTIES OUTPUT_NAME redfst)
+target_link_libraries(redfstbin m)
+
 install(PROGRAMS ${CMAKE_BINARY_DIR}/src/redfst/redfst DESTINATION bin)
 
 configure_file("${CMAKE_HOME_DIRECTORY}/src/redfst/redfst_config.h.in" "${CMAKE_BINARY_DIR}/redfst_config.h" @ONLY IMMEDIATE)

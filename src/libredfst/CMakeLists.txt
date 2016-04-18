@@ -50,6 +50,7 @@ set_target_properties(libredfst_static PROPERTIES OUTPUT_NAME redfst)
 
 add_library(libredfst_dynamic SHARED ${LIBREDFST_SOURCES})
 set_target_properties(libredfst_dynamic PROPERTIES OUTPUT_NAME redfst)
+target_link_libraries(libredfst_dynamic cpufreq)
 
 install(TARGETS libredfst_static DESTINATION lib)
 install(TARGETS libredfst_dynamic DESTINATION lib)
