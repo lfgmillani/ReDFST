@@ -11,7 +11,6 @@ void redfst_region(int id);
 void redfst_region_all(int id);
 void redfst_reset(void);
 void redfst_print(void);
-void redfst_exit(void);
 #else
 #include "redfst/region.c"
 #endif
