@@ -38,12 +38,12 @@ int main(int argc, char **argv){
     }
   }
   redfst_print(); // print energy counters
-  
+
   redfst_reset(); // reset energy counters
   redfst_region_all(2); // change code region of all threads
   usleep(3000000);
   redfst_exit(); // print energy counters and exit
-  
+
   return x;
 }
 #+END_SRC
@@ -78,7 +78,7 @@ regions is given by the variable =REDFST_LOW=. The set of *fast*
 value of 1 for the *n*-th bit means region *n* is part of the set. For
 example, we set =REDFST_SLOWREGIONS= to 4 (0100 in binary), which
 means the set contains the region 2 (2^2 = 4). In the same manner,
-=REDFST_SLOWREGIONS= contains the region *1* (2^1 = 2).  The use of
+=REDFST_FASTREGIONS= contains the region *1* (2^1 = 2).  The use of
 =OMP_PROC_BIND= to bind the threads to cores is obligatory.
 
 For ReDFST to change the frequency it requires permissions and the use
