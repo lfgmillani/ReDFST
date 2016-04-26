@@ -20,14 +20,14 @@ uint64_t __redfstTime0; // timer is set to last reset
 #endif
 
 void (*__redfst_energy_update)();
-void (*__redfst_energy_update_one)(core_t *c);
+void (*__redfst_energy_update_one)(cpu_t *c);
 
 static void dummy(){}
-static void dummy_one(core_t *c){}
+static void dummy_one(cpu_t *c){}
 
 int __redfstNcores; // actually these are hardware threads, not cores. this is misnamed everywhere.
-core_t *__redfstCore;
-core_t **gCoreId2Core;
+cpu_t *__redfstCpu;
+cpu_t **gCpuId2Cpu;
 volatile int __redfstMutex;
 FILE *__redfst_fd;
 
@@ -73,13 +73,13 @@ static FILE * __redfst_energy_get_fd(){
 }
 
 static int cmpid(const void *a, const void *b){
-	return ((core_t*)a)->id - ((core_t*)b)->id;
+	return ((cpu_t*)a)->id - ((cpu_t*)b)->id;
 }
 
 static void get_all_sensors(){
 	struct dirent *e;
 	DIR *d;
-	core_t *c;
+	cpu_t *c;
 	char *s;
 	int ncores;
 
@@ -113,7 +113,7 @@ static void get_all_sensors(){
 
 static void get_sensors(){
 	char *s;
-	core_t *core;
+	cpu_t *cpu;
 	int alloc;
 	int ncores;
 	int a,b;

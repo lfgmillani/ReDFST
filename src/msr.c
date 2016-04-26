@@ -14,7 +14,7 @@
 #define MSR_PP1_ENERGY_STATUS  0x641
 
 extern int __redfstNcores;
-extern core_t *__redfstCore;
+extern cpu_t *__redfstCpu;
 
 static uint64_t msr_read(int fd, int which){
 	uint64_t data;
@@ -33,14 +33,14 @@ static void redfst_msr_update_which(uint64_t *total, uint32_t *prev, int fd, int
 	*total += delta;
 }
 
-void redfst_msr_update_one(core_t *c){
+void redfst_msr_update_one(cpu_t *c){
 		redfst_msr_update_which(&c->pkg,  &c->pkgPrev,  c->fd, MSR_PKG_ENERGY_STATUS);
 		redfst_msr_update_which(&c->pp0,  &c->pp0Prev,  c->fd, MSR_PP0_ENERGY_STATUS);
 		redfst_msr_update_which(&c->dram, &c->dramPrev, c->fd, MSR_DRAM_ENERGY_STATUS);
 }
 
 void redfst_msr_update(){
-	core_t *c;
+	cpu_t *c;
 	int i;
 	for(i=0; i < __redfstNcores; ++i){
 		c = __redfstCore+i;
@@ -52,7 +52,7 @@ void redfst_msr_update(){
 
 int redfst_msr_init(){
 	char buf[32];
-	core_t *c;
+	cpu_t *c;
 	int i;
 	for(i=0; i < __redfstNcores; ++i){
 		c = __redfstCore + i;

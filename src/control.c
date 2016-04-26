@@ -30,7 +30,7 @@ static void __redfst_safe_update(){
 	REDFST_UNLOCK(__redfstMutex);
 }
 
-static void __redfst_safe_update_one(core_t *c){
+static void __redfst_safe_update_one(cpu_t *c){
 /*
 	Update a single energy counter if no update is underway.
 	Otherwise, wait for update to finish before returning.
@@ -50,7 +50,7 @@ static
 #endif
 void redfst_reset(){
 /* zeroes energy counters */
-	core_t *c;
+	cpu_t *c;
 	int i;
 	while(unlikely(REDFST_LOCK(__redfstMutex)))
 		;
@@ -70,7 +70,7 @@ static
 void redfst_print(){
 /* print current value of energy counters */
 	static char *buf = 0;
-	core_t *c;
+	cpu_t *c;
 	double pkg, pp0, dram;
 	double totalPkg, totalPp0, totalDram;
 	double t;
@@ -118,7 +118,7 @@ void redfst_get(double *dst, int core){
 	dst[1] = pp0.core
 	dst[2] = dram.core
 */
-	core_t *c;
+	cpu_t *c;
 	c = gCoreId2Core[core];
 	__redfst_safe_update_one(c);
 	dst[0] = c->pkg * c->unit;
@@ -138,7 +138,7 @@ void redfst_get_all(double *dst){
 	dst[1+3*core] = pp0.core
 	dst[2+3*core] = dram.core
 */
-	core_t *c;
+	cpu_t *c;
 	int i;
 	__redfst_safe_update();
 	for(i=0; i<__redfstNcores; ++i){
