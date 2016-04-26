@@ -1,3 +1,5 @@
+#ifndef REDFST_REGION_C
+#define REDFST_REGION_C
 #include <stdio.h>
 #include <time.h>
 #include <stdint.h>
@@ -87,4 +89,5 @@ void redfst_region_all(int id){
 	for(i=0; i < nthreads; ++i)
 		redfst_region(id);
 }
+#endif
 #endif
