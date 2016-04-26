@@ -10,7 +10,7 @@
 #include "config.h"
 #include "monitor.h"
 
-#define REDFST_MONITOR_PERIOD (1000000 / REDFSTLIB_MONITOR_FREQUENCY)
+#define REDFST_MONITOR_PERIOD (1000000 / REDFST_MONITOR_FREQUENCY)
 
 typedef struct{
 	redfst_perf_t events[REDFST_MAX_THREADS];
@@ -81,7 +81,7 @@ void * redfst_monitor_loop(void *dummy){
 
 void redfst_monitor_init(){
 	pthread_t tid;
-	gLen = 512 * REDFSTLIB_MONITOR_FREQUENCY;
+	gLen = 512 * REDFST_MONITOR_FREQUENCY;
 	gI = 0;
 	gLoop = 1;
 	gMon = malloc(gLen * sizeof(*gMon));

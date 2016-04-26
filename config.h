@@ -14,7 +14,7 @@
 /*
 	polling frequency for the monitor
 */
-#define REDFSTLIB_MONITOR_FREQUENCY 100
+#define REDFST_MONITOR_FREQUENCY 100
 
 /*
 	if defined, the library will target OpenMP. at the moment that's the only
