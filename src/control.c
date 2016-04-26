@@ -137,6 +137,7 @@ void redfst_get_all(double *dst){
 	dst[0+3*cpu]   = pkg.cpu
 	dst[1+3*cpu]   = pp0.cpu
 	dst[2+3*cpu]   = dram.cpu
+	dst[3*ncpus+1] = execution time in seconds
 */
 	cpu_t *c;
 	int i;
@@ -147,6 +148,7 @@ void redfst_get_all(double *dst){
 		*dst++ = c->pp0 * c->unit;
 		*dst++ = c->dram * c->unit;
 	}
+	*dst = (time_now() - __redfstTime0) * 1e-9;
 }
 
 #undef REDFST_LOCK
