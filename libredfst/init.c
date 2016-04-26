@@ -16,7 +16,7 @@
 #include "region.h"
 #include "util.h"
 #include "profile.h"
-#include "redfst.h"
+#include "energy.h"
 #include "redfst_omp.h"
 
 typedef struct{
@@ -105,6 +105,7 @@ redfst_init(){
 	gRedfstThreadCount = 0;
 	gFreq[0] = gFreq[1] = 0;
 	from_env();
+	redfst_energy_init();
 	redfst_perf_init();
 #ifdef REDFST_OMP
 	redfst_omp_init();
