@@ -72,7 +72,7 @@ static
 void redfst_region_final(){
 	int cpu;
 	for(cpu=0; cpu < gRedfstThreadCount;++cpu){
-		redfst_region_impl(REDFSTLIB_MAX_REGIONS-1, cpu);
+		redfst_region_impl(REDFST_MAX_REGIONS-1, cpu);
 	}
 }
 

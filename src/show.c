@@ -13,7 +13,7 @@ redfst_show(){
   int cpu;
   int region;
   fp = fopen("redfst.profile","wt");
-  for(region=0;region<REDFSTLIB_MAX_REGIONS;++region){
+  for(region=0;region<REDFST_MAX_REGIONS;++region){
     totTime = totRef = totMiss = 0;
     for(cpu=0;cpu<REDFSTLIB_MAX_THREADS;++cpu){
       m = &gRedfstRegion[cpu][region];

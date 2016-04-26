@@ -117,7 +117,7 @@ void redfst_profile_load(){
 	int cpu,id;
 	redfst_profile_load_impl(gRedfstRegion[0]);
 	for(cpu=1;cpu<REDFSTLIB_MAX_THREADS;++cpu){
-		for(id=0;id<REDFSTLIB_MAX_REGIONS;++id){
+		for(id=0;id<REDFST_MAX_REGIONS;++id){
 			gRedfstRegion[cpu][id].perf.refs = gRedfstRegion[0][id].perf.refs;
 			gRedfstRegion[cpu][id].perf.miss = gRedfstRegion[0][id].perf.miss;
 			gRedfstRegion[cpu][id].time = gRedfstRegion[0][id].time;
@@ -131,17 +131,17 @@ void redfst_profile_graph_save(){
 	int last;
 	int cpu;
 	int i,j;
-	hist = calloc(REDFSTLIB_MAX_REGIONS*REDFSTLIB_MAX_REGIONS, sizeof(*hist));
+	hist = calloc(REDFST_MAX_REGIONS*REDFST_MAX_REGIONS, sizeof(*hist));
 	last = 0;
 	for(cpu=0; cpu < gRedfstThreadCount; ++cpu){
-		for(i=0; i < REDFSTLIB_MAX_REGIONS; ++i){
-			for(j=0; j < REDFSTLIB_MAX_REGIONS; ++j){
+		for(i=0; i < REDFST_MAX_REGIONS; ++i){
+			for(j=0; j < REDFST_MAX_REGIONS; ++j){
 				if(gRedfstRegion[cpu][i].next[j]){
 					if(i > last)
 						last = i;
 					if(j > last)
 						last = j;
-					hist[i*REDFSTLIB_MAX_REGIONS+j] += gRedfstRegion[cpu][i].next[j];
+					hist[i*REDFST_MAX_REGIONS+j] += gRedfstRegion[cpu][i].next[j];
 				}
 			}
 		}
@@ -150,7 +150,7 @@ void redfst_profile_graph_save(){
 	for(i=0;i<=last;++i){
 		fprintf(fp,"%d",i);
 		for(j=0;j<=last;++j)
-			fprintf(fp,";%d",hist[i*REDFSTLIB_MAX_REGIONS+j]);
+			fprintf(fp,";%d",hist[i*REDFST_MAX_REGIONS+j]);
 		fprintf(fp,"\n");
 	}
 	fclose(fp);
@@ -158,7 +158,7 @@ void redfst_profile_graph_save(){
 }
 
 void redfst_profile_save(){
-	redfst_region_t hist[REDFSTLIB_MAX_REGIONS] = {0,};
+	redfst_region_t hist[REDFST_MAX_REGIONS] = {0,};
   redfst_region_t *m;
   FILE *fp;
   uint64_t totTime,totRef,totMiss;
@@ -170,7 +170,7 @@ void redfst_profile_save(){
 		fprintf(stderr, "failed to open profile file \"%s\"\n",gProfileFname);
 		return;
 	}
-  for(region=0;region<REDFSTLIB_MAX_REGIONS;++region){
+  for(region=0;region<REDFST_MAX_REGIONS;++region){
     totTime = totRef = totMiss = 0;
     for(cpu=0;cpu<gRedfstThreadCount;++cpu){
       m = &gRedfstRegion[cpu][region];

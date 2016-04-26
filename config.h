@@ -4,7 +4,7 @@
 	maximum number of code regions.
 	as 64bit integers are used with this, it cannot be higher than 64.
 */
-#define REDFSTLIB_MAX_REGIONS 64
+#define REDFST_MAX_REGIONS 64
 
 /*
 	maximum number of threads supported
