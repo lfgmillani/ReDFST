@@ -1,0 +1,56 @@
+#!/bin/bash
+
+function error_is_small() {
+	if [[ "1" == $(bc -l <<< "$1 > $2") ]]; then
+		a=$1
+		b=$2
+	else
+		a=$2
+		b=$1
+	fi
+	bc -l <<< "($a-$b)/$a < $3"
+}
+	
+r=0
+outfile=$(mktemp)
+errfile=$(mktemp)
+enefile=$(mktemp)
+$1 1>"$outfile" 2>"$errfile" 3>"$enefile"
+out=$(cat "$outfile")
+err=$(cat "$errfile")
+ene=$(cat "$enefile")
+rm "$outfile" "$errfile" "$enefile"
+
+if [[ 0 -ne $? ]]; then
+	echo "invalid retval"
+	r=1
+fi
+if [[ "" != "$out" ]]; then
+	echo "invalid stdout:"
+	echo -e "$out"
+	r=1
+fi
+if [[ "" != "$err" ]]; then
+	echo "invalid stderr:"
+	echo -e "$err"
+	r=1
+fi
+if grep Failed <<< "$ene" > /dev/null; then
+	echo "error while reading energy:"
+	grep Failed <<< "$ene"
+	r=1
+	ene=$(grep -v Failed <<< "$ene")
+fi
+
+ene=( $(sed 's/.*,//g' <<< "$ene") )
+i=0
+while read t; do # read expected times from stdin
+	if [[ "" == "$t" ]]; then continue; fi
+	x=${ene[i]}
+if [[ "0" == "$(error_is_small $x $t 0.01)" ]]; then
+		echo "Error too high"
+		r=1
+	fi
+	i=$(( i + 1 ))
+done
+exit $r
