@@ -74,30 +74,6 @@ void redfst_region_final(){
 	}
 }
 
-#include <time.h>
-#ifdef REDFSTLIB_STATIC
-static
-#endif
-void redfst_impl(const char *cmd){
-	struct timespec spec;
-	clock_gettime(CLOCK_MONOTONIC, &spec);
-	printf("%lld.%.9ld ENERGY %s\n",(long long)spec.tv_sec,spec.tv_nsec,cmd);
-	fflush(stdout);
-}
-#ifdef REDFSTLIB_STATIC
-static
-#endif
-void redfst_reset(){ redfst_impl("reset"); }
-#ifdef REDFSTLIB_STATIC
-static
-#endif
-void redfst_print(){ redfst_impl("print"); }
-#ifdef REDFSTLIB_STATIC
-static
-#endif
-void redfst_exit() { redfst_impl("exit" ); }
-
-
 #ifdef REDFSTLIB_OMP
 #include <omp.h>
 #ifdef REDFSTLIB_STATIC
