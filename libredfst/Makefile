@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Os -march=native -mtune=native -I.
 OPENMP = -fopenmp
 LDFLAGS = 
-SRCS = perf.c redfst_omp.c init.c region.c global.c util.c profile.c monitor.c
+SRCS = perf.c redfst_omp.c init.c region.c global.c util.c profile.c monitor.c energy.c msr.c control.c
 OBJS = $(SRCS:.c=.o)
 TARGET = libredfst.so
 .PHONY: all clean install
