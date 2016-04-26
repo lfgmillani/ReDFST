@@ -128,7 +128,7 @@ void redfst_thread_init(int cpu){
   timeNow = time_now();
   tRedfstCpu = cpu;
   tRedfstPrevId = 0;
-#ifdef REDFSTLIB_FREQ_PER_CORE
+#ifdef REDFST_FREQ_PER_CORE
   gRedfstCurrentFreq[cpu] = FREQ_HIGH;
 	cpufreq_set_frequency(cpu, FREQ_HIGH);
 #else

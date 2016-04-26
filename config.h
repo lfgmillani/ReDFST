@@ -31,9 +31,9 @@
 /*
 	if defined, frequency is decided on a per-core basis. otherwise, its per-cpu.
 */
-#define REDFSTLIB_FREQ_PER_CORE
+#define REDFST_FREQ_PER_CORE
 /*
-	if REDFSTLIB_FREQ_PER_CORE was not defined, these variables define which cores will
+	if REDFST_FREQ_PER_CORE was not defined, these variables define which cores will
 	have their frequencies changed. all other cores will be kept at the low
 	frequency.
 */

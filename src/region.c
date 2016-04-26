@@ -48,7 +48,7 @@ static void redfst_region_impl(int id, int cpu){
 
 	redfst_perf_read(cpu, &m->perf);
 
-#ifndef REDFSTLIB_FREQ_PER_CORE
+#ifndef REDFST_FREQ_PER_CORE
 	if(REDFSTLIB_CPU0 != cpu && REDFSTLIB_CPU1 != cpu)
 		return;
 #endif
