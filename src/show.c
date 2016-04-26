@@ -15,7 +15,7 @@ redfst_show(){
   fp = fopen("redfst.profile","wt");
   for(region=0;region<REDFST_MAX_REGIONS;++region){
     totTime = totRef = totMiss = 0;
-    for(cpu=0;cpu<REDFSTLIB_MAX_THREADS;++cpu){
+    for(cpu=0;cpu<REDFST_MAX_THREADS;++cpu){
       m = &gRedfstRegion[cpu][region];
       totTime += m->time;
       totRef += m->perf.refs;

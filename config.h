@@ -9,7 +9,7 @@
 /*
 	maximum number of threads supported
 */
-#define REDFSTLIB_MAX_THREADS 32
+#define REDFST_MAX_THREADS 32
 
 /*
 	polling frequency for the monitor

@@ -45,7 +45,7 @@ struct read_format{
 	} values[REDFST_PERF_NUM_EVENTS]; // N events - WILL BREAK IF WE MONITOR MORE AND DON'T CHANGE THIS
 };
 
-static int gFd[REDFSTLIB_MAX_THREADS] = {0};
+static int gFd[REDFST_MAX_THREADS] = {0};
 
 static long
 perf_event_open(struct perf_event_attr *hw_event, pid_t pid,

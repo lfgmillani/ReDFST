@@ -6,9 +6,9 @@
 extern __thread int tRedfstCpu;
 extern __thread int tRedfstPrevId;
 extern int gFreq[2];
-extern int gRedfstCurrentId[REDFSTLIB_MAX_THREADS];
-extern int gRedfstCurrentFreq[REDFSTLIB_MAX_THREADS];
-extern redfst_region_t gRedfstRegion[REDFSTLIB_MAX_THREADS][REDFSTLIB_MAX_REGIONS];
+extern int gRedfstCurrentId[REDFST_MAX_THREADS];
+extern int gRedfstCurrentFreq[REDFST_MAX_THREADS];
+extern redfst_region_t gRedfstRegion[REDFST_MAX_THREADS][REDFST_MAX_REGIONS];
 extern uint64_t gRedfstSlowRegions;
 extern uint64_t gRedfstFastRegions;
 extern int gRedfstThreadCount;

@@ -116,7 +116,7 @@ FAILED:
 void redfst_profile_load(){
 	int cpu,id;
 	redfst_profile_load_impl(gRedfstRegion[0]);
-	for(cpu=1;cpu<REDFSTLIB_MAX_THREADS;++cpu){
+	for(cpu=1;cpu<REDFST_MAX_THREADS;++cpu){
 		for(id=0;id<REDFST_MAX_REGIONS;++id){
 			gRedfstRegion[cpu][id].perf.refs = gRedfstRegion[0][id].perf.refs;
 			gRedfstRegion[cpu][id].perf.miss = gRedfstRegion[0][id].perf.miss;

@@ -13,9 +13,9 @@
 #define REDFST_MONITOR_PERIOD (1000000 / REDFSTLIB_MONITOR_FREQUENCY)
 
 typedef struct{
-	redfst_perf_t events[REDFSTLIB_MAX_THREADS];
+	redfst_perf_t events[REDFST_MAX_THREADS];
 	uint64_t freq;
-	uint8_t region[REDFSTLIB_MAX_REGIONS];
+	uint8_t region[REDFST_MAX_REGIONS];
 	int status;
 }monitor_t;
 
@@ -42,8 +42,8 @@ static void freq_encode(uint64_t *dst, int *src){
 	uint64_t n = 0;
 	int i;
 	CASSERT(LEN(gFreq)==2);
-	CASSERT(REDFSTLIB_MAX_THREADS<=64);
-	for(i=0;i<REDFSTLIB_MAX_THREADS;++i){
+	CASSERT(REDFST_MAX_THREADS<=64);
+	for(i=0;i<REDFST_MAX_THREADS;++i){
 		n |= (src[i] == FREQ_HIGH) << i;
 	}
 	*dst = n;
@@ -51,7 +51,7 @@ static void freq_encode(uint64_t *dst, int *src){
 
 static void freq_decode(int *dst, uint64_t src){
 	int i;
-	for(i=0;i<REDFSTLIB_MAX_THREADS;++i){
+	for(i=0;i<REDFST_MAX_THREADS;++i){
 		dst[i] = (src&(1LL<<i)) ? FREQ_HIGH : FREQ_LOW;
 	}
 }
@@ -96,7 +96,7 @@ void redfst_monitor_end(){
 }
 
 void redfst_monitor_show(){
-	int freq[REDFSTLIB_MAX_THREADS];
+	int freq[REDFST_MAX_THREADS];
 	FILE *f;
 	monitor_t *m;
 	int i,j,k;
