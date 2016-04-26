@@ -76,7 +76,7 @@ void redfst_region_final(){
 	}
 }
 
-#ifdef REDFSTLIB_OMP
+#ifdef REDFST_OMP
 #include <omp.h>
 #ifdef REDFST_STATIC
 static

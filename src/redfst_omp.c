@@ -6,7 +6,7 @@
 #include "init.h"
 #include "global.h"
 #include "redfst_omp.h"
-#ifdef REDFSTLIB_OMP
+#ifdef REDFST_OMP
 static void redfst_omp_init_check(){
 	if(omp_proc_bind_true != omp_get_proc_bind()){
 		fprintf(stderr,"You must set OMP_PROC_BIND=TRUE to use libredfst. Aborting.\n");

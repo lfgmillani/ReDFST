@@ -20,7 +20,7 @@
 	if defined, the library will target OpenMP. at the moment that's the only
 	option.
 */
-#define REDFSTLIB_OMP
+#define REDFST_OMP
 
 /*
 	if defined as static, the library will implement some functions in the header
