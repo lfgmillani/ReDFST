@@ -11,8 +11,11 @@ void redfst_region(int id);
 void redfst_region_all(int id);
 void redfst_reset(void);
 void redfst_print(void);
+void redfst_get(double *dst, int core);
+void redfst_get_all(double *dst);
 #else
 #include "redfst/region.c"
+#include "redfst/control.c"
 #endif
 #ifdef __cplusplus
 };
