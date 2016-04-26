@@ -1,16 +1,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 /*
-	the configuration is divided in two parts. variables starting with REDFSTLIB_
-	only affect the library side, whereas those starting with REDFSTBIN_ only
-	affect the binary.
-*/
-
-
-
-/* libredfst config */
-
-/*
 	maximum number of code regions.
 	as 64bit integers are used with this, it cannot be higher than 64.
 */
@@ -52,20 +42,5 @@
 
 /* if defined, energy is printed as a table */
 #define REDFST_CSV
-
-/* redfst config */
-
-/*
-	maximum number of cores supported.
-*/
-#define REDFSTBIN_MAX_CORES 64
-
-/*
-	frequency at which the energy counters should be read.
-	high values increase overhead.
-	with lower values the program takes longer to react to events such as the
-	target exiting or stdin commands.
-*/
-#define REDFSTBIN_POLLING_FREQUENCY 100
 
 #endif
