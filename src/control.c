@@ -113,10 +113,10 @@ static
 #endif
 void redfst_get(double *dst, int cpu){
 /*
-	write into dst the energy consumed by each core:
-	dst[0] = pkg.core
-	dst[1] = pp0.core
-	dst[2] = dram.core
+	write into dst the energy consumed by each cpu:
+	dst[0] = cpu.pkg
+	dst[1] = cpu.pp0
+	dst[2] = cpu.dram
 */
 	cpu_t *c;
 	c = gCpuId2Cpu[cpu];
@@ -133,10 +133,10 @@ static
 #endif
 void redfst_get_all(double *dst){
 /*
-	write into dst the energy consumed by each core:
-	dst[0+3*core] = pkg.core
-	dst[1+3*core] = pp0.core
-	dst[2+3*core] = dram.core
+	write into dst the energy consumed by each cpu:
+	dst[0+3*cpu]   = pkg.cpu
+	dst[1+3*cpu]   = pp0.cpu
+	dst[2+3*cpu]   = dram.cpu
 */
 	cpu_t *c;
 	int i;
