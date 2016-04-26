@@ -13,7 +13,7 @@
 #define MSR_PP0_ENERGY_STATUS  0x639
 #define MSR_PP1_ENERGY_STATUS  0x641
 
-extern int __redfstNcores;
+extern int __redfstNcpus;
 extern cpu_t *__redfstCpu;
 
 static uint64_t msr_read(int fd, int which){
@@ -42,8 +42,8 @@ void redfst_msr_update_one(cpu_t *c){
 void redfst_msr_update(){
 	cpu_t *c;
 	int i;
-	for(i=0; i < __redfstNcores; ++i){
-		c = __redfstCore+i;
+	for(i=0; i < __redfstNcpus; ++i){
+		c = __redfstCpu+i;
 		redfst_msr_update_which(&c->pkg,  &c->pkgPrev,  c->fd, MSR_PKG_ENERGY_STATUS);
 		redfst_msr_update_which(&c->pp0,  &c->pp0Prev,  c->fd, MSR_PP0_ENERGY_STATUS);
 		redfst_msr_update_which(&c->dram, &c->dramPrev, c->fd, MSR_DRAM_ENERGY_STATUS);
@@ -54,16 +54,16 @@ int redfst_msr_init(){
 	char buf[32];
 	cpu_t *c;
 	int i;
-	for(i=0; i < __redfstNcores; ++i){
-		c = __redfstCore + i;
-		sprintf(buf,"/dev/cpu/%d/msr",__redfstCore[i].id);
+	for(i=0; i < __redfstNcpus; ++i){
+		c = __redfstCpu + i;
+		sprintf(buf,"/dev/cpu/%d/msr",__redfstCpu[i].id);
 		c->fd = open(buf,O_RDONLY);
 		if(c->fd < 0){
 			fprintf(__redfst_fd, "Failed to open %s\n",buf);
-			__redfstCore[i].fd = 0;
+			__redfstCpu[i].fd = 0;
 			while(i--){
-				close(__redfstCore[i].fd);
-				__redfstCore[i].fd = 0;
+				close(__redfstCpu[i].fd);
+				__redfstCpu[i].fd = 0;
 			}
 			return -1;
 		}

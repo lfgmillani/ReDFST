@@ -9,9 +9,9 @@ void redfst_reset();
 void redfst_print();
 /* writes into dst the values of pkg, pp0 and dram of core
    dst = {PKG.core, PP0.core, DRAM.core} */
-void redfst_get(double *dst, int core);
 /* writes into dst the values of pkg, pp0 and dram for each core
    dst = {PKG.0, PP0.0, DRAM.0, ..., PKG.N, PP0.N, DRAM.N} */
+void redfst_get(double *dst, int cpu);
 void redfst_get_all(double *dst);
 #else
 #include "redfst/control.c"

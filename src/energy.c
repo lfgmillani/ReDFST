@@ -25,7 +25,7 @@ void (*__redfst_energy_update_one)(cpu_t *c);
 static void dummy(){}
 static void dummy_one(cpu_t *c){}
 
-int __redfstNcores; // actually these are hardware threads, not cores. this is misnamed everywhere.
+int __redfstNcpus;
 cpu_t *__redfstCpu;
 cpu_t **gCpuId2Cpu;
 volatile int __redfstMutex;
@@ -81,15 +81,15 @@ static void get_all_sensors(){
 	DIR *d;
 	cpu_t *c;
 	char *s;
-	int ncores;
+	int ncpus;
 
 	d = opendir("/dev/cpu/");
 	if(!d){
-		__redfstNcores = 0;
-		__redfstCore   = 0;
+		__redfstNcpus = 0;
+		__redfstCpu   = 0;
 		return;
 	}
-	ncores = 0;
+	ncpus = 0;
 	c = malloc(1);
 
 	while((e=readdir(d))){
@@ -97,25 +97,25 @@ static void get_all_sensors(){
 			if(*s<'0' || *s>'9')
 				break;
 		if(!*s){
-			c = realloc(c, (ncores+1) * sizeof(*c));
-			memset(c+ncores,0,sizeof(*c));
-			c[ncores++].id = atoi(e->d_name);
+			c = realloc(c, (ncpus+1) * sizeof(*c));
+			memset(c+ncpus,0,sizeof(*c));
+			c[ncpus++].id = atoi(e->d_name);
 		}
 	}
 	closedir(d);
-	if(!ncores){
+	if(!ncpus){
 		free(c);
 		c = 0;
 	}
-	__redfstNcores = ncores;
-	__redfstCore = c;
+	__redfstNcpus = ncpus;
+	__redfstCpu = c;
 }
 
 static void get_sensors(){
 	char *s;
 	cpu_t *cpu;
 	int alloc;
-	int ncores;
+	int ncpus;
 	int a,b;
 	int *l;
 	char c;
@@ -125,22 +125,22 @@ static void get_sensors(){
 		get_all_sensors();
 		return;
 	}else if(!*s){
-		__redfstNcores = 0;
-		__redfstCore = 0;
+		__redfstNcpus = 0;
+		__redfstCpu = 0;
 		return;
 	}
 	alloc = 1024;
-	ncores = 0;
-	core = malloc(alloc * sizeof(*core));
+	ncpus = 0;
+	cpu = malloc(alloc * sizeof(*cpu));
 
 	st = 0;
 #define APPEND(x) do{\
-	if(ncores+1 == alloc){\
+	if(ncpus+1 == alloc){\
 		alloc += 1024;\
-		core = realloc(core, alloc * sizeof(core));\
+		cpu = realloc(cpu, alloc * sizeof(cpu));\
 	}\
-	memset(core+ncores,0,sizeof(*core));\
-	core[ncores++].id = (x);\
+	memset(cpu+ncpus,0,sizeof(*cpu));\
+	cpu[ncpus++].id = (x);\
 }while(0)
 #define N (c>='0'&&c<='9')
 
@@ -189,22 +189,22 @@ static void get_sensors(){
 	}while(c);
 #undef N
 #undef APPEND
-	if(ncores){
-		core = realloc(core, ncores * sizeof(*core));
-		l = calloc(ncores, sizeof(*l));
-		for(a=0;a<ncores;++a){
-			if(l[core[a].id]++){
-				fprintf(__redfst_fd, "No repeated elements allowed in REDFST_CPU: \"%s\". %d appears twice.\n", getenv("REDFST_CPU"),core[a].id);
+	if(ncpus){
+		cpu = realloc(cpu, ncpus * sizeof(*cpu));
+		l = calloc(ncpus, sizeof(*l));
+		for(a=0;a<ncpus;++a){
+			if(l[cpu[a].id]++){
+				fprintf(__redfst_fd, "No repeated elements allowed in REDFST_CPU: \"%s\". %d appears twice.\n", getenv("REDFST_CPU"),cpu[a].id);
 				goto FAIL;
 			}
 		}
 		free(l);
 	}else{
-		free(core);
-		core = 0;
+		free(cpu);
+		cpu = 0;
 	}
-	__redfstNcores = ncores;
-	__redfstCore = core;
+	__redfstNcpus = ncpus;
+	__redfstCpu = cpu;
 	return;
 FAIL:
 	fprintf(__redfst_fd, "Failed to parse REDFST_CPU: \"%s\"\n", getenv("REDFST_CPU"));
@@ -221,21 +221,21 @@ void redfst_energy_init(){
 
 	// what should we monitor?
 	get_sensors();
-	if(__redfstNcores)
-		qsort(__redfstCore, __redfstNcores, sizeof(*__redfstCore), cmpid);
+	if(__redfstNcpus)
+		qsort(__redfstCpu, __redfstNcpus, sizeof(*__redfstCpu), cmpid);
 #if 0
-	for(i=0;i<__redfstNcores;++i)
-		printf("%d ",__redfstCore[i].id);
+	for(i=0;i<__redfstNcpus;++i)
+		printf("%d ",__redfstCpu[i].id);
 	printf("\n");
 #endif
 
-	// create core mapping
-	for(i=j=0; i < __redfstNcores; ++i)
-		if(j < __redfstNcores)
-			j = __redfstNcores;
-	gCoreId2Core = malloc((j+1)*sizeof(*gCoreId2Core));
-	for(i=j=0; i < __redfstNcores; ++i)
-		gCoreId2Core[__redfstCore[i].id] = __redfstCore+i;
+	// create cpu mapping
+	for(i=j=0; i < __redfstNcpus; ++i)
+		if(j < __redfstNcpus)
+			j = __redfstNcpus;
+	gCpuId2Cpu = malloc((j+1)*sizeof(*gCpuId2Cpu));
+	for(i=j=0; i < __redfstNcpus; ++i)
+		gCpuId2Cpu[__redfstCpu[i].id] = __redfstCpu+i;
 
 	// initialize measurement functions
 	if(!redfst_msr_init()){
@@ -244,9 +244,9 @@ void redfst_energy_init(){
 	}else{
 		__redfst_energy_update = dummy;
 		__redfst_energy_update_one = dummy_one;
-		__redfstNcores = 0;
-		free(__redfstCore);
-		__redfstCore = 0;
+		__redfstNcpus = 0;
+		free(__redfstCpu);
+		__redfstCpu = 0;
 	}
 
 	redfst_reset();
@@ -255,8 +255,8 @@ void redfst_energy_init(){
 
 #ifdef REDFST_CSV
 	if(getenv("REDFST_HEADER")){
-		for(i=0; i < __redfstNcores; ++i)
-			fprintf(__redfst_fd,"pkg.%d, pp0.%d, dram.%d, ", __redfstCore[i].id, __redfstCore[i].id, __redfstCore[i].id);
+		for(i=0; i < __redfstNcpus; ++i)
+			fprintf(__redfst_fd,"pkg.%d, pp0.%d, dram.%d, ", __redfstCpu[i].id, __redfstCpu[i].id, __redfstCpu[i].id);
 		fprintf(__redfst_fd,"pkg, pp0, dram, time\n");
 	}
 #endif

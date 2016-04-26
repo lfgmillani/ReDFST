@@ -54,8 +54,8 @@ void redfst_reset(){
 	int i;
 	while(unlikely(REDFST_LOCK(__redfstMutex)))
 		;
-	for(i=0; i < __redfstNcores; ++i){
-		c = __redfstCore+i;
+	for(i=0; i < __redfstNcpus; ++i){
+		c = __redfstCpu+i;
 		c->pkg = c->pp0 = c->dram = 0;
 	}
 	REDFST_UNLOCK(__redfstMutex);
@@ -80,11 +80,11 @@ void redfst_print(){
 	__redfst_safe_update();
 	t = (time_now() - __redfstTime0) * 1e-9;
 	if(!buf){
-		buf = malloc((__redfstNcores+1) * 3 * 32);
+		buf = malloc((__redfstNcpus+1) * 3 * 32);
 	}
 	n = 0;
-	for(i=0; i < __redfstNcores; ++i){
-		c = __redfstCore+i;
+	for(i=0; i < __redfstNcpus; ++i){
+		c = __redfstCpu+i;
 		pkg = c->pkg * c->unit;
 		pp0 = c->pp0 * c->unit;
 		dram = c->dram * c->unit;
@@ -111,7 +111,7 @@ void redfst_print(){
 #ifdef REDFSTLIB_STATIC
 static
 #endif
-void redfst_get(double *dst, int core){
+void redfst_get(double *dst, int cpu){
 /*
 	write into dst the energy consumed by each core:
 	dst[0] = pkg.core
@@ -119,7 +119,7 @@ void redfst_get(double *dst, int core){
 	dst[2] = dram.core
 */
 	cpu_t *c;
-	c = gCoreId2Core[core];
+	c = gCpuId2Cpu[cpu];
 	__redfst_safe_update_one(c);
 	dst[0] = c->pkg * c->unit;
 	dst[1] = c->pp0 * c->unit;
@@ -141,8 +141,8 @@ void redfst_get_all(double *dst){
 	cpu_t *c;
 	int i;
 	__redfst_safe_update();
-	for(i=0; i<__redfstNcores; ++i){
-		c = __redfstCore + i;
+	for(i=0; i<__redfstNcpus; ++i){
+		c = __redfstCpu + i;
 		*dst++ = c->pkg * c->unit;
 		*dst++ = c->pp0 * c->unit;
 		*dst++ = c->dram * c->unit;
