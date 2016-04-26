@@ -1,5 +1,5 @@
-#ifndef REGION_H
-#define REGION_H
+#ifndef REDFST_REGION_H
+#define REDFST_REGION_H
 #include <stdint.h>
 #include "redfst/perf.h"
 #include "redfst/config.h"
