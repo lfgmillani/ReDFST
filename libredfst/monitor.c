@@ -27,7 +27,7 @@ static char * gRedfstMonitorEventName[REDFST_PERF_NUM_EVENTS] = {
   "instr",
 };
 static monitor_t *gMon = (void*)0xdeadbabe;
-static int gI = 0;;
+static int gI = 0;
 static int gLen = 0;
 static char gLoop = 1;
 static int gRedfstMonitorStatus = 0;
