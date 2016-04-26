@@ -1,15 +1,20 @@
+AR = ar
 CC = gcc
 CFLAGS = -Wall -Os -march=native -mtune=native -I.
 OPENMP = -fopenmp
 LDFLAGS = 
 SRCS = perf.c redfst_omp.c init.c region.c global.c util.c profile.c monitor.c energy.c msr.c control.c
 OBJS = $(SRCS:.c=.o)
-TARGET = libredfst.so
+TARGET = libredfst.so #libredfst.a
 .PHONY: all clean install test
 all: $(SRCS) $(OBJS) $(TARGET)
 
-$(TARGET) : $(OBJS)
+libredfst.so : $(OBJS)
 	$(CC) $(CFLAGS) $(OPENMP) -shared $(OBJS) $(LDFLAGS) -o $@
+
+# currently broken
+#libredfst.a : $(OBJS)
+#	 $(AR) rcs $@ $(OBJS)
 
 %.o : %.c
 	$(CC) $(CFLAGS) $(OPENMP) -fPIC -c $<
@@ -33,5 +38,6 @@ test0: libredfst.so test0.c
 test: test0
 	env LD_LIBRARY_PATH=${LD_LIBRARY_PATH} ./tester ./test0 < test0.answer
 	echo All tests passed
+
 clean:
 	rm -fr $(OBJS) $(TARGET) test0
