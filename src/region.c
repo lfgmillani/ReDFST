@@ -59,14 +59,14 @@ static void redfst_region_impl(int id, int cpu){
 	}
 }
 
-#ifdef REDFSTLIB_STATIC
+#ifdef REDFST_STATIC
 static
 #endif
 void redfst_region(int id){
 	redfst_region_impl(id, tRedfstCpu);
 }
 
-#ifdef REDFSTLIB_STATIC
+#ifdef REDFST_STATIC
 static
 #endif
 void redfst_region_final(){
@@ -78,7 +78,7 @@ void redfst_region_final(){
 
 #ifdef REDFSTLIB_OMP
 #include <omp.h>
-#ifdef REDFSTLIB_STATIC
+#ifdef REDFST_STATIC
 static
 #endif
 void redfst_region_all(int id){

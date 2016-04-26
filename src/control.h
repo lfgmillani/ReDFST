@@ -2,7 +2,7 @@
 #define REDFST_CONTROL_H
 #include "redfst/config.h"
 
-#ifndef REDFSTLIB_STATIC
+#ifndef REDFST_STATIC
 /* reset energy counters */
 void redfst_reset();
 /* prints energy counters to file descriptor 3*/

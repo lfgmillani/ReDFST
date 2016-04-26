@@ -15,7 +15,7 @@ struct timespec{
 };
 #endif
 
-#ifdef REDFSTLIB_STATIC
+#ifdef REDFST_STATIC
 static
 #endif
 uint64_t time_now(){

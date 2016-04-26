@@ -11,7 +11,7 @@
 #define REDFST_LOCK(x) __sync_val_compare_and_swap(&(x), 0, 1) // return 0 if it manages to obtain the mutex
 #define REDFST_UNLOCK(x) do{(x)=0;}while(0)
 
-#ifdef REDFSTLIB_STATIC // static is not accidentally swapped here
+#ifdef REDFST_STATIC // static is not accidentally swapped here
 extern uint64_t __redfstTime0; // timer is set to last reset
 #else
 static uint64_t __redfstTime0; // timer is set to last reset
@@ -45,7 +45,7 @@ static void __redfst_safe_update_one(cpu_t *c){
 
 
 
-#ifdef REDFSTLIB_STATIC
+#ifdef REDFST_STATIC
 static
 #endif
 void redfst_reset(){
@@ -64,7 +64,7 @@ void redfst_reset(){
 
 
 
-#ifdef REDFSTLIB_STATIC
+#ifdef REDFST_STATIC
 static
 #endif
 void redfst_print(){
@@ -108,7 +108,7 @@ void redfst_print(){
 
 
 
-#ifdef REDFSTLIB_STATIC
+#ifdef REDFST_STATIC
 static
 #endif
 void redfst_get(double *dst, int cpu){
@@ -128,7 +128,7 @@ void redfst_get(double *dst, int cpu){
 
 
 
-#ifdef REDFSTLIB_STATIC
+#ifdef REDFST_STATIC
 static
 #endif
 void redfst_get_all(double *dst){

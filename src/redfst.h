@@ -6,7 +6,7 @@ extern "C"{
 #include "redfst/config.h"
 void redfst_monitor_set_status(int n);
 
-#ifndef REDFSTLIB_STATIC
+#ifndef REDFST_STATIC
 void redfst_region(int id);
 void redfst_region_all(int id);
 void redfst_reset(void);

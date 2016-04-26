@@ -26,7 +26,7 @@
 	if defined as static, the library will implement some functions in the header
 	files. otherwise, the implementations will reside in the lib.
 */
-//#define REDFSTLIB_STATIC static
+//#define REDFST_STATIC static
 
 /*
 	if defined, frequency is decided on a per-core basis. otherwise, its per-cpu.
