@@ -49,7 +49,7 @@ static void redfst_region_impl(int id, int cpu){
 	redfst_perf_read(cpu, &m->perf);
 
 #ifndef REDFST_FREQ_PER_CORE
-	if(REDFSTLIB_CPU0 != cpu && REDFSTLIB_CPU1 != cpu)
+	if(REDFST_CPU0 != cpu && REDFST_CPU1 != cpu)
 		return;
 #endif
 	freq = redfst_freq_get(region_get(cpu,id), id);

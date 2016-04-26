@@ -132,7 +132,7 @@ void redfst_thread_init(int cpu){
   gRedfstCurrentFreq[cpu] = FREQ_HIGH;
 	cpufreq_set_frequency(cpu, FREQ_HIGH);
 #else
-	if(REDFSTLIB_CPU0 == cpu || REDFSTLIB_CPU1 == cpu){
+	if(REDFST_CPU0 == cpu || REDFST_CPU1 == cpu){
   	gRedfstCurrentFreq[cpu] = FREQ_HIGH;
 		cpufreq_set_frequency(cpu, FREQ_HIGH);
 	}else{

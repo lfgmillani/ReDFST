@@ -37,8 +37,8 @@
 	have their frequencies changed. all other cores will be kept at the low
 	frequency.
 */
-#define REDFSTLIB_CPU0 0
-#define REDFSTLIB_CPU1 1
+#define REDFST_CPU0 0
+#define REDFST_CPU1 1
 
 /* if defined, energy is printed as a table */
 #define REDFST_CSV
