@@ -120,7 +120,7 @@ static void get_sensors(){
 	int *l;
 	char c;
 	char st;
-	s = getenv("REDFST_CPU");
+	s = getenv("REDFST_CPUS");
 	if(!s){
 		get_all_sensors();
 		return;
@@ -194,7 +194,7 @@ static void get_sensors(){
 		l = calloc(ncpus, sizeof(*l));
 		for(a=0;a<ncpus;++a){
 			if(l[cpu[a].id]++){
-				fprintf(__redfst_fd, "No repeated elements allowed in REDFST_CPU: \"%s\". %d appears twice.\n", getenv("REDFST_CPU"),cpu[a].id);
+				fprintf(__redfst_fd, "No repeated elements allowed in REDFST_CPUS: \"%s\". %d appears twice.\n", getenv("REDFST_CPUS"),cpu[a].id);
 				goto FAIL;
 			}
 		}
@@ -207,7 +207,7 @@ static void get_sensors(){
 	__redfstCpu = cpu;
 	return;
 FAIL:
-	fprintf(__redfst_fd, "Failed to parse REDFST_CPU: \"%s\"\n", getenv("REDFST_CPU"));
+	fprintf(__redfst_fd, "Failed to parse REDFST_CPUS: \"%s\"\n", getenv("REDFST_CPUS"));
 	exit(1);
 }
 
