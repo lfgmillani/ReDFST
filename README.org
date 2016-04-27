@@ -197,9 +197,7 @@ The following variables are accepted by libredfst. Besides them,
      bit is 1 if the region *n* is part of the set or 0
      otherwise. Example: "6" will trigger the low frequency for
      regions 1 and 2 since (1<<1)&6 is 0010 (binary) and (1<<2)&6
-     is 0100. The 0th region corresponds to the idle function. The
-     63th region is entered when the program finishes. The other
-     regions are user-defined.
+     is 0100.
 - ~REDFST_FASTREGIONS~ :: Regions which will trigger the high
      frequency. See ~REDFST_SLOWREGIONS~.
 - ~REDFST_MONITOR~ :: If defined to anything other than "0", "F" or
