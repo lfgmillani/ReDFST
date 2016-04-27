@@ -20,10 +20,10 @@ libredfst.so : $(OBJS)
 	$(CC) $(CFLAGS) $(OPENMP) -fPIC -c $<
 
 install: $(TARGET)
-	install -m 644 -D libredfst.so $(PREFIX)/lib/libredfst.so
-	install -m 644 -D redfst.h $(PREFIX)/include/redfst.h
+	install -m 644 -D libredfst.so "$(DESTDIR)/$(PREFIX)/lib/libredfst.so"
+	install -m 644 -D redfst.h "$(DESTDIR)/$(PREFIX)/include/redfst.h"
 	for x in redfst/*; do \
-		install -m 644 -D $$x ${PREFIX}/include/$$x; \
+		install -m 644 -D $$x "$(DESTDIR)/$(PREFIX)/include/$$x"; \
 	done
 
 test0: libredfst.so test0.c
