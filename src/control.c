@@ -54,6 +54,7 @@ void redfst_reset(){
 	int i;
 	while(unlikely(REDFST_LOCK(__redfstMutex)))
 		;
+	__redfst_energy_update();
 	for(i=0; i < __redfstNcpus; ++i){
 		c = __redfstCpu+i;
 		c->pkg = c->pp0 = c->dram = 0;
