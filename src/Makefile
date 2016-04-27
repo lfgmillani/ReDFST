@@ -28,9 +28,9 @@ install: $(TARGET)
 
 test0: libredfst.so test0.c
 	if ld -lcpupower 2> /dev/null; then\
-		$(CC) $(CFLAGS) -Wl,-rpath=`pwd` test0.c -o $@ -L. -lredfst -lcpupower -lm;\
+		$(CC) $(CFLAGS) -Wl,-rpath="`pwd`" test0.c -o $@ -L. -lredfst -lcpupower -lm;\
 	else\
-		$(CC) $(CFLAGS) -Wl,-rpath=`pwd` test0.c -o $@ -L. -lredfst -lcpufreq  -lm;\
+		$(CC) $(CFLAGS) -Wl,-rpath="`pwd`" test0.c -o $@ -L. -lredfst -lcpufreq  -lm;\
 	fi
 
 # this only tests the timing
