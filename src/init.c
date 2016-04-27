@@ -77,6 +77,24 @@ static void env2f(float *dst, const char *envname){
 	*dst = x;
 }
 
+static int get_freq(int isHigh){
+	char s[128];
+	FILE *f;
+	sprintf(s, "/sys/devices/system/cpu/cpufreq/policy0/scaling_%s_freq", isHigh?"max":"min");
+	f = fopen(s, "rt");
+	if(!f){
+		sprintf(s, "/sys/devices/system/cpu/cpu0/cpufreq/scaling_%s_freq", isHigh?"max":"min");
+		f = fopen(s, "rt");
+	}
+	if(!f){
+		fprintf(stderr,"ReDFST: Failed to get %s cpu frequency. Please specify it with REDFST_%s\n",
+		        isHigh?"max":"min", isHigh?"HIGH":"LOW");
+		exit(1);
+	}
+	fread(s, 1, sizeof(s), f);
+	fclose(f);
+	return atoi(s);
+}
 
 static void from_env(){
 	const char *s;
@@ -85,6 +103,11 @@ static void from_env(){
 
 	env2i(&FREQ_HIGH,"REDFST_HIGH");
 	env2i(&FREQ_LOW,"REDFST_LOW");
+	if(!FREQ_HIGH)
+		FREQ_HIGH = get_freq(1);
+	if(!FREQ_LOW)
+		FREQ_LOW = get_freq(0);
+
 	env2uint64(&gRedfstSlowRegions,"REDFST_SLOWREGIONS");
 	env2uint64(&gRedfstFastRegions,"REDFST_FASTREGIONS");
 	if((s=getenv("REDFST_MONITOR"))){
