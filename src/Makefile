@@ -36,7 +36,7 @@ test0: libredfst.so test0.c
 # this only tests the timing
 # energy readings are not validated
 test: test0
-	env LD_LIBRARY_PATH=${LD_LIBRARY_PATH} ./tester ./test0 < test0.answer
+	env OMP_PROC_BIND=TRUE ./tester ./test0 < test0.answer
 	echo All tests passed
 
 clean:
