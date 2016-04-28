@@ -116,7 +116,7 @@ static void get_all_sensors(){
 	__redfstCpu = c;
 }
 
-static void get_sensors(){
+static void get_default_cpus(){
 	char *s;
 	cpu_t *cpu;
 	int alloc;
@@ -238,7 +238,7 @@ void redfst_energy_init(){
 	__redfstMutex = 0;
 
 	// what should we monitor?
-	get_sensors();
+	get_default_cpus();
 	if(__redfstNcpus)
 		qsort(__redfstCpu, __redfstNcpus, sizeof(*__redfstCpu), cmpid);
 #if 0
