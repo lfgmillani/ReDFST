@@ -231,7 +231,7 @@ static void create_cpu_mapping(){
 
 void redfst_energy_init(){
 	pthread_t t;
-	int i,j;
+	int i;
 
 	__redfst_fd = redfst_energy_get_fd();
 
