@@ -51,7 +51,7 @@ static void * redfst_energy_loop(void *a){
 }
 
 
-static FILE * __redfst_energy_get_fd(){
+static FILE * redfst_energy_get_fd(){
 /*
 	this function must be called before any files are opened (unless they're closed)
 */
@@ -220,7 +220,7 @@ void redfst_energy_init(){
 	pthread_t t;
 	int i,j;
 
-	__redfst_fd = __redfst_energy_get_fd();
+	__redfst_fd = redfst_energy_get_fd();
 
 	__redfstMutex = 0;
 
