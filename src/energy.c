@@ -216,6 +216,19 @@ FAIL:
 	exit(1);
 }
 
+static void create_cpu_mapping(){
+	int i;
+	int j;
+	if(gCpuId2Cpu)
+		free(gCpuId2Cpu);
+	for(i=j=0; i < __redfstNcpus; ++i)
+		if(j < __redfstNcpus)
+			j = __redfstNcpus;
+	gCpuId2Cpu = malloc((j+1)*sizeof(*gCpuId2Cpu));
+	for(i=j=0; i < __redfstNcpus; ++i)
+		gCpuId2Cpu[__redfstCpu[i].id] = __redfstCpu+i;
+}
+
 void redfst_energy_init(){
 	pthread_t t;
 	int i,j;
@@ -234,13 +247,7 @@ void redfst_energy_init(){
 	printf("\n");
 #endif
 
-	// create cpu mapping
-	for(i=j=0; i < __redfstNcpus; ++i)
-		if(j < __redfstNcpus)
-			j = __redfstNcpus;
-	gCpuId2Cpu = malloc((j+1)*sizeof(*gCpuId2Cpu));
-	for(i=j=0; i < __redfstNcpus; ++i)
-		gCpuId2Cpu[__redfstCpu[i].id] = __redfstCpu+i;
+	create_cpu_mapping();
 
 	// initialize measurement functions
 	if(!redfst_msr_init()){
