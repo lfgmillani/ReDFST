@@ -29,7 +29,7 @@ static void dummy_one(cpu_t *c){}
 
 int __redfstNcpus;
 cpu_t *__redfstCpu;
-cpu_t **gCpuId2Cpu;
+cpu_t **gCpuId2Cpu = 0;
 volatile int __redfstMutex;
 FILE *__redfst_fd;
 
