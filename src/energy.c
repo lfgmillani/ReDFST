@@ -245,8 +245,10 @@ void redfst_energy_init(){
 		__redfst_energy_update = dummy;
 		__redfst_energy_update_one = dummy_one;
 		__redfstNcpus = 0;
-		free(__redfstCpu);
-		__redfstCpu = 0;
+		if(__redfstCpu){
+			free(__redfstCpu);
+			__redfstCpu = 0;
+		}
 	}
 
 	redfst_reset();
