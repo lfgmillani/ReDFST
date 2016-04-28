@@ -52,6 +52,9 @@ static void * redfst_energy_loop(void *a){
 
 
 static FILE * __redfst_energy_get_fd(){
+/*
+	this function must be called before any files are opened (unless they're closed)
+*/
 	FILE *fd;
 	int i;
 	if(getenv("REDFST_OUT")){
