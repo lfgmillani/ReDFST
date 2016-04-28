@@ -21,6 +21,8 @@ uint64_t __redfstTime0; // timer is set to last reset
 
 void (*__redfst_energy_update)();
 void (*__redfst_energy_update_one)(cpu_t *c);
+int  (*__redfst_energy_init)();
+void (*__redfst_energy_end)();
 
 static void dummy(){}
 static void dummy_one(cpu_t *c){}
@@ -239,11 +241,15 @@ void redfst_energy_init(){
 
 	// initialize measurement functions
 	if(!redfst_msr_init()){
-		__redfst_energy_update = redfst_msr_update;
+		__redfst_energy_update     = redfst_msr_update;
 		__redfst_energy_update_one = redfst_msr_update_one;
+		__redfst_energy_init       = redfst_msr_init;
+		__redfst_energy_end        = redfst_msr_end;
 	}else{
-		__redfst_energy_update = dummy;
+		__redfst_energy_update     = dummy;
 		__redfst_energy_update_one = dummy_one;
+		__redfst_energy_init       = (void*)dummy;
+		__redfst_energy_end        = dummy;
 		__redfstNcpus = 0;
 		if(__redfstCpu){
 			free(__redfstCpu);
