@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include "macros.h"
 #include "energy.h"
+#include "msr.h"
 
 #define MSR_RAPL_POWER_UNIT    0x606
 #define MSR_PKG_ENERGY_STATUS  0x611
@@ -74,3 +75,8 @@ int redfst_msr_init(){
 	return 0;
 }
 
+void redfst_msr_end(){
+	int i;
+	for(i=0;i<__redfstNcpus;++i)
+		close(__redfstCpu[i].fd);
+}
