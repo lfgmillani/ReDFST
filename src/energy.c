@@ -192,14 +192,16 @@ FAIL:
 
 static void create_cpu_mapping(){
 	int i;
-	int j;
+	int maxCpu;
 	if(gCpuId2Cpu)
 		free(gCpuId2Cpu);
-	for(i=j=0; i < __redfstNcpus; ++i)
-		if(j < __redfstNcpus)
-			j = __redfstNcpus;
-	gCpuId2Cpu = malloc((j+1)*sizeof(*gCpuId2Cpu));
-	for(i=j=0; i < __redfstNcpus; ++i)
+	for(i=maxCpu=0; i < __redfstNcpus; ++i)
+		if(maxCpu < __redfstCpu[i].id)
+			maxCpu = __redfstCpu[i].id;
+	gCpuId2Cpu = malloc((maxCpu+1) * sizeof(*gCpuId2Cpu));
+	for(i=0; i <= maxCpu; ++i)
+		gCpuId2Cpu[i] = (void*)0xdeadbabe;
+	for(i=0; i < __redfstNcpus; ++i)
 		gCpuId2Cpu[__redfstCpu[i].id] = __redfstCpu+i;
 }
 
