@@ -184,6 +184,10 @@ stdbuf -o0 PROGRAM | stdbuf -i0 -o0 grep ENERGY | stdbuf -i0 -o0 sed s/.*ENERGY\
 The following variables are accepted by libredfst. Besides them,
 ~OMP_PROC_BIND~ must be set to true.
 
+- ~REDFST_CPUS~ :: List of CPUs that will have their energy
+     consumption measured
+- ~REDFST_OUT~ :: Energy measurements are output to this file
+- ~REDFST_HEADER~ :: If defined, write a CSV header to ~REDFST_OUT~
 - ~REDFST_LOW~  :: Frequency to use on slow regions. Example: 1500000
      (for 1.5GHz)
 - ~REDFST_HIGH~ :: Frequency for the fast regions. Example: 2000000 (for
