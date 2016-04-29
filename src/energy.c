@@ -40,6 +40,7 @@ int redfst_support(){
 	return redfstEnergySupport;
 }
 #endif
+
 static void safe_force_update(){
 	while(unlikely(LOCK(__redfstMutex)))
 		;
