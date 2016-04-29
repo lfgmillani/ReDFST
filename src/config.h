@@ -40,7 +40,4 @@
 #define REDFST_CPU0 0
 #define REDFST_CPU1 1
 
-/* if defined, energy is printed as a table */
-#define REDFST_CSV
-
 #endif

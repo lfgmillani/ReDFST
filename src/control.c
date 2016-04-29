@@ -92,18 +92,9 @@ void redfst_print(){
 		totalPkg += pkg;
 		totalPp0 += pp0;
 		totalDram += dram;
-#ifdef REDFST_CSV
 		n += sprintf(buf+n,"%lf, %lf, %lf, ",pkg,pp0,dram);
-#else
-		n += sprintf(buf+n,"pkg.%d  %lf\npp0.%d  %lf\ndram.%d  %lf\n",
-		       c->id, pkg, c->id, pp0, c->id, dram);
-#endif
 	}
-#ifdef REDFST_CSV
 	sprintf(buf+n,"%lf, %lf, %lf, %lf\n",totalPkg,totalPp0,totalDram,t);
-#else
-	sprintf(buf+n,,"pkg    %lf\npp0    %lf\ndram    %lf\ntime   %lf\n",totalPkg,totalPp0,totalDram,t);
-#endif
 	fprintf(__redfst_fd,buf);
 }
 

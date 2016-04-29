@@ -285,12 +285,10 @@ void redfst_energy_init(){
 
 	pthread_create(&t,0,redfst_energy_loop,0);
 
-#ifdef REDFST_CSV
 	if(getenv("REDFST_HEADER")){
 		for(i=0; i < __redfstNcpus; ++i)
 			fprintf(__redfst_fd,"pkg.%d, pp0.%d, dram.%d, ", __redfstCpu[i].id, __redfstCpu[i].id, __redfstCpu[i].id);
 		fprintf(__redfst_fd,"pkg, pp0, dram, time\n");
 	}
-#endif
 }
 
