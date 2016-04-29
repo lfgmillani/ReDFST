@@ -50,6 +50,24 @@ if(!redfst_cpus(cpus))
 #+end_src
 
 The functions used to measure energy consumption are:
+- ~int redfst_support()~ :: Returns 1 if measuring energy is possible on the system, or 0 otherwise
+- ~int redfst_cpus(const int *cpus)~ :: Sets which cpus will have
+    their energy measured. The array should end with -1.
+- ~void redfst_reset()~ :: Zeroes the energy counters.
+- ~void redfst_print()~ :: Output the current value of the counters.
+- ~void redfst_get(double *dst, int cpu)~  :: Write into dst the energy counters
+    of the given cpu:\\
+    dst[3*cpu + 0] = cpu.pkg\\
+    dst[3*cpu + 1] = cpu.pp0\\
+    dst[3*cpu + 2] = cpu.dram
+- ~void redfst_get_all(double *dst)~ :: Write into dst the energy counters
+     of each cpu, followed by the execution time in seconds:\\
+     dst = {\\
+       cpu0.pkg, cpu0.pp0, cpu0.dram,\\
+       ... ,\\
+       cpuN.pkg, cpuN.pp0, cpuN.dram,\\
+       time}
+
 #+BEGIN_SRC C
 #include <stdlib.h>
 #include <unistd.h>
