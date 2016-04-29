@@ -111,6 +111,22 @@ Attention: If the library was not installed to /lib or /usr/lib, you
 have to pass ~-Wl,-rpath=/INSTALLPATH/lib~ to the compiler or run the
 example as root.
 
+Run it:
+- as root
+#+BEGIN_SRC sh
+sudo ./example
+#+END_SRC
+or
+- as your user:
+First set the permissions
+#+BEGIN_SRC sh
+sudo setcap cap_sys_rawio=pei example
+#+END_SRC
+Run it:
+#+BEGIN_SRC sh
+./example
+#+END_SRC
+
 *** Changing the frequency
 #+BEGIN_SRC C
 #include <stdlib.h>
