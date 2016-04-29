@@ -241,11 +241,6 @@ void redfst_energy_init(){
 	get_default_cpus();
 	if(__redfstNcpus)
 		qsort(__redfstCpu, __redfstNcpus, sizeof(*__redfstCpu), cmpid);
-#if 0
-	for(i=0;i<__redfstNcpus;++i)
-		printf("%d ",__redfstCpu[i].id);
-	printf("\n");
-#endif
 
 	create_cpu_mapping();
 
