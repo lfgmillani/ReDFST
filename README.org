@@ -23,7 +23,7 @@ int main(int argc, char **argv){
   int i;
   int j;
 
-  n = argc > 1 ? atoi(argv[1]) : 1024*1024;
+  n = argc > 1 ? atoi(argv[1]) : 8*1024;
 
   redfst_reset(); // zero energy counters to skip initialization code
 #pragma omp parallel for reduction(+:x)
