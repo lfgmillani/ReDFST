@@ -127,6 +127,21 @@ Run it:
 ./example
 #+END_SRC
 
+The output should be similar to:
+#+BEGIN_EXAMPLE
+51.217300, 38.908722, 2.748489, 44.485428, 32.220169, 2.158203, 95.702728, 71.128891, 4.906693, 0.868234
+35.392227, 5.524429, 5.437225, 36.257050, 6.249054, 5.364868, 71.649277, 11.773483, 10.802094, 3.000128
+#+END_EXAMPLE
+To print a header explaining what each column means, set the variable ~REDFST_HEADER~:
+#+BEGIN_SRC sh
+REDFST_HEADER=1 ./example
+#+END_SRC
+#+BEGIN_EXAMPLE
+pkg.0, pp0.0, dram.0, pkg.1, pp0.1, dram.1, pkg, pp0, dram, time
+51.217300, 38.908722, 2.748489, 44.485428, 32.220169, 2.158203, 95.702728, 71.128891, 4.906693, 0.868234
+35.392227, 5.524429, 5.437225, 36.257050, 6.249054, 5.364868, 71.649277, 11.773483, 10.802094, 3.000128
+#+END_EXAMPLE
+
 *** Changing the frequency
 #+BEGIN_SRC C
 #include <stdlib.h>
