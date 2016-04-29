@@ -3,7 +3,7 @@
 #endif
 #include <time.h>
 #include <stdint.h>
-#include "util.h"
+#include "redfst/util.h"
 
 // hack to work with -std=C99
 #if 0
