@@ -251,19 +251,33 @@ sudo cpupower frequency-set -c all -g userspace
 Besides using the userspace governor you also need read/write
 permissions to ~/sys/devices/system/cpu/cpu*/cpufreq/scaling_setspeed~.
 ** API
-- ~energy_region(int id)~ :: Sets the code region of the calling core
-     to "id". May trigger a frequency change.
-- ~energy_region_all(int id)~ :: Sets the code region of all cores to
-     "id". May trigger a frequency change on all cores.
-- ~energy_monitor_set_status(int n)~ :: Sets the value of a variable
-     used by the execution monitor, which is explained in the
+- ~int redfst_support()~ :: Returns 1 if measuring energy consumption
+     if there is support for reading energy consumption or 0
+     otherwise.
+- ~int redfst_cpus(const int *cpus)~ :: Sets which cpus will have
+     their energy measured. The array /cpus/ should end with -1.
+- ~void redfst_reset()~ :: Reset the energy counters.
+- ~void redfst_print()~ :: Print the energy counters.
+- ~void redfst_get(double *dst, int cpu)~  :: write into dst the
+     energy counters of the given cpu:\\
+     dst[3*cpu + 0] = cpu.pkg\\
+     dst[3*cpu + 1] = cpu.pp0\\
+     dst[3*cpu + 2] = cpu.dram
+- ~void redfst_get_all(double *dst)~ :: write into dst the energy
+     counters of each cpu, followed by the execution time in
+     seconds:\\
+     dst = {\\
+       cpu0.pkg, cpu0.pp0, cpu0.dram,\\
+       ... ,\\
+       cpuN.pkg, cpuN.pp0, cpuN.dram,\\
+       time}
+- ~void redfst_region(int id)~ :: Set the code region of the calling
+     core to "id". May trigger a frequency change.
+- ~void redfst_region_all(int id)~ :: Set the code region of all cores
+     to "id". May trigger a frequency change on all cores.
+- ~void redfst_monitor_set_status(int n)~ :: Sets the value of a
+     variable used by the execution monitor, which is explained in the
      Environment Variables section
-- ~energy_reset()~ :: Tells the redfst binary to reset the energy
-     counters.
-- ~energy_print()~ :: Tells the redfst binary to print the energy
-     counters.
-- ~energy_print()~ :: Tells the redfst binary to print the energy
-     counters and terminate.
 ** Environment Variables
 The following variables are accepted by libredfst. Besides them,
 ~OMP_PROC_BIND~ must be set to true.
