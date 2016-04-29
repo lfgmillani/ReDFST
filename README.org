@@ -142,6 +142,18 @@ pkg.0, pp0.0, dram.0, pkg.1, pp0.1, dram.1, pkg, pp0, dram, time
 35.392227, 5.524429, 5.437225, 36.257050, 6.249054, 5.364868, 71.649277, 11.773483, 10.802094, 3.000128
 #+END_EXAMPLE
 
+In the output above, the first row of numbers comes from the first
+~redfst_print~ and represents the energy spent on the first loop. The
+second row of numbers, printed by the second call to ~redfst_print~,
+displays the energy spent on the sleep function.
+
+The columns labeled ~pkg.0~, ~pp0.0~ and ~dram.0~ show, respectively,
+the energy consumed by the package, power plane 0 and DRAM of CPU 0.
+Likewise, ~pkg.1~, ~pp0.1~ and ~dram.1~ are the energy of CPU 1.  The
+columns labeled ~pkg~, ~pp0~ and ~dram~ are, respectively, the sum of
+the package, power plane 0 and DRAM of all CPUs. The last column,
+~time~, contains the number of seconds passed since the last call to
+redfst_reset.
 *** Changing the frequency
 #+BEGIN_SRC C
 #include <stdlib.h>
