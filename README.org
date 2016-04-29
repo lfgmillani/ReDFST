@@ -68,6 +68,7 @@ The functions used to measure energy consumption are:
        cpuN.pkg, cpuN.pp0, cpuN.dram,\\
        time}
 
+Sample code:
 #+BEGIN_SRC C
 #include <stdlib.h>
 #include <unistd.h>
@@ -84,18 +85,48 @@ int main(int argc, char **argv){
   redfst_reset(); // zero energy counters to skip initialization code
 #pragma omp parallel for reduction(+:x)
   for(i = 0; i < n; ++i){
-    redfst_region(1); // change code region of current thread
     for(j = 0; j < n; ++j){
       x ^= i^j;
     }
   }
   redfst_print(); // print energy counters
   
-  redfst_reset(); // reset energy counters
-  redfst_region_all(2); // change code region of all threads
-*** Changing the frequency
+  redfst_reset(); // reset energy counters so we can measure something else
   usleep(3000000);
-  redfst_exit(); // print energy counters and exit
+  redfst_print(); // print energy counters
+
+  return x;
+}
+#+END_SRC
+
+*** Changing the frequency
+#+BEGIN_SRC C
+#include <stdlib.h>
+#include <unistd.h>
+#include <redfst.h>
+
+int main(int argc, char **argv){
+  int n;
+  int x;
+  int i;
+  int j;
+
+  n = argc > 1 ? atoi(argv[1]) : 8*1024;
+
+  redfst_reset(); // clear the energy counters to skip initialization
+#pragma omp parallel for reduction(+:x)
+  for(i = 0; i < n; ++i){
+    redfst_region(1); // set the code region of the current thread to 1
+    for(j = 0; j < n; ++j){
+      x ^= i^j;
+    }
+  }
+  redfst_print(); // print the energy counters
+  
+  redfst_reset(); // reset the energy counters
+  redfst_region_all(2); // set the code region of all threads to 2
+  usleep(3000000);
+  redfst_print(); // print the energy counters
   
   return x;
 }
