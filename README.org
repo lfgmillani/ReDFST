@@ -11,7 +11,7 @@ make
 make install
 #+END_SRC
 ** Usage
-*** Changing the frequency
+*** Measuring energy consumption
 #+BEGIN_SRC C
 #include <stdlib.h>
 #include <unistd.h>
@@ -37,6 +37,7 @@ int main(int argc, char **argv){
   
   redfst_reset(); // reset energy counters
   redfst_region_all(2); // change code region of all threads
+*** Changing the frequency
   usleep(3000000);
   redfst_exit(); // print energy counters and exit
   
