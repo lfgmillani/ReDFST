@@ -19,4 +19,5 @@ extern volatile int __redfstMutex;
 extern FILE *__redfst_fd;
 
 void redfst_energy_init();
+int redfst_cpus(const int *cpus);
 #endif

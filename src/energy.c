@@ -205,6 +205,35 @@ static void create_cpu_mapping(){
 		gCpuId2Cpu[__redfstCpu[i].id] = __redfstCpu+i;
 }
 
+int redfst_cpus(const int *cpus){
+	int cpu;
+	int alloc = 1024;
+	__redfst_energy_end();
+	if(__redfstCpu)
+		free(__redfstCpu);
+	__redfstNcpus = 0;
+	__redfstCpu = malloc(alloc*sizeof(*__redfstCpu));
+	for(cpu=*cpus; -1!=*cpus++;){
+		if(0 > cpu || __redfstHwNcpus <= cpu){
+			free(__redfstCpu);
+			__redfstNcpus = 0;
+			return -1;
+		}
+		if(__redfstNcpus==alloc){
+			alloc += 1024;
+			__redfstCpu = realloc(__redfstCpu, alloc * sizeof(*__redfstCpu));
+		}
+		memset(__redfstCpu+__redfstNcpus, 0, sizeof(*__redfstCpu));
+		__redfstCpu[__redfstNcpus++].id = cpu;
+	}
+	if(__redfstNcpus)
+		qsort(__redfstCpu, __redfstNcpus, sizeof(*__redfstCpu), cmpid);
+	__redfstCpu = realloc(__redfstCpu, __redfstNcpus * sizeof(*__redfstCpu));
+	create_cpu_mapping();
+	__redfst_energy_init();
+	return 0;
+}
+
 void redfst_energy_init(){
 	pthread_t t;
 	int i;
