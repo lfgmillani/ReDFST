@@ -28,12 +28,18 @@ void (*__redfst_energy_end)();
 static void dummy(){}
 static void dummy_one(cpu_t *c){}
 
+int redfstEnergySupport = 0; // if 0 reading energy is not supported
 int __redfstNcpus;
 cpu_t *__redfstCpu;
 cpu_t **gCpuId2Cpu = 0;
 volatile int __redfstMutex;
 FILE *__redfst_fd;
 
+#ifndef REDFST_STATIC
+int redfst_support(){
+	return redfstEnergySupport;
+}
+#endif
 static void safe_force_update(){
 	while(unlikely(LOCK(__redfstMutex)))
 		;
@@ -252,11 +258,13 @@ void redfst_energy_init(){
 
 	// initialize measurement functions
 	if(!redfst_msr_init()){
+		redfstEnergySupport = 1;
 		__redfst_energy_update     = redfst_msr_update;
 		__redfst_energy_update_one = redfst_msr_update_one;
 		__redfst_energy_init       = redfst_msr_init;
 		__redfst_energy_end        = redfst_msr_end;
 	}else{
+		redfstEnergySupport = 0;
 		__redfst_energy_update     = dummy;
 		__redfst_energy_update_one = dummy_one;
 		__redfst_energy_init       = (void*)dummy;
