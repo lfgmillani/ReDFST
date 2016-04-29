@@ -10,6 +10,7 @@
 #include "msr.h"
 #include "macros.h"
 #include "control.h"
+#include "hw.h"
 #include "energy.h"
 
 #define LOCK(x) __sync_val_compare_and_swap(&(x), 0, 1) // return 0 if it manages to obtain the __redfstMutex
@@ -234,6 +235,7 @@ void redfst_energy_init(){
 	int i;
 
 	__redfst_fd = redfst_energy_get_fd();
+	__redfst_hw_init();
 
 	__redfstMutex = 0;
 
