@@ -106,7 +106,7 @@ sudo cpupower frequency-set -c all -g userspace
 #+END_SRC
 
 Besides using the userspace governor you also need read/write
-permissions to /sys/devices/system/cpu/cpu*/cpufreq/scaling_setspeed.
+permissions to ~/sys/devices/system/cpu/cpu*/cpufreq/scaling_setspeed~.
 ** API
 - ~energy_region(int id)~ :: Sets the code region of the calling core
      to "id". May trigger a frequency change.
