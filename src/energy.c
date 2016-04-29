@@ -81,7 +81,7 @@ static int cmpid(const void *a, const void *b){
 	return ((cpu_t*)a)->id - ((cpu_t*)b)->id;
 }
 
-static void get_all_sensors(){
+static void get_all_cpus(){
 	struct dirent *e;
 	DIR *d;
 	cpu_t *c;
@@ -127,7 +127,7 @@ static void get_default_cpus(){
 	char st;
 	s = getenv("REDFST_CPUS");
 	if(!s){
-		get_all_sensors();
+		get_all_cpus();
 		return;
 	}else if(!*s){
 		__redfstNcpus = 0;
