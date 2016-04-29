@@ -220,17 +220,6 @@ int main(int argc, char **argv){
 	int i;
 	int cpuModel;
 
-	cpuModel = detect_cpu();
-	if(cpuModel < 0){
-		err("CPU not supported\n");
-		return 1;
-	}
-
-	if(signal(SIGCHLD,app_dies) || signal(SIGINT,signal_callback_handler)){
-		err("failed to set sigaction\n");
-		return 1;
-	}
-
 	for(i=1;i<argc;++i){
 		char *a = argv[i];
 		if(a[0]=='-'&&((a[1]=='-'&&!a[2])||!a[1])){
@@ -261,6 +250,18 @@ int main(int argc, char **argv){
 			break;
 		}
 	}
+
+	cpuModel = detect_cpu();
+	if(cpuModel < 0){
+		err("CPU not supported\n");
+		return 1;
+	}
+
+	if(signal(SIGCHLD,app_dies) || signal(SIGINT,signal_callback_handler)){
+		err("failed to set sigaction\n");
+		return 1;
+	}
+
 	if(!ncores){
 		ncores = 1;
 		energy_init(cores, 0);
