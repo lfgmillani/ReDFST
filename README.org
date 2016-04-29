@@ -17,6 +17,25 @@ package, power plane 0 and DRAM of the processors. Besides the
 hardware support, which is not available on all Intel processor, it
 requires the msr kernel module, which can be loaded with:
 
+#+BEGIN_SRC sh
+sudo modprobe msr
+#+END_SRC
+
+You will also need read/write permissions for /dev/cpu/*/msr. These
+permissions can be obtained in two ways:
+
+- by running your application as root
+#+begin_src sh
+sudo ./application
+#+end_src
+
+- by giving your application the necessary access
+#+begin_src sh
+sudo chmod 666 /dev/cpu/*/msr
+sudo setcap cap_sys_rawio=eip ./application
+./application
+#+end_src
+
 #+BEGIN_SRC C
 #include <stdlib.h>
 #include <unistd.h>
