@@ -120,6 +120,10 @@ static void get_default_cpus(){
 
 	st = 0;
 #define APPEND(x) do{\
+	if(x >= __redfstHwNcpus){\
+		fprintf(__redfst_fd, "Failed to parse REDFST_CPUS: \"%s\" - \"%d\" is not a valid CPU\n", getenv("REDFST_CPUS"), x);\
+		exit(1);\
+	}\
 	if(ncpus+1 == alloc){\
 		alloc += 1024;\
 		cpu = realloc(cpu, alloc * sizeof(cpu));\
