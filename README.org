@@ -12,6 +12,11 @@ make install
 #+END_SRC
 ** Usage
 *** Measuring energy consumption
+ReDFST uses Intel RAPL to measure the energy consumption of the
+package, power plane 0 and DRAM of the processors. Besides the
+hardware support, which is not available on all Intel processor, it
+requires the msr kernel module, which can be loaded with:
+
 #+BEGIN_SRC C
 #include <stdlib.h>
 #include <unistd.h>
