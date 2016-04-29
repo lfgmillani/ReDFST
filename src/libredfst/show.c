@@ -16,7 +16,7 @@ redfst_show(){
   fp = fopen("redfst.profile","wt");
   if (!fp) {
     fprintf(stderr, "failed to open redfst.profile\n");
-    exit(1);
+    return;
   }
   for(region=0;region<REDFSTLIB_MAX_REGIONS;++region){
     totTime = totRef = totMiss = 0;
