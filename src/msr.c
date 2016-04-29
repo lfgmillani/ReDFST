@@ -14,9 +14,6 @@
 #define MSR_PP0_ENERGY_STATUS  0x639
 #define MSR_PP1_ENERGY_STATUS  0x641
 
-extern int __redfstNcpus;
-extern cpu_t *__redfstCpu;
-
 static uint64_t msr_read(int fd, int which){
 	uint64_t data;
 	if(unlikely(pread(fd,&data,sizeof(data),which)!=sizeof(data))){
