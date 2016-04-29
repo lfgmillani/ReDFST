@@ -237,7 +237,7 @@ void redfst_energy_init(){
 
 	__redfstMutex = 0;
 
-	// what should we monitor?
+	// what cpus should we monitor?
 	get_default_cpus();
 	if(__redfstNcpus)
 		qsort(__redfstCpu, __redfstNcpus, sizeof(*__redfstCpu), cmpid);
