@@ -83,38 +83,11 @@ static int cmpid(const void *a, const void *b){
 }
 
 static void get_all_cpus(){
-	struct dirent *e;
-	DIR *d;
-	cpu_t *c;
-	char *s;
-	int ncpus;
-
-	d = opendir("/dev/cpu/");
-	if(!d){
-		__redfstNcpus = 0;
-		__redfstCpu   = 0;
-		return;
-	}
-	ncpus = 0;
-	c = malloc(1);
-
-	while((e=readdir(d))){
-		for(s=e->d_name; *s; ++s)
-			if(*s<'0' || *s>'9')
-				break;
-		if(!*s){
-			c = realloc(c, (ncpus+1) * sizeof(*c));
-			memset(c+ncpus,0,sizeof(*c));
-			c[ncpus++].id = atoi(e->d_name);
-		}
-	}
-	closedir(d);
-	if(!ncpus){
-		free(c);
-		c = 0;
-	}
-	__redfstNcpus = ncpus;
-	__redfstCpu = c;
+	int i;
+	__redfstCpu = calloc(__redfstHwNcpus, sizeof(*__redfstCpu));
+	for(i=0; i<__redfstHwNcpus; ++i)
+		__redfstCpu[i].id = i;
+	__redfstNcpus = __redfstHwNcpus;
 }
 
 static void get_default_cpus(){
