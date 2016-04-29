@@ -36,6 +36,20 @@ sudo setcap cap_sys_rawio=eip ./application
 ./application
 #+end_src
 
+The CPUs which will have their energy measured are given in the
+~REDFST_CPUS~ environment variable. This is a comma-separated list of:
+- number
+- number:number
+Example: /0,3:5,7/ will measure the energy of cpus 0, 3, 4, 5 and 7.
+
+Alternatively, the list of CPUs can be set by calling ~redfst_cpus~:
+#+begin_src c
+int cpus[] = {0,3,4,5,7,-1}; // terminate the list with -1
+if(!redfst_cpus(cpus))
+  printf("failed to read energy of cpus\n");
+#+end_src
+
+The functions used to measure energy consumption are:
 #+BEGIN_SRC C
 #include <stdlib.h>
 #include <unistd.h>
