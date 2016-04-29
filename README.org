@@ -101,11 +101,11 @@ int main(int argc, char **argv){
 
 Compile with
 #+BEGIN_SRC sh
-gcc -o example example.c -fopenmp -lredfst -lcpupower -lm
+gcc -o example1 example1.c -fopenmp -lredfst -lcpupower -lm
 #+END_SRC
 or
 #+BEGIN_SRC sh
-gcc -o example example.c -fopenmp -lredfst -lcpufreq -lm
+gcc -o example1 example1.c -fopenmp -lredfst -lcpufreq -lm
 #+END_SRC
 Attention: If the library was not installed to /lib or /usr/lib, you
 have to pass ~-Wl,-rpath=/INSTALLPATH/lib~ to the compiler or run the
@@ -114,17 +114,17 @@ example as root.
 Run it:
 - as root
 #+BEGIN_SRC sh
-sudo ./example
+sudo ./example1
 #+END_SRC
 or
 - as your user:
 First set the permissions
 #+BEGIN_SRC sh
-sudo setcap cap_sys_rawio=pei example
+sudo setcap cap_sys_rawio=pei example1
 #+END_SRC
 Run it:
 #+BEGIN_SRC sh
-./example
+./example1
 #+END_SRC
 
 The output should be similar to:
@@ -134,7 +134,7 @@ The output should be similar to:
 #+END_EXAMPLE
 To print a header explaining what each column means, set the variable ~REDFST_HEADER~:
 #+BEGIN_SRC sh
-REDFST_HEADER=1 ./example
+REDFST_HEADER=1 ./example1
 #+END_SRC
 #+BEGIN_EXAMPLE
 pkg.0, pp0.0, dram.0, pkg.1, pp0.1, dram.1, pkg, pp0, dram, time
@@ -190,11 +190,11 @@ int main(int argc, char **argv){
 Compile with:
 
 #+BEGIN_SRC sh
-gcc example.c -fopenmp -lredfst -lcpupower -lm
+gcc -o example2 example2.c -fopenmp -lredfst -lcpupower -lm
 #+END_SRC
 or
 #+BEGIN_SRC sh
-gcc example.c -fopenmp -lredfst -lcpufreq -lm
+gcc -o example2 example2.c -fopenmp -lredfst -lcpufreq -lm
 #+END_SRC
 
 Let's run the code region /1/ at 2.0GHz frequency and the code region
@@ -206,7 +206,7 @@ export REDFST_LOW=1500000
 export REDFST_FASTREGIONS=2
 export REDFST_SLOWREGIONS=4
 export OMP_PROC_BIND=TRUE
-./a.out
+./example2
 #+END_SRC
 
 The frequency for the *fast* regions is given by the variable
