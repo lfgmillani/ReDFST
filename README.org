@@ -47,11 +47,11 @@ int main(int argc, char **argv){
 Compile with:
 
 #+BEGIN_SRC sh
-gcc example.c -fopenmp -lredfst -lcpupower
+gcc example.c -fopenmp -lredfst -lcpupower -lm
 #+END_SRC
 or
 #+BEGIN_SRC sh
-gcc example.c -fopenmp -lredfst -lcpufreq
+gcc example.c -fopenmp -lredfst -lcpufreq -lm
 #+END_SRC
 
 Let's run the code region /1/ at 2.0GHz frequency and the code region
