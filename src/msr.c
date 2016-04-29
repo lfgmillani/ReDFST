@@ -5,6 +5,7 @@
 #include <error.h>
 #include <fcntl.h>
 #include "macros.h"
+#include "hw.h"
 #include "energy.h"
 #include "msr.h"
 
@@ -54,7 +55,7 @@ int redfst_msr_init(){
 	int i;
 	for(i=0; i < __redfstNcpus; ++i){
 		c = __redfstCpu + i;
-		sprintf(buf,"/dev/cpu/%d/msr",__redfstCpu[i].id);
+		sprintf(buf,"/dev/cpu/%d/msr",socket_to_logical_core(__redfstCpu[i].id));
 		c->fd = open(buf,O_RDONLY);
 		if(c->fd < 0){
 			fprintf(__redfst_fd, "Failed to open %s\n",buf);
