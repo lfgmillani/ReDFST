@@ -48,15 +48,15 @@ include_directories(${CMAKE_BINARY_DIR})
 if(REDFST_STATIC)
   add_library(libredfst_static STATIC ${LIBREDFST_SOURCES})
   set_target_properties(libredfst_static PROPERTIES OUTPUT_NAME redfst)
+    target_link_libraries(libredfst_static cpufreq)
   install(TARGETS libredfst_static DESTINATION lib)
+else(REDFST_STATIC)
+  add_library(libredfst_dynamic SHARED ${LIBREDFST_SOURCES})
+  set_target_properties(libredfst_dynamic PROPERTIES OUTPUT_NAME redfst)
+  target_link_libraries(libredfst_dynamic cpufreq)
+  install(TARGETS libredfst_dynamic DESTINATION lib)
 endif(REDFST_STATIC)
 
-add_library(libredfst_dynamic SHARED ${LIBREDFST_SOURCES})
-set_target_properties(libredfst_dynamic PROPERTIES OUTPUT_NAME redfst)
-target_link_libraries(libredfst_dynamic cpufreq)
-
-
-install(TARGETS libredfst_dynamic DESTINATION lib)
 install(FILES ${LIBREDFST_HEADERS} DESTINATION include)
 
 configure_file("${CMAKE_HOME_DIRECTORY}/src/libredfst/libredfst_config.h.in" "${CMAKE_BINARY_DIR}/libredfst_config.h" @ONLY IMMEDIATE)
