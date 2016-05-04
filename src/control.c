@@ -96,7 +96,6 @@ void redfst_print(){
 	}
 	sprintf(buf+n,"%lf, %lf, %lf, %lf\n",totalPkg,totalPp0,totalDram,t);
 	fprintf(__redfst_fd,buf);
-	free(buf);
 }
 
 
