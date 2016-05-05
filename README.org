@@ -203,8 +203,8 @@ Let's run the code region /1/ at 2.0GHz frequency and the code region
 #+BEGIN_SRC sh
 export REDFST_HIGH=2000000
 export REDFST_LOW=1500000
-export REDFST_FASTREGIONS=2
-export REDFST_SLOWREGIONS=4
+export REDFST_FASTREGIONS=1
+export REDFST_SLOWREGIONS=2
 export OMP_PROC_BIND=TRUE
 ./example2
 #+END_SRC
@@ -213,12 +213,9 @@ The frequency for the *fast* regions is given by the variable
 =REDFST_HIGH=. Likewise, the frequency to be used in the *slow*
 regions is given by the variable =REDFST_LOW=. The set of *fast*
 (*slow*) regions is given by =REDFST_FASTREGIONS=
-(=REDFST_SLOWREGIONS=). The regions are encoded as a bitmask where a
-value of 1 for the *n*-th bit means region *n* is part of the set. For
-example, we set =REDFST_SLOWREGIONS= to 4 (0100 in binary), which
-means the set contains the region 2 (2^2 = 4). In the same manner,
-=REDFST_SLOWREGIONS= contains the region *1* (2^1 = 2).  The use of
-=OMP_PROC_BIND= to bind the threads to cores is obligatory.
+(=REDFST_SLOWREGIONS=) as a list in the format region[,region...]
+(example: 1,3,4). The use of =OMP_PROC_BIND= to bind the threads to
+cores is obligatory.
 
 For ReDFST to change the frequency it requires permissions and the use
 of the userspace governor. You can see which governor you're using with:
@@ -291,13 +288,10 @@ The following variables are accepted by libredfst. Besides them,
 - ~REDFST_HIGH~ :: Frequency for the fast regions. Example: 2000000 (for
      2.0GHz)
 - ~REDFST_SLOWREGIONS~ :: Set of regions which will trigger the low
-     frequency. This variable is a bitmask *s* such that its *n*-th
-     bit is 1 if the region *n* is part of the set or 0
-     otherwise. Example: "6" will trigger the low frequency for
-     regions 1 and 2 since (1<<1)&6 is 0010 (binary) and (1<<2)&6
-     is 0100. The 0th region corresponds to the idle function. The
-     63th region is entered when the program finishes. The other
-     regions are user-defined.
+     frequency. The regions are given as a comma-separated
+     list. Example: to use the regions 1, 3 and 4, this variable
+     should be set to *1,3,4*.  The 63th region is entered when the
+     program finishes. The other regions are user-defined.
 - ~REDFST_FASTREGIONS~ :: Regions which will trigger the high
      frequency. See ~REDFST_SLOWREGIONS~.
 - ~REDFST_MONITOR~ :: If defined to anything other than "0", "F" or
