@@ -96,6 +96,53 @@ static int get_freq(int isHigh){
 	return atoi(s);
 }
 
+static uint64_t list_to_bitmask(const char *envname){
+	char *s;
+	uint64_t mask;
+	uint64_t n;
+	char c;
+	char st = 0;
+	s = getenv(envname);
+	if(!s||!*s)
+		return 0;
+	mask = 0;
+	st = 0;
+	do{
+		c=*s++;
+		switch(st){
+		case 0:
+			if(c >= '0' && c <= '9'){
+				n = c - '0';
+				++st;
+			}else{
+				fprintf(stderr, "invalid value for %s: \"%s\"\n", envname, s);
+				exit(1);
+			}
+			break;
+		case 1:
+			if(c >= '0' && c <= '9'){
+				n = 10 * n + c - '0';
+				if(n > REDFST_MAX_REGIONS-1){
+					fprintf(stderr, "invalid value for %s: the maximum region number is %d\n", envname, REDFST_MAX_REGIONS-1);
+					exit(1);
+				}
+			}else if(c==','||!c){
+				n = 1ULL << n;
+				if(mask & n){
+					fprintf(stderr, "invalid value for %s: repeated regions found\n", envname);
+					exit(1);
+				}
+				mask |= n;
+				--st;
+			}else{
+				fprintf(stderr, "invalid value for %s: \"%s\"\n", envname, s);
+				exit(1);
+			}
+		}
+	}while(c);
+	return mask;
+}
+
 static void from_env(){
 	const char *s;
 
@@ -108,8 +155,11 @@ static void from_env(){
 	if(!FREQ_LOW)
 		FREQ_LOW = get_freq(0);
 
-	env2uint64(&gRedfstSlowRegions,"REDFST_SLOWREGIONS");
-	env2uint64(&gRedfstFastRegions,"REDFST_FASTREGIONS");
+	gRedfstSlowRegions = list_to_bitmask("REDFST_SLOWREGIONS");
+	gRedfstFastRegions = list_to_bitmask("REDFST_FASTREGIONS");
+	if(gRedfstSlowRegions&gRedfstFastRegions){
+		fprintf(stderr, "The same region cannot be slow and fast. Verify REDFST_SLOWREGIONS and REDFST_FASTREGIONS.\n");
+	}
 	if((s=getenv("REDFST_MONITOR"))){
 		if(*s&&*s!='0'&&*s!='F'&&*s!='f'){
 			gCfg.monitor = 1;
