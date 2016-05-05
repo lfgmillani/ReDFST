@@ -38,45 +38,6 @@ static void env2i(int *dst, const char *envname){
 	*dst = (int)x;
 }
 
-static void env2uint64(uint64_t *dst, const char *envname){
-	char *s;
-	uint64_t n;
-	char c;
-	char neg=0;
-	s = getenv(envname);
-	if(!s||!*s)
-		return;
-	if('-'==*s){
-		neg = 1;
-		++s;
-	}
-	for(c=*s,n=0; c; c=*(++s)){
-		if(c < '0' || c>'9' || n>10*n){
-			fprintf(stderr,"invalid value for %s: \"%s\"\n",envname,s);
-			exit(1);
-		}
-		n = 10*n + c - '0';
-	}
-	if(neg)
-		n = -n;
-	*dst = n;
-	return;
-}
-
-static void env2f(float *dst, const char *envname){
-	char *s,*r;
-	float x;
-	s = getenv(envname);
-	if(!s||!*s)
-		return;
-	x = strtof(s,&r);
-	if(*r){
-		fprintf(stderr,"invalid value for %s: \"%s\"\n",envname,s);
-		exit(1);
-	}
-	*dst = x;
-}
-
 static int get_freq(int isHigh){
 	char s[128];
 	FILE *f;
