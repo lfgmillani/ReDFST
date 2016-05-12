@@ -311,4 +311,6 @@ The following variables are accepted by libredfst. Besides them,
   - events :: Hardware counters. The defaults are last level cache
        (LLC) references, LLC misses, cycles, instructions.
 - ~REDFST_TRACEFILE~ :: If the library was compiling with tracing
-     enabled, the trace will be written to this file.
+     enabled, the trace will be written to this file. If undefined,
+     the trace is output to the file descriptor 4, or otherwise to
+     stderr.
