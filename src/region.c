@@ -55,7 +55,9 @@ static void redfst_region_impl(int id, int cpu){
 	redfst_perf_read(cpu, &m->perf);
 
 #ifdef REDFST_TRACE
-	fprintf(__redfstTraceFd, "%"PRIu64",%d,%d\n", timeNow - __redfstTraceT0, cpu, id);
+	freq = redfst_freq_get(region_get(cpu,id), id);
+	fprintf(__redfstTraceFd, "%"PRIu64",%d,%d,%d\n", timeNow - __redfstTraceT0, cpu,
+	        id, freq ? freq : gRedfstCurrentFreq[cpu]);
 #endif
 
 #ifndef REDFST_FREQ_PER_CORE
