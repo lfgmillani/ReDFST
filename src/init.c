@@ -141,6 +141,9 @@ redfst_init(){
 	from_env();
 	redfst_energy_init();
 	redfst_perf_init();
+#ifdef REDFST_TRACE
+	redfst_trace_init();
+#endif
 #ifdef REDFST_OMP
 	redfst_omp_init();
 #endif

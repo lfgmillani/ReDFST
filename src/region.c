@@ -11,6 +11,12 @@
 #include "redfst/util.h"
 #include "redfst/global.h"
 #include "redfst/config.h"
+
+#ifdef REDFST_TRACE
+extern FILE * __redfstTraceFd;
+extern uint64_t __redfstTraceT0;
+#endif
+
 static inline redfst_region_t * region_get(int cpu, int id){
 	return &gRedfstRegion[cpu][id];
 }
@@ -47,6 +53,10 @@ static void redfst_region_impl(int id, int cpu){
 	gRedfstCurrentId[cpu] = id;
 
 	redfst_perf_read(cpu, &m->perf);
+
+#ifdef REDFST_TRACE
+	fprintf(__redfstTraceFd, "%"PRIu64",%d,%d\n", timeNow - __redfstTraceT0, cpu, id);
+#endif
 
 #ifndef REDFST_FREQ_PER_CORE
 	if(REDFST_CPU0 != cpu && REDFST_CPU1 != cpu)

@@ -40,4 +40,9 @@
 #define REDFST_CPU0 0
 #define REDFST_CPU1 1
 
+/*
+	if defined, all calls to redfst_region(_all) are traced
+*/
+//#define REDFST_TRACE
+
 #endif
