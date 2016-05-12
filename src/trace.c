@@ -29,6 +29,6 @@ static FILE * redfst_trace_get_fd(){
 void redfst_trace_init(){
 	__redfstTraceFd = redfst_trace_get_fd();
 	__redfstTraceT0 = time_now();
-	fprintf(__redfstTraceFd, "time, thread, region\n");
+	fprintf(__redfstTraceFd, "time, thread, region, frequency\n");
 }
 #endif
