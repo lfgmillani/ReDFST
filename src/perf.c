@@ -112,7 +112,7 @@ void redfst_perf_init_worker(){
 
 void redfst_perf_shutdown(){
 	int i;
-	for(i=0;i<LEN(gFd);++i)
+	for(i=0;i<REDFST_LEN(gFd);++i)
 		if(gFd[i])
 			close(gFd[i]);
 }

@@ -13,14 +13,14 @@
 	gets the length of an array
 */
 /* 0[x] guards against [] overloading, the division against using with a pointer */
-#define LEN(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
+#define REDFST_LEN(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
 
 
 
 /*
 	compile-time assert
 */
-#define CASSERT(condition) ((void)sizeof(char[1 - 2*!(condition)]))
+#define REDFST_CASSERT(condition) ((void)sizeof(char[1 - 2*!(condition)]))
 
 
 

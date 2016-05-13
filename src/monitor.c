@@ -41,8 +41,8 @@ void redfst_monitor_set_status(int n){
 static void freq_encode(uint64_t *dst, int *src){
 	uint64_t n = 0;
 	int i;
-	CASSERT(LEN(gFreq)==2);
-	CASSERT(REDFST_MAX_THREADS<=64);
+	REDFST_CASSERT(REDFST_LEN(gFreq)==2);
+	REDFST_CASSERT(REDFST_MAX_THREADS<=64);
 	for(i=0;i<REDFST_MAX_THREADS;++i){
 		n |= (src[i] == FREQ_HIGH) << i;
 	}
