@@ -5,8 +5,12 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <pthread.h>
-#include "redfst.h"
 #include "config.h"
+#ifdef REDFST_FUN_IN_H
+#include "redfst-static.h"
+#else
+#include "redfst-default.h"
+#endif
 #include "util.h"
 #include "msr.h"
 #include "macros.h"

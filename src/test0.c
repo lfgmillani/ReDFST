@@ -1,5 +1,10 @@
 #include <unistd.h>
-#include <redfst.h>
+#include "config.h"
+#ifdef REDFST_FUN_IN_H
+#include <redfst-static.h>
+#else
+#include <redfst-default.h>
+#endif
 
 int main(){
 	redfst_reset();

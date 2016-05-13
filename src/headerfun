@@ -1,0 +1,37 @@
+#!/bin/bash
+
+declare -A included
+included["redfst.h"]=1
+included["redfst-static.h"]=1
+included["redfst-default.h"]=1
+function putfile {
+	included["$1"]=1
+	while IFS=$'\n' read -r s; do
+		if grep -Po '^#include ".*"$' <<< "$s" > /dev/null; then
+			s=$(sed 's/#include "//' <<< "$s" | sed 's/"//')
+			if ! test "${included["$s"]+isset}"; then
+				putfile "$s"
+			fi
+		else
+			echo "$s"
+		fi
+	done < "$1"
+}
+
+cat << EOF
+#ifndef REDFST_H
+#define REDFST_H
+#ifdef __cplusplus
+extern "C"{
+#endif
+EOF
+putfile util.c
+putfile control.c
+putfile region.c
+putfile region-all.h
+cat << EOF
+#ifdef __cplusplus
+};
+#endif
+#endif
+EOF

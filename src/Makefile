@@ -16,15 +16,19 @@ libredfst.so : $(OBJS)
 #libredfst.a : $(OBJS)
 #	 $(AR) rcs $@ $(OBJS)
 
-%.o : %.c
+redfst-static.h: util.c control.c region.c region-all.h
+	sh headerfun > $@
+
+%.o : %.c redfst-static.h
 	$(CC) $(CFLAGS) $(OPENMP) -fPIC -c $<
 
 install: $(TARGET)
 	install -m 644 -D libredfst.so "$(DESTDIR)/$(PREFIX)/lib/libredfst.so"
-	install -m 644 -D redfst.h "$(DESTDIR)/$(PREFIX)/include/redfst.h"
-	for x in redfst/*; do \
-		install -m 644 -D $$x "$(DESTDIR)/$(PREFIX)/include/$$x"; \
-	done
+	if $(CC) $(CFLAGS) -dM -E config.h | grep REDFST_FUN_IN_H > /dev/null; then\
+		install -m 644 -D redfst-static.h "$(DESTDIR)/$(PREFIX)/include/redfst.h";\
+	else\
+		install -m 644 -D redfst-default.h "$(DESTDIR)/$(PREFIX)/include/redfst.h";\
+	fi
 
 test0: libredfst.so test0.c
 	if ld -lcpupower 2> /dev/null; then\
