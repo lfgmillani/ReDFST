@@ -254,7 +254,10 @@ permissions to ~/sys/devices/system/cpu/cpu*/cpufreq/scaling_setspeed~.
 - ~int redfst_cpus(const int *cpus)~ :: Sets which cpus will have
      their energy measured. The array /cpus/ should end with -1.
 - ~void redfst_reset()~ :: Reset the energy counters.
-- ~void redfst_print()~ :: Print the energy counters.
+- ~void redfst_print(...)~ :: Print the energy counters. If given, the
+     arguments are passed to fprintf and then the counters are
+     printed. Example: redfst_print("%s,","here") will output
+     "here,cpuX.pkg,cpuX.pp0,cpuX.dram,...,total.pkg,total.pp0,total.dram,time"
 - ~void redfst_get(double *dst, int cpu)~  :: write into dst the
      energy counters of the given cpu:\\
      dst[3*cpu + 0] = cpu.pkg\\
