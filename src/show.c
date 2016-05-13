@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <stdint.h>
-#include <stdlib.h>
-#include "libredfst_config.h"
+#include "config.h"
 #include "region.h"
 #include "global.h"
 
@@ -14,13 +13,9 @@ redfst_show(){
   int cpu;
   int region;
   fp = fopen("redfst.profile","wt");
-  if (!fp) {
-    fprintf(stderr, "failed to open redfst.profile\n");
-    return;
-  }
-  for(region=0;region<REDFSTLIB_MAX_REGIONS;++region){
+  for(region=0;region<REDFST_MAX_REGIONS;++region){
     totTime = totRef = totMiss = 0;
-    for(cpu=0;cpu<REDFSTLIB_MAX_THREADS;++cpu){
+    for(cpu=0;cpu<REDFST_MAX_THREADS;++cpu){
       m = &gRedfstRegion[cpu][region];
       totTime += m->time;
       totRef += m->perf.refs;

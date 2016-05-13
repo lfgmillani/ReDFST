@@ -14,5 +14,49 @@
 # along with ReDFST. If not, see <http://www.gnu.org/licenses/>.
 cmake_minimum_required(VERSION 2.8)
 
-add_subdirectory(libredfst)
-add_subdirectory(redfst)
+set(LIBREDFST_SOURCES
+  global.c
+  init.c
+  monitor.c
+  perf.c
+  profile.c
+  redfst_omp.c
+  region.c
+  show.c
+  util.c)
+
+set(LIBREDFST_HEADERS
+  redfst.h)
+
+#maximum number of code regions; as 64bit integers are used with this, it cannot be higher than 64.
+set(REDFSTLIB_MAX_REGIONS 64)
+#maximum number of threads supported
+set(REDFSTLIB_MAX_THREADS 32)
+#polling frequency for the monitor (in microseconds)
+set(REDFSTLIB_MONITOR_FREQUENCY 100)
+#if defined, the library will target OpenMP. at the moment that's the only option.
+set(REDFSTLIB_OMP ON)
+#if defined, frequency is decided on a per-core basis. otherwise, its per-cpu.
+set(REDFSTLIB_FREQ_PER_CORE ON)
+#if REDFSTLIB_FREQ_PER_CORE was not defined, these variables define
+#which cores will have their frequencies changed. all other cores will
+#be kept at the low frequency.
+set(REDFSTLIB_CPU0 0)
+set(REDFSTLIB_CPU1 1)
+
+include_directories(${CMAKE_BINARY_DIR})
+if(REDFST_STATIC)
+  add_library(libredfst_static STATIC ${LIBREDFST_SOURCES})
+  set_target_properties(libredfst_static PROPERTIES OUTPUT_NAME redfst)
+    target_link_libraries(libredfst_static cpufreq)
+  install(TARGETS libredfst_static DESTINATION lib)
+else(REDFST_STATIC)
+  add_library(libredfst_dynamic SHARED ${LIBREDFST_SOURCES})
+  set_target_properties(libredfst_dynamic PROPERTIES OUTPUT_NAME redfst)
+  target_link_libraries(libredfst_dynamic cpufreq)
+  install(TARGETS libredfst_dynamic DESTINATION lib)
+endif(REDFST_STATIC)
+
+install(FILES ${LIBREDFST_HEADERS} DESTINATION include)
+
+configure_file("${CMAKE_HOME_DIRECTORY}/src/libredfst/libredfst_config.h.in" "${CMAKE_BINARY_DIR}/libredfst_config.h" @ONLY IMMEDIATE)

@@ -1,5 +1,4 @@
 #define _GNU_SOURCE
-#include <features.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -10,15 +9,16 @@
 #include <sched.h>
 #include <sys/types.h>
 #include <sys/syscall.h>
-#include "macros.h"
+#include <macros.h>
 #include "global.h"
 #include "perf.h"
 #include "monitor.h"
 #include "region.h"
 #include "util.h"
 #include "profile.h"
-#include "redfst.h"
+#include "energy.h"
 #include "redfst_omp.h"
+#include "trace.h"
 
 typedef struct{
 	int monitor;
@@ -39,45 +39,71 @@ static void env2i(int *dst, const char *envname){
 	*dst = (int)x;
 }
 
-static void env2uint64(uint64_t *dst, const char *envname){
-	char *s;
-	uint64_t n;
-	char c;
-	char neg=0;
-	s = getenv(envname);
-	if(!s||!*s)
-		return;
-	if('-'==*s){
-		neg = 1;
-		++s;
+static int get_freq(int isHigh){
+	char s[128];
+	FILE *f;
+	sprintf(s, "/sys/devices/system/cpu/cpufreq/policy0/scaling_%s_freq", isHigh?"max":"min");
+	f = fopen(s, "rt");
+	if(!f){
+		sprintf(s, "/sys/devices/system/cpu/cpu0/cpufreq/scaling_%s_freq", isHigh?"max":"min");
+		f = fopen(s, "rt");
 	}
-	for(c=*s,n=0; c; c=*(++s)){
-		if(c < '0' || c>'9' || n>10*n){
-			fprintf(stderr,"invalid value for %s: \"%s\"\n",envname,s);
-			exit(1);
-		}
-		n = 10*n + c - '0';
-	}
-	if(neg)
-		n = -n;
-	*dst = n;
-	return;
-}
-
-static void env2f(float *dst, const char *envname){
-	char *s,*r;
-	float x;
-	s = getenv(envname);
-	if(!s||!*s)
-		return;
-	x = strtof(s,&r);
-	if(*r){
-		fprintf(stderr,"invalid value for %s: \"%s\"\n",envname,s);
+	if(!f){
+		fprintf(stderr,"ReDFST: Failed to get %s cpu frequency. Please specify it with REDFST_%s\n",
+		        isHigh?"max":"min", isHigh?"HIGH":"LOW");
 		exit(1);
 	}
-	*dst = x;
+	fread(s, 1, sizeof(s), f);
+	fclose(f);
+	return atoi(s);
 }
 
+static uint64_t list_to_bitmask(const char *envname){
+	char *s;
+	uint64_t mask;
+	uint64_t n;
+	char c;
+	char st = 0;
+	s = getenv(envname);
+	if(!s||!*s)
+		return 0;
+	mask = 0;
+	st = 0;
+	do{
+		c=*s++;
+		switch(st){
+		case 0:
+			if(c >= '0' && c <= '9'){
+				n = c - '0';
+				++st;
+			}else{
+				fprintf(stderr, "invalid value for %s: \"%s\"\n", envname, s);
+				exit(1);
+			}
+			break;
+		case 1:
+			if(c >= '0' && c <= '9'){
+				n = 10 * n + c - '0';
+				if(n > REDFST_MAX_REGIONS-1){
+					fprintf(stderr, "invalid value for %s: the maximum region number is %d\n", envname, REDFST_MAX_REGIONS-1);
+					exit(1);
+				}
+			}else if(c==','||!c){
+				n = 1ULL << n;
+				if(mask & n){
+					fprintf(stderr, "invalid value for %s: repeated regions found\n", envname);
+					exit(1);
+				}
+				mask |= n;
+				--st;
+			}else{
+				fprintf(stderr, "invalid value for %s: \"%s\"\n", envname, s);
+				exit(1);
+			}
+		}
+	}while(c);
+	return mask;
+}
 
 static void from_env(){
 	const char *s;
@@ -86,8 +112,16 @@ static void from_env(){
 
 	env2i(&FREQ_HIGH,"REDFST_HIGH");
 	env2i(&FREQ_LOW,"REDFST_LOW");
-	env2uint64(&gRedfstSlowRegions,"REDFST_SLOWREGIONS");
-	env2uint64(&gRedfstFastRegions,"REDFST_FASTREGIONS");
+	if(!FREQ_HIGH)
+		FREQ_HIGH = get_freq(1);
+	if(!FREQ_LOW)
+		FREQ_LOW = get_freq(0);
+
+	gRedfstSlowRegions = list_to_bitmask("REDFST_SLOWREGIONS");
+	gRedfstFastRegions = list_to_bitmask("REDFST_FASTREGIONS");
+	if(gRedfstSlowRegions&gRedfstFastRegions){
+		fprintf(stderr, "The same region cannot be slow and fast. Verify REDFST_SLOWREGIONS and REDFST_FASTREGIONS.\n");
+	}
 	if((s=getenv("REDFST_MONITOR"))){
 		if(*s&&*s!='0'&&*s!='F'&&*s!='f'){
 			gCfg.monitor = 1;
@@ -106,7 +140,11 @@ redfst_init(){
 	gRedfstThreadCount = 0;
 	gFreq[0] = gFreq[1] = 0;
 	from_env();
+	redfst_energy_init();
 	redfst_perf_init();
+#ifdef REDFST_TRACE
+	redfst_trace_init();
+#endif
 #ifdef REDFST_OMP
 	redfst_omp_init();
 #endif
@@ -125,14 +163,14 @@ void redfst_thread_init(int cpu){
   CPU_SET(cpu, &set);
   sched_setaffinity(syscall(SYS_gettid), sizeof(set), &set);
 #endif
-  timeNow = time_now();
+  timeNow = __redfst_time_now();
   tRedfstCpu = cpu;
   tRedfstPrevId = 0;
-#ifdef REDFSTLIB_FREQ_PER_CORE
+#ifdef REDFST_FREQ_PER_CORE
   gRedfstCurrentFreq[cpu] = FREQ_HIGH;
 	cpufreq_set_frequency(cpu, FREQ_HIGH);
 #else
-	if(REDFSTLIB_CPU0 == cpu || REDFSTLIB_CPU1 == cpu){
+	if(REDFST_CPU0 == cpu || REDFST_CPU1 == cpu){
   	gRedfstCurrentFreq[cpu] = FREQ_HIGH;
 		cpufreq_set_frequency(cpu, FREQ_HIGH);
 	}else{
@@ -144,6 +182,18 @@ void redfst_thread_init(int cpu){
 	__sync_fetch_and_add(&gRedfstThreadCount, 1);
   redfst_perf_init_worker();
 }
+
+#ifdef REDFST_OMP
+#include <omp.h>
+static void redfst_region_final(){
+	int nthreads;
+	int i;
+	nthreads = omp_get_max_threads();
+#pragma omp parallel for num_threads(nthreads)
+	for(i=0; i < nthreads; ++i)
+		redfst_region(REDFST_MAX_REGIONS-1);
+}
+#endif
 
 void __attribute__((destructor))
 redfst_close(){

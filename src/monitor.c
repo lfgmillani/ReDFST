@@ -4,18 +4,18 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "macros.h"
+#include <macros.h>
 #include "perf.h"
 #include "global.h"
-#include "libredfst_config.h"
+#include "config.h"
 #include "monitor.h"
 
-#define REDFST_MONITOR_PERIOD (1000000 / REDFSTLIB_MONITOR_FREQUENCY)
+#define REDFST_MONITOR_PERIOD (1000000 / REDFST_MONITOR_FREQUENCY)
 
 typedef struct{
-	redfst_perf_t events[REDFSTLIB_MAX_THREADS];
+	redfst_perf_t events[REDFST_MAX_THREADS];
 	uint64_t freq;
-	uint8_t region[REDFSTLIB_MAX_REGIONS];
+	uint8_t region[REDFST_MAX_REGIONS];
 	int status;
 }monitor_t;
 
@@ -27,7 +27,7 @@ static char * gRedfstMonitorEventName[REDFST_PERF_NUM_EVENTS] = {
   "instr",
 };
 static monitor_t *gMon = (void*)0xdeadbabe;
-static int gI = 0;;
+static int gI = 0;
 static int gLen = 0;
 static char gLoop = 1;
 static int gRedfstMonitorStatus = 0;
@@ -41,9 +41,9 @@ void redfst_monitor_set_status(int n){
 static void freq_encode(uint64_t *dst, int *src){
 	uint64_t n = 0;
 	int i;
-	CASSERT(LEN(gFreq)==2);
-	CASSERT(REDFSTLIB_MAX_THREADS<=64);
-	for(i=0;i<REDFSTLIB_MAX_THREADS;++i){
+	REDFST_CASSERT(REDFST_LEN(gFreq)==2);
+	REDFST_CASSERT(REDFST_MAX_THREADS<=64);
+	for(i=0;i<REDFST_MAX_THREADS;++i){
 		n |= (src[i] == FREQ_HIGH) << i;
 	}
 	*dst = n;
@@ -51,14 +51,14 @@ static void freq_encode(uint64_t *dst, int *src){
 
 static void freq_decode(int *dst, uint64_t src){
 	int i;
-	for(i=0;i<REDFSTLIB_MAX_THREADS;++i){
+	for(i=0;i<REDFST_MAX_THREADS;++i){
 		dst[i] = (src&(1LL<<i)) ? FREQ_HIGH : FREQ_LOW;
 	}
 }
 
 static inline void monitor_poll(){
 	int i;
-	if(unlikely(gI == gLen)){
+	if(REDFST_UNLIKELY(gI == gLen)){
 		gLen = gLen << 1;
 		gMon = realloc(gMon, gLen * sizeof(*gMon));
 	}
@@ -72,7 +72,7 @@ static inline void monitor_poll(){
 }
 
 void * redfst_monitor_loop(void *dummy){
-	while(likely(gLoop)){
+	while(REDFST_LIKELY(gLoop)){
 		monitor_poll();
 		usleep(REDFST_MONITOR_PERIOD);
 	}
@@ -81,11 +81,11 @@ void * redfst_monitor_loop(void *dummy){
 
 void redfst_monitor_init(){
 	pthread_t tid;
-	gLen = 512 * REDFSTLIB_MONITOR_FREQUENCY;
+	gLen = 512 * REDFST_MONITOR_FREQUENCY;
 	gI = 0;
 	gLoop = 1;
 	gMon = malloc(gLen * sizeof(*gMon));
-	if((unlikely(pthread_create(&tid,0,redfst_monitor_loop,0)))){
+	if((REDFST_UNLIKELY(pthread_create(&tid,0,redfst_monitor_loop,0)))){
 		fprintf(stderr,"Failed to create monitor thread\n");
 		exit(1);
 	}
@@ -96,7 +96,7 @@ void redfst_monitor_end(){
 }
 
 void redfst_monitor_show(){
-	int freq[REDFSTLIB_MAX_THREADS];
+	int freq[REDFST_MAX_THREADS];
 	FILE *f;
 	monitor_t *m;
 	int i,j,k;

@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <omp.h>
-#include "macros.h"
-#include "libredfst_config.h"
+#include <macros.h>
+#include "config.h"
 #include "init.h"
 #include "global.h"
 #include "redfst_omp.h"
-#ifdef REDFSTLIB_OMP
+#ifdef REDFST_OMP
 static void redfst_omp_init_check(){
 	if(omp_proc_bind_true != omp_get_proc_bind()){
 		fprintf(stderr,"You must set OMP_PROC_BIND=TRUE to use libredfst. Aborting.\n");
@@ -20,9 +20,9 @@ void redfst_omp_init(){
 	int i,j;
 	redfst_omp_init_check();
 	n = omp_get_max_threads();
-	if(n > REDFSTLIB_MAX_THREADS){
-		fprintf(stderr,"Number of threads should be no greater than REDFSTLIB_MAX_THREADS(%d). Aborting.\n",
-		        REDFSTLIB_MAX_THREADS);
+	if(n > REDFST_MAX_THREADS){
+		fprintf(stderr,"Number of threads should be no greater than REDFST_MAX_THREADS(%d). Aborting.\n",
+		        REDFST_MAX_THREADS);
 		exit(1);
 	}
 	ok = malloc(n * sizeof(*ok));

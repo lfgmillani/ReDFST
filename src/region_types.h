@@ -1,14 +1,11 @@
-#ifndef REGION_H
-#define REGION_H
+#ifndef REDFST_REGION_TYPES_H
+#define REDFST_REGION_TYPES_H
 #include <stdint.h>
-#include "libredfst_config.h"
 #include "perf.h"
+#include "config.h"
 typedef struct{
-	int next[REDFSTLIB_MAX_REGIONS];
+	int next[REDFST_MAX_REGIONS];
 	redfst_perf_t perf;
 	uint64_t time,timeStarted;
 } __attribute__((aligned(4),packed)) redfst_region_t;
-#ifndef REDFSTLIB_STATIC
-void redfst_region_final();
-#endif
 #endif

@@ -15,6 +15,149 @@ mkdir build; cd build; cmake ..; make;
 sudo make install
 #+END_SRC
 ** Usage
+*** Measuring energy consumption
+ReDFST uses Intel RAPL to measure the energy consumption of the
+package, power plane 0 and DRAM of the processors. Besides the
+hardware support, which is not available on all Intel processor, it
+requires the msr kernel module, which can be loaded with:
+
+#+BEGIN_SRC sh
+sudo modprobe msr
+#+END_SRC
+
+You will also need read/write permissions for /dev/cpu/*/msr. These
+permissions can be obtained in two ways:
+
+- by running your application as root
+#+begin_src sh
+sudo ./application
+#+end_src
+
+- by giving your application the necessary access
+#+begin_src sh
+sudo chmod 666 /dev/cpu/*/msr
+sudo setcap cap_sys_rawio=eip ./application
+./application
+#+end_src
+
+The CPUs which will have their energy measured are given in the
+~REDFST_CPUS~ environment variable. This is a comma-separated list of:
+- number
+- number:number
+Example: /0,3:5,7/ will measure the energy of cpus 0, 3, 4, 5 and 7.
+
+Alternatively, the list of CPUs can be set by calling ~redfst_cpus~:
+#+begin_src c
+int cpus[] = {0,3,4,5,7,-1}; // terminate the list with -1
+if(!redfst_cpus(cpus))
+  printf("failed to read energy of cpus\n");
+#+end_src
+
+The functions used to measure energy consumption are:
+- ~int redfst_support()~ :: Returns 1 if measuring energy is possible on the system, or 0 otherwise
+- ~int redfst_cpus(const int *cpus)~ :: Sets which cpus will have
+    their energy measured. The array should end with -1.
+- ~void redfst_reset()~ :: Zeroes the energy counters.
+- ~void redfst_print()~ :: Output the current value of the counters.
+- ~void redfst_get(double *dst, int cpu)~  :: Write into dst the energy counters
+    of the given cpu:\\
+    dst[3*cpu + 0] = cpu.pkg\\
+    dst[3*cpu + 1] = cpu.pp0\\
+    dst[3*cpu + 2] = cpu.dram
+- ~void redfst_get_all(double *dst)~ :: Write into dst the energy counters
+     of each cpu, followed by the execution time in seconds:\\
+     dst = {\\
+       cpu0.pkg, cpu0.pp0, cpu0.dram,\\
+       ... ,\\
+       cpuN.pkg, cpuN.pp0, cpuN.dram,\\
+       time}
+
+Sample code:
+#+BEGIN_SRC C
+#include <stdlib.h>
+#include <unistd.h>
+#include <redfst.h>
+
+int main(int argc, char **argv){
+  int n;
+  int x;
+  int i;
+  int j;
+
+  n = argc > 1 ? atoi(argv[1]) : 8*1024;
+
+  redfst_reset(); // zero energy counters to skip initialization code
+#pragma omp parallel for reduction(+:x)
+  for(i = 0; i < n; ++i){
+    for(j = 0; j < n; ++j){
+      x ^= i^j;
+    }
+  }
+  redfst_print(); // print energy counters
+  
+  redfst_reset(); // reset energy counters so we can measure something else
+  usleep(3000000);
+  redfst_print(); // print energy counters
+
+  return x;
+}
+#+END_SRC
+
+Compile with
+#+BEGIN_SRC sh
+gcc -o example1 example1.c -fopenmp -lredfst -lcpupower -lm
+#+END_SRC
+or
+#+BEGIN_SRC sh
+gcc -o example1 example1.c -fopenmp -lredfst -lcpufreq -lm
+#+END_SRC
+Attention: If the library was not installed to /lib or /usr/lib, you
+have to pass ~-Wl,-rpath=/INSTALLPATH/lib~ to the compiler or run the
+example as root.
+
+Run it:
+- as root
+#+BEGIN_SRC sh
+sudo ./example1
+#+END_SRC
+or
+- as your user:
+First set the permissions
+#+BEGIN_SRC sh
+sudo setcap cap_sys_rawio=pei example1
+#+END_SRC
+Run it:
+#+BEGIN_SRC sh
+./example1
+#+END_SRC
+
+The output should be similar to:
+#+BEGIN_EXAMPLE
+51.217300, 38.908722, 2.748489, 44.485428, 32.220169, 2.158203, 95.702728, 71.128891, 4.906693, 0.868234
+35.392227, 5.524429, 5.437225, 36.257050, 6.249054, 5.364868, 71.649277, 11.773483, 10.802094, 3.000128
+#+END_EXAMPLE
+To print a header explaining what each column means, set the variable ~REDFST_HEADER~:
+#+BEGIN_SRC sh
+REDFST_HEADER=1 ./example1
+#+END_SRC
+#+BEGIN_EXAMPLE
+pkg.0, pp0.0, dram.0, pkg.1, pp0.1, dram.1, pkg, pp0, dram, time
+51.217300, 38.908722, 2.748489, 44.485428, 32.220169, 2.158203, 95.702728, 71.128891, 4.906693, 0.868234
+35.392227, 5.524429, 5.437225, 36.257050, 6.249054, 5.364868, 71.649277, 11.773483, 10.802094, 3.000128
+#+END_EXAMPLE
+
+In the output above, the first row of numbers comes from the first
+~redfst_print~ and represents the energy spent on the first loop. The
+second row of numbers, printed by the second call to ~redfst_print~,
+displays the energy spent on the sleep function.
+
+The columns labeled ~pkg.0~, ~pp0.0~ and ~dram.0~ show, respectively,
+the energy consumed by the package, power plane 0 and DRAM of CPU 0.
+Likewise, ~pkg.1~, ~pp0.1~ and ~dram.1~ are the energy of CPU 1.  The
+columns labeled ~pkg~, ~pp0~ and ~dram~ are, respectively, the sum of
+the package, power plane 0 and DRAM of all CPUs. The last column,
+~time~, contains the number of seconds passed since the last call to
+redfst_reset.
 *** Changing the frequency
 #+BEGIN_SRC C
 #include <stdlib.h>
@@ -27,23 +170,23 @@ int main(int argc, char **argv){
   int i;
   int j;
 
-  n = argc>1?atoi(argv[1]):1024*1024;
+  n = argc > 1 ? atoi(argv[1]) : 8*1024;
 
-  redfst_reset(); // zero energy counters to skip initialization stuff
+  redfst_reset(); // clear the energy counters to skip initialization
 #pragma omp parallel for reduction(+:x)
   for(i = 0; i < n; ++i){
-    redfst_region(1); // change code region of current thread
+    redfst_region(1); // set the code region of the current thread to 1
     for(j = 0; j < n; ++j){
       x ^= i^j;
     }
   }
-  redfst_print(); // print energy counters
-
-  redfst_reset(); // reset energy counters
-  redfst_region_all(2); // change code region of all threads
+  redfst_print(); // print the energy counters
+  
+  redfst_reset(); // reset the energy counters
+  redfst_region_all(2); // set the code region of all threads to 2
   usleep(3000000);
-  redfst_exit(); // print energy counters and exit
-
+  redfst_print(); // print the energy counters
+  
   return x;
 }
 #+END_SRC
@@ -51,11 +194,11 @@ int main(int argc, char **argv){
 Compile with:
 
 #+BEGIN_SRC sh
-gcc example.c -fopenmp -lredfst -lcpupower
+gcc -o example2 example2.c -fopenmp -lredfst -lcpupower -lm
 #+END_SRC
 or
 #+BEGIN_SRC sh
-gcc example.c -fopenmp -lredfst -lcpufreq
+gcc -o example2 example2.c -fopenmp -lredfst -lcpufreq -lm
 #+END_SRC
 
 Let's run the code region /1/ at 2.0GHz frequency and the code region
@@ -64,22 +207,19 @@ Let's run the code region /1/ at 2.0GHz frequency and the code region
 #+BEGIN_SRC sh
 export REDFST_HIGH=2000000
 export REDFST_LOW=1500000
-export REDFST_FASTREGIONS=2
-export REDFST_SLOWREGIONS=4
+export REDFST_FASTREGIONS=1
+export REDFST_SLOWREGIONS=2
 export OMP_PROC_BIND=TRUE
-./a.out
+./example2
 #+END_SRC
 
 The frequency for the *fast* regions is given by the variable
 =REDFST_HIGH=. Likewise, the frequency to be used in the *slow*
 regions is given by the variable =REDFST_LOW=. The set of *fast*
 (*slow*) regions is given by =REDFST_FASTREGIONS=
-(=REDFST_SLOWREGIONS=). The regions are encoded as a bitmask where a
-value of 1 for the *n*-th bit means region *n* is part of the set. For
-example, we set =REDFST_SLOWREGIONS= to 4 (0100 in binary), which
-means the set contains the region 2 (2^2 = 4). In the same manner,
-=REDFST_FASTREGIONS= contains the region *1* (2^1 = 2).  The use of
-=OMP_PROC_BIND= to bind the threads to cores is obligatory.
+(=REDFST_SLOWREGIONS=) as a list in the format region[,region...]
+(example: 1,3,4). The use of =OMP_PROC_BIND= to bind the threads to
+cores is obligatory.
 
 For ReDFST to change the frequency it requires permissions and the use
 of the userspace governor. You can see which governor you're using with:
@@ -110,94 +250,55 @@ sudo cpupower frequency-set -c all -g userspace
 #+END_SRC
 
 Besides using the userspace governor you also need read/write
-permissions to /sys/devices/system/cpu/cpu*/cpufreq/scaling_setspeed.
-*** Measuring energy consumption
-The binary /redfst/ measures energy consumption of the package, power
-plane 0 and DRAM of one or more processors. It uses the Intel RAPL
-interface, which is not available on all processors. Furthermore, it
-requires the msr module, which can be loaded with:
-
-#+BEGIN_SRC sh
-sudo modprobe msr
-#+END_SRC
-
-You will also need read/write permissions for /dev/cpu/*/msr.
-
-#+BEGIN_SRC sh
-usage: ./install/bin/redfst [-c CORE...] [PROGRAM] [ARGS]
-  Outputs energy consumption for the package, pp0 and dram of each of the given COREs.
-#+END_SRC
-
-The following commands are accepted from the stdin:
--  reset :: zeroes energy counters
--  print :: outputs to stderr the current value of the counters
--  exit  :: terminates execution
-
-Arguments:
-- -c CORE :: measures energy consumption of CORE
-- PROGRAM :: if given, executes program with ARGS and terminates
-     execution when PROGRAM finishes
-
-
-If PROGRAM is given, this tool calls PROGRAM with ARGS. When PROGRAM
-exits, "exit" is read from the stdin, or it receives SIGINT, the
-energy consumption is printed and the tool exits.
-
-Data is printed using the following format:
-#+BEGIN_EXAMPLE
-pkg.n  X.X # energy consumption of the package of cpu n since last reset
-pp0.n  X.X # energy consumption of the power plane 0 of cpu n since last reset
-dram.n X.X # energy consumption of the dram of cpu n since last reset
-...
-pkg.m  X.X # energy consumption of the package of cpu m since last reset
-pp0.m  X.X # energy consumption of the power plane 0 of cpu m since last reset
-dram.m X.X # energy consumption of the dram of cpu m since last reset
-pkg    X.X # total energy consumption of the package of cpus n..m since last reset
-pp0    X.X # total energy consumption of the power plane 0 of cpus n..m since last reset
-dram   X.X # total energy consumption of the dram of cpus n..m since last reset
-time   X.X # execution time
-#+END_EXAMPLE
-
-To use it:
-#+BEGIN_SRC sh
-sudo redfst PROGRAM
-#+END_SRC
-
-If the target program uses the functions *redfst_print*,
-*redfst_reset* or *redfst_exit*, those must be passed through the
-stdin. To skip buffering we will use stdbuf:
-#+BEGIN_SRC sh
-stdbuf -o0 PROGRAM | stdbuf -i0 -o0 grep ENERGY | stdbuf -i0 -o0 sed s/.*ENERGY\ //g | sudo stdbuf -i0 redfst
-#+END_SRC
-
+permissions to ~/sys/devices/system/cpu/cpu*/cpufreq/scaling_setspeed~.
 ** API
-- ~redfst_region(int id)~ :: Sets the code region of the calling core
-     to "id". May trigger a frequency change.
-- ~redfst_region_all(int id)~ :: Sets the code region of all cores to
-     "id". May trigger a frequency change on all cores.
-- ~redfst_monitor_set_status(int n)~ :: Sets the value of a variable
-     used by the execution monitor, which is explained in the
+- ~int redfst_support()~ :: Returns 1 if measuring energy consumption
+     if there is support for reading energy consumption or 0
+     otherwise.
+- ~int redfst_cpus(const int *cpus)~ :: Sets which cpus will have
+     their energy measured. The array /cpus/ should end with -1.
+- ~void redfst_reset()~ :: Reset the energy counters.
+- ~void redfst_print(...)~ :: Print the energy counters. If given, the
+     arguments are passed to fprintf and then the counters are
+     printed. Example: redfst_print("%s,","here") will output
+     "here,cpuX.pkg,cpuX.pp0,cpuX.dram,...,total.pkg,total.pp0,total.dram,time"
+- ~void redfst_get(double *dst, int cpu)~  :: write into dst the
+     energy counters of the given cpu:\\
+     dst[3*cpu + 0] = cpu.pkg\\
+     dst[3*cpu + 1] = cpu.pp0\\
+     dst[3*cpu + 2] = cpu.dram
+- ~void redfst_get_all(double *dst)~ :: write into dst the energy
+     counters of each cpu, followed by the execution time in
+     seconds:\\
+     dst = {\\
+       cpu0.pkg, cpu0.pp0, cpu0.dram,\\
+       ... ,\\
+       cpuN.pkg, cpuN.pp0, cpuN.dram,\\
+       time}
+- ~void redfst_region(int id)~ :: Set the code region of the calling
+     core to "id". May trigger a frequency change.
+- ~void redfst_region_all(int id)~ :: Set the code region of all cores
+     to "id". May trigger a frequency change on all cores.
+- ~void redfst_monitor_set_status(int n)~ :: Sets the value of a
+     variable used by the execution monitor, which is explained in the
      Environment Variables section
-- ~redfst_reset()~ :: Tells the redfst binary to reset the energy
-     counters.
-- ~redfst_print()~ :: Tells the redfst binary to print the energy
-     counters.
-- ~redfst_print()~ :: Tells the redfst binary to print the energy
-     counters and terminate.
 ** Environment Variables
 The following variables are accepted by libredfst. Besides them,
 ~OMP_PROC_BIND~ must be set to true.
 
+- ~REDFST_CPUS~ :: List of CPUs that will have their energy
+     consumption measured
+- ~REDFST_OUT~ :: Energy measurements are output to this file
+- ~REDFST_HEADER~ :: If defined, write a CSV header to ~REDFST_OUT~
 - ~REDFST_LOW~  :: Frequency to use on slow regions. Example: 1500000
      (for 1.5GHz)
 - ~REDFST_HIGH~ :: Frequency for the fast regions. Example: 2000000 (for
      2.0GHz)
 - ~REDFST_SLOWREGIONS~ :: Set of regions which will trigger the low
-     frequency. This variable is a bitmask *s* such that its *n*-th
-     bit is 1 if the region *n* is part of the set or 0
-     otherwise. Example: "6" will trigger the low frequency for
-     regions 1 and 2 since (1<<1)&6 is 0010 (binary) and (1<<2)&6
-     is 0100.
+     frequency. The regions are given as a comma-separated
+     list. Example: to use the regions 1, 3 and 4, this variable
+     should be set to *1,3,4*.  The 63th region is entered when the
+     program finishes. The other regions are user-defined.
 - ~REDFST_FASTREGIONS~ :: Regions which will trigger the high
      frequency. See ~REDFST_SLOWREGIONS~.
 - ~REDFST_MONITOR~ :: If defined to anything other than "0", "F" or
@@ -216,3 +317,7 @@ The following variables are accepted by libredfst. Besides them,
        to the *n*-th core.
   - events :: Hardware counters. The defaults are last level cache
        (LLC) references, LLC misses, cycles, instructions.
+- ~REDFST_TRACEFILE~ :: If the library was compiling with tracing
+     enabled, the trace will be written to this file. If undefined,
+     the trace is output to the file descriptor 4, or otherwise to
+     stderr.

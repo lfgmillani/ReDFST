@@ -9,8 +9,8 @@
 #include <linux/perf_event.h>
 #include <asm/unistd.h>
 #include <sched.h>
-#include "macros.h"
-#include "libredfst_config.h"
+#include <macros.h>
+#include "config.h"
 #include "perf.h"
 #include "monitor.h"
 
@@ -45,7 +45,7 @@ struct read_format{
 	} values[REDFST_PERF_NUM_EVENTS]; // N events - WILL BREAK IF WE MONITOR MORE AND DON'T CHANGE THIS
 };
 
-static int gFd[REDFSTLIB_MAX_THREADS] = {0};
+static int gFd[REDFST_MAX_THREADS] = {0};
 
 static long
 perf_event_open(struct perf_event_attr *hw_event, pid_t pid,
@@ -72,7 +72,7 @@ event_init(struct perf_event_attr *p, uint64_t event){
 void redfst_perf_read(int cpu, redfst_perf_t *p){
 	struct read_format r;
 	int i;
-	if(unlikely(!gFd[cpu])){
+	if(REDFST_UNLIKELY(!gFd[cpu])){
 		for(i=0;i<REDFST_PERF_NUM_EVENTS;++i)
 			p->events[i] = 0;
 	}else{
@@ -112,7 +112,7 @@ void redfst_perf_init_worker(){
 
 void redfst_perf_shutdown(){
 	int i;
-	for(i=0;i<LEN(gFd);++i)
+	for(i=0;i<REDFST_LEN(gFd);++i)
 		if(gFd[i])
 			close(gFd[i]);
 }

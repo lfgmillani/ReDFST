@@ -16,6 +16,6 @@ int main(){
 	redfst_reset(); // zero counters
 	redfst_region_all(2); // enter region 2
 	usleep(3000000);
-	redfst_exit(); // print counters and exit
+	redfst_print(); // print counters
 	return x;
 }

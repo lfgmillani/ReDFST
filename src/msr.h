@@ -1,0 +1,8 @@
+#ifndef MSR_H
+#define MSR_H
+#include "energy.h"
+void redfst_msr_update_one(cpu_t *c);
+void redfst_msr_update();
+int redfst_msr_init();
+void redfst_msr_end();
+#endif
