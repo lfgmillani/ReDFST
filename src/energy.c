@@ -43,7 +43,8 @@ static void safe_force_update(){
 	__redfst_energy_update();
 	UNLOCK(__redfstMutex);
 }
-
+#undef LOCK
+#undef UNLOCK
 
 
 static void * redfst_energy_loop(void *a){
