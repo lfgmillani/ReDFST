@@ -5,6 +5,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <pthread.h>
+#include "redfst.h"
 #include "config.h"
 #include "util.h"
 #include "msr.h"
