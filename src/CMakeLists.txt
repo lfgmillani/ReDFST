@@ -45,6 +45,8 @@ set(REDFSTLIB_FREQ_PER_CORE ON)
 #be kept at the low frequency.
 set(REDFSTLIB_CPU0 0)
 set(REDFSTLIB_CPU1 1)
+#if defined, all calls to redfst_region(_all) are traced
+set(REDFSTLIB_TRACE OFF)
 
 include_directories(${CMAKE_BINARY_DIR})
 if(REDFST_STATIC)
