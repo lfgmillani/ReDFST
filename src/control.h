@@ -1,6 +1,6 @@
 #ifndef REDFST_CONTROL_H
 #define REDFST_CONTROL_H
-#include "redfst/config.h"
+#include "config.h"
 
 #ifndef REDFST_STATIC
 /* reset energy counters */
@@ -17,7 +17,5 @@ void redfst_get(double *dst, int cpu);
           cpuN.PKG, cpuN.PP0, cpuN.DRAM,
           TIME} */
 void redfst_get_all(double *dst);
-#else
-#include "redfst/control.c"
 #endif
 #endif

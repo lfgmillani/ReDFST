@@ -5,12 +5,12 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include <cpufreq.h>
-#include "redfst/macros.h"
-#include "redfst/region.h"
-#include "redfst/perf.h"
-#include "redfst/util.h"
-#include "redfst/global.h"
-#include "redfst/config.h"
+#include "macros.h"
+#include "region.h"
+#include "perf.h"
+#include "util.h"
+#include "global.h"
+#include "config.h"
 
 #ifdef REDFST_TRACE
 extern FILE * __redfstTraceFd;

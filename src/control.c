@@ -2,11 +2,11 @@
 #define REDFST_CONTROL_C
 #include <stdio.h>
 #include <stdlib.h>
-#include "redfst/config.h"
-#include "redfst/util.h"
-#include "redfst/macros.h"
-#include "redfst/energy.h"
-#include "redfst/control.h"
+#include "config.h"
+#include "util.h"
+#include "macros.h"
+#include "energy.h"
+#include "control.h"
 
 #define REDFST_LOCK(x) __sync_val_compare_and_swap(&(x), 0, 1) // return 0 if it manages to obtain the mutex
 #define REDFST_UNLOCK(x) do{(x)=0;}while(0)

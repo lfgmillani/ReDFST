@@ -1,8 +1,8 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 #include <stdint.h>
-#include "redfst/region_types.h"
-#include "redfst/config.h"
+#include "region_types.h"
+#include "config.h"
 extern __thread int tRedfstCpu;
 extern __thread int tRedfstPrevId;
 extern int gFreq[2];

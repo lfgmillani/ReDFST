@@ -1,7 +1,7 @@
 #ifndef REDFST_ENERGY_H
 #define REDFST_ENERGY_H
 #include <stdint.h>
-#include "redfst/config.h"
+#include "config.h"
 typedef struct{
 	uint64_t pkg, pp0, dram;
 	uint32_t pkgPrev, pp0Prev, dramPrev;

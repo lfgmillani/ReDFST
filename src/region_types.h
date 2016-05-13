@@ -1,8 +1,8 @@
 #ifndef REDFST_REGION_TYPES_H
 #define REDFST_REGION_TYPES_H
 #include <stdint.h>
-#include "redfst/perf.h"
-#include "redfst/config.h"
+#include "perf.h"
+#include "config.h"
 typedef struct{
 	int next[REDFST_MAX_REGIONS];
 	redfst_perf_t perf;
