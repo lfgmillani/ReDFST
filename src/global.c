@@ -12,7 +12,5 @@ int gRedfstCurrentFreq[REDFST_MAX_THREADS];
 redfst_region_t gRedfstRegion[REDFST_MAX_THREADS][REDFST_MAX_REGIONS];
 uint64_t gRedfstSlowRegions;
 uint64_t gRedfstFastRegions;
-#ifdef REDFST_FUN_IN_H
 uint64_t __redfstTime0;
-#endif
 int gRedfstThreadCount;

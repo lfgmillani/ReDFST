@@ -12,12 +12,6 @@
 #define REDFST_LOCK(x) __sync_val_compare_and_swap(&(x), 0, 1) // return 0 if it manages to obtain the mutex
 #define REDFST_UNLOCK(x) do{(x)=0;}while(0)
 
-#ifdef REDFST_FUN_IN_H // static is not accidentally swapped here
-extern uint64_t __redfstTime0; // timer is set to last reset
-#else
-static uint64_t __redfstTime0; // timer is set to last reset
-#endif
-
 static void __redfst_safe_update(){
 /*
 	Update energy counters if no update is underway.
