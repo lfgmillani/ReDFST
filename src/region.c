@@ -64,7 +64,9 @@ static void redfst_region_impl(int id, int cpu){
 	if(REDFST_CPU0 != cpu && REDFST_CPU1 != cpu)
 		return;
 #endif
+#ifndef REDFST_TRACE
 	freq = redfst_freq_get(region_get(cpu,id), id);
+#endif
 	if(unlikely(freq && freq != gRedfstCurrentFreq[cpu])){
 		gRedfstCurrentFreq[cpu] = freq;
 		cpufreq_set_frequency(cpu, freq);
