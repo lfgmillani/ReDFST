@@ -6,7 +6,7 @@
 #include "config.h"
 
 #ifdef REDFST_FUN_IN_H
-static
+static inline
 #endif
 uint64_t __redfst_time_now(){
 	struct timespec spec;

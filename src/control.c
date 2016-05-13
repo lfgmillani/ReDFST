@@ -46,7 +46,7 @@ static void __redfst_safe_update_one(cpu_t *c){
 
 
 #ifdef REDFST_FUN_IN_H
-static
+static inline
 #endif
 void redfst_reset(){
 /* zeroes energy counters */
@@ -66,7 +66,7 @@ void redfst_reset(){
 
 
 #ifdef REDFST_FUN_IN_H
-static
+static inline
 #endif
 void redfst_print(){
 /* print current value of energy counters */
@@ -101,7 +101,7 @@ void redfst_print(){
 
 
 #ifdef REDFST_FUN_IN_H
-static
+static inline
 #endif
 void redfst_get(double *dst, int cpu){
 /*
@@ -121,7 +121,7 @@ void redfst_get(double *dst, int cpu){
 
 
 #ifdef REDFST_FUN_IN_H
-static
+static inline
 #endif
 void redfst_get_all(double *dst){
 /*
