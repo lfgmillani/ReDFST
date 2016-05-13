@@ -30,6 +30,8 @@ static int redfst_freq_get(redfst_region_t *m, int id){
 		return FREQ_LOW;
 	return 0;
 }
+#undef REDFST_IS_FAST
+#undef REDFST_IS_SLOW
 
 
 static void redfst_region_impl(int id, int cpu){
