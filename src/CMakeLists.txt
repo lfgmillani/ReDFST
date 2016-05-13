@@ -61,4 +61,4 @@ endif(REDFST_STATIC)
 
 install(FILES ${LIBREDFST_HEADERS} DESTINATION include)
 
-configure_file("${CMAKE_HOME_DIRECTORY}/src/libredfst/libredfst_config.h.in" "${CMAKE_BINARY_DIR}/libredfst_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/config.h.in" "${CMAKE_BINARY_DIR}/config.h" @ONLY IMMEDIATE)
