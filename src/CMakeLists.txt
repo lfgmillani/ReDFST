@@ -36,6 +36,8 @@ set(REDFSTLIB_MAX_THREADS 32)
 set(REDFSTLIB_MONITOR_FREQUENCY 100)
 #if defined, the library will target OpenMP. at the moment that's the only option.
 set(REDFSTLIB_OMP ON)
+#if defined, small functions will be implemented in the header
+set(REDFST_FUN_IN_H OFF)
 #if defined, frequency is decided on a per-core basis. otherwise, its per-cpu.
 set(REDFSTLIB_FREQ_PER_CORE ON)
 #if REDFSTLIB_FREQ_PER_CORE was not defined, these variables define
