@@ -21,9 +21,5 @@ extern int redfstEnergySupport;
 
 void redfst_energy_init();
 int redfst_cpus(const int *cpus);
-#ifdef REDFST_STATIC
-static int redfst_support(){ return redfstEnergySupport; }
-#else
 int redfst_support();
-#endif
 #endif

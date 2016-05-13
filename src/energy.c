@@ -32,11 +32,12 @@ cpu_t **gCpuId2Cpu = 0;
 volatile int __redfstMutex;
 FILE *__redfst_fd;
 
-#ifndef REDFST_STATIC
+#ifdef REDFST_STATIC
+static inline
+#endif
 int redfst_support(){
 	return redfstEnergySupport;
 }
-#endif
 
 static void safe_force_update(){
 	while(unlikely(LOCK(__redfstMutex)))
