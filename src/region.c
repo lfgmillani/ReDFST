@@ -81,19 +81,4 @@ static
 void redfst_region(int id){
 	redfst_region_impl(id, tRedfstCpu);
 }
-
-#ifdef REDFST_OMP
-#include <omp.h>
-#ifdef REDFST_STATIC
-static
-#endif
-void redfst_region_all(int id){
-	int nthreads;
-	int i;
-	nthreads = omp_get_max_threads();
-#pragma omp parallel for num_threads(nthreads)
-	for(i=0; i < nthreads; ++i)
-		redfst_region(id);
-}
-#endif
 #endif
