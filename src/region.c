@@ -82,16 +82,6 @@ void redfst_region(int id){
 	redfst_region_impl(id, tRedfstCpu);
 }
 
-#ifdef REDFST_STATIC
-static
-#endif
-void redfst_region_final(){
-	int cpu;
-	for(cpu=0; cpu < gRedfstThreadCount;++cpu){
-		redfst_region_impl(REDFST_MAX_REGIONS-1, cpu);
-	}
-}
-
 #ifdef REDFST_OMP
 #include <omp.h>
 #ifdef REDFST_STATIC

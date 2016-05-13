@@ -182,6 +182,18 @@ void redfst_thread_init(int cpu){
   redfst_perf_init_worker();
 }
 
+#ifdef REDFST_OMP
+#include <omp.h>
+static void redfst_region_final(){
+	int nthreads;
+	int i;
+	nthreads = omp_get_max_threads();
+#pragma omp parallel for num_threads(nthreads)
+	for(i=0; i < nthreads; ++i)
+		redfst_region(REDFST_MAX_REGIONS-1);
+}
+#endif
+
 void __attribute__((destructor))
 redfst_close(){
 /* must be called at the end of execution */
