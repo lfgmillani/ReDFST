@@ -18,7 +18,7 @@ struct timespec{
 #ifdef REDFST_STATIC
 static
 #endif
-uint64_t time_now(){
+uint64_t __redfst_time_now(){
 	struct timespec spec;
 	clock_gettime(CLOCK_MONOTONIC, &spec);
 	return ((uint64_t)1e9) * spec.tv_sec + spec.tv_nsec;

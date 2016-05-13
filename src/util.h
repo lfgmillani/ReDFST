@@ -4,6 +4,6 @@
 #ifdef REDFST_STATIC
 #include "redfst/util.c"
 #else
-uint64_t time_now();
+uint64_t __redfst_time_now();
 #endif
 #endif

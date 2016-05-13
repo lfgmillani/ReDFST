@@ -162,7 +162,7 @@ void redfst_thread_init(int cpu){
   CPU_SET(cpu, &set);
   sched_setaffinity(syscall(SYS_gettid), sizeof(set), &set);
 #endif
-  timeNow = time_now();
+  timeNow = __redfst_time_now();
   tRedfstCpu = cpu;
   tRedfstPrevId = 0;
 #ifdef REDFST_FREQ_PER_CORE

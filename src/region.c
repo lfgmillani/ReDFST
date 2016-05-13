@@ -45,7 +45,7 @@ static void redfst_region_impl(int id, int cpu){
 		return;
 	}
 	tRedfstPrevId = id;
-	timeNow = time_now();
+	timeNow = __redfst_time_now();
 	m->time += timeNow - m->timeStarted;
 	region_get(cpu,id)->timeStarted = timeNow;
 

@@ -60,7 +60,7 @@ void redfst_reset(){
 		c->pkg = c->pp0 = c->dram = 0;
 	}
 	REDFST_UNLOCK(__redfstMutex);
-	__redfstTime0 = time_now();
+	__redfstTime0 = __redfst_time_now();
 }
 
 
@@ -79,7 +79,7 @@ void redfst_print(){
 	int i;
 	totalPkg = totalPp0 = totalDram = 0;
 	__redfst_safe_update();
-	t = (time_now() - __redfstTime0) * 1e-9;
+	t = (__redfst_time_now() - __redfstTime0) * 1e-9;
 	if(!buf){
 		buf = malloc((__redfstNcpus+1) * 3 * 32);
 	}
@@ -140,7 +140,7 @@ void redfst_get_all(double *dst){
 		*dst++ = c->pp0 * c->unit;
 		*dst++ = c->dram * c->unit;
 	}
-	*dst = (time_now() - __redfstTime0) * 1e-9;
+	*dst = (__redfst_time_now() - __redfstTime0) * 1e-9;
 }
 
 #undef REDFST_LOCK
