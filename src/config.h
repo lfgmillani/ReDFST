@@ -23,10 +23,10 @@
 #define REDFST_OMP
 
 /*
-	if defined as static, the library will implement some functions in the header
+	if defined, the library will define small functions in the header
 	files. otherwise, the implementations will reside in the lib.
 */
-//#define REDFST_STATIC static
+//#define REDFST_FUN_IN_H static inline
 
 /*
 	if defined, frequency is decided on a per-core basis. otherwise, its per-cpu.

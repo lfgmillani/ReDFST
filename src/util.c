@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "config.h"
 
-#ifdef REDFST_STATIC
+#ifdef REDFST_FUN_IN_H
 static
 #endif
 uint64_t __redfst_time_now(){

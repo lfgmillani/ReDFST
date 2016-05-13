@@ -32,7 +32,7 @@ cpu_t **gCpuId2Cpu = 0;
 volatile int __redfstMutex;
 FILE *__redfst_fd;
 
-#ifdef REDFST_STATIC
+#ifdef REDFST_FUN_IN_H
 static inline
 #endif
 int redfst_support(){

@@ -75,7 +75,7 @@ static void redfst_region_impl(int id, int cpu){
 	}
 }
 
-#ifdef REDFST_STATIC
+#ifdef REDFST_FUN_IN_H
 static
 #endif
 void redfst_region(int id){

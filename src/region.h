@@ -4,7 +4,7 @@
 #include "perf.h"
 #include "config.h"
 #include "region_types.h"
-#ifndef REDFST_STATIC
+#ifndef REDFST_FUN_IN_H
 void redfst_region(int id);
 #else
 #include "region.c"
