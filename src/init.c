@@ -18,6 +18,7 @@
 #include "profile.h"
 #include "energy.h"
 #include "redfst_omp.h"
+#include "trace.h"
 
 typedef struct{
 	int monitor;

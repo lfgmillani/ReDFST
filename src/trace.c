@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <fcntl.h>
 #include "util.h"
+#include "trace.h"
 FILE * __redfstTraceFd;
 uint64_t __redfstTraceT0;
 
