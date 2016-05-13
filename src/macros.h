@@ -24,7 +24,7 @@
 
 
 
-#define likely(x)    __builtin_expect (!!(x), 1)
-#define unlikely(x)  __builtin_expect (!!(x), 0)
+#define REDFST_LIKELY(x)    __builtin_expect (!!(x), 1)
+#define REDFST_UNLIKELY(x)  __builtin_expect (!!(x), 0)
 
 #endif

@@ -17,7 +17,7 @@
 
 static uint64_t msr_read(int fd, int which){
 	uint64_t data;
-	if(unlikely(pread(fd,&data,sizeof(data),which)!=sizeof(data))){
+	if(REDFST_UNLIKELY(pread(fd,&data,sizeof(data),which)!=sizeof(data))){
 		perror("rdmsr:pread");
 		exit(1);
 	}

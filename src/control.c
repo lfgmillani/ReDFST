@@ -22,7 +22,7 @@ static void __redfst_safe_update(){
 	Update energy counters if no update is underway.
 	Otherwise, wait for update to finish before returning.
 */
-	if(likely(!REDFST_LOCK(__redfstMutex)))
+	if(REDFST_LIKELY(!REDFST_LOCK(__redfstMutex)))
 		__redfst_energy_update();
 	else
 		while(REDFST_LOCK(__redfstMutex))
@@ -35,7 +35,7 @@ static void __redfst_safe_update_one(cpu_t *c){
 	Update a single energy counter if no update is underway.
 	Otherwise, wait for update to finish before returning.
 */
-	if(likely(!REDFST_LOCK(__redfstMutex)))
+	if(REDFST_LIKELY(!REDFST_LOCK(__redfstMutex)))
 		__redfst_energy_update_one(c);
 	else
 		while(REDFST_LOCK(__redfstMutex))
@@ -52,7 +52,7 @@ void redfst_reset(){
 /* zeroes energy counters */
 	cpu_t *c;
 	int i;
-	while(unlikely(REDFST_LOCK(__redfstMutex)))
+	while(REDFST_UNLIKELY(REDFST_LOCK(__redfstMutex)))
 		;
 	__redfst_energy_update();
 	for(i=0; i < __redfstNcpus; ++i){

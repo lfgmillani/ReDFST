@@ -44,7 +44,7 @@ int redfst_support(){
 }
 
 static void safe_force_update(){
-	while(unlikely(LOCK(__redfstMutex)))
+	while(REDFST_UNLIKELY(LOCK(__redfstMutex)))
 		;
 	__redfst_energy_update();
 	UNLOCK(__redfstMutex);

@@ -43,7 +43,7 @@ static void redfst_region_impl(int id, int cpu){
 	++m->next[id];
 
 	// don't waste too many cycles when called inside loops
-	if(likely(id == tRedfstPrevId)){
+	if(REDFST_LIKELY(id == tRedfstPrevId)){
 		return;
 	}
 	tRedfstPrevId = id;
@@ -69,7 +69,7 @@ static void redfst_region_impl(int id, int cpu){
 #ifndef REDFST_TRACE
 	freq = redfst_freq_get(region_get(cpu,id), id);
 #endif
-	if(unlikely(freq && freq != gRedfstCurrentFreq[cpu])){
+	if(REDFST_UNLIKELY(freq && freq != gRedfstCurrentFreq[cpu])){
 		gRedfstCurrentFreq[cpu] = freq;
 		cpufreq_set_frequency(cpu, freq);
 	}

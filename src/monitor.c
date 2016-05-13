@@ -58,7 +58,7 @@ static void freq_decode(int *dst, uint64_t src){
 
 static inline void monitor_poll(){
 	int i;
-	if(unlikely(gI == gLen)){
+	if(REDFST_UNLIKELY(gI == gLen)){
 		gLen = gLen << 1;
 		gMon = realloc(gMon, gLen * sizeof(*gMon));
 	}
@@ -72,7 +72,7 @@ static inline void monitor_poll(){
 }
 
 void * redfst_monitor_loop(void *dummy){
-	while(likely(gLoop)){
+	while(REDFST_LIKELY(gLoop)){
 		monitor_poll();
 		usleep(REDFST_MONITOR_PERIOD);
 	}
@@ -85,7 +85,7 @@ void redfst_monitor_init(){
 	gI = 0;
 	gLoop = 1;
 	gMon = malloc(gLen * sizeof(*gMon));
-	if((unlikely(pthread_create(&tid,0,redfst_monitor_loop,0)))){
+	if((REDFST_UNLIKELY(pthread_create(&tid,0,redfst_monitor_loop,0)))){
 		fprintf(stderr,"Failed to create monitor thread\n");
 		exit(1);
 	}
