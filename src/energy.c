@@ -16,10 +16,6 @@
 #define LOCK(x) __sync_val_compare_and_swap(&(x), 0, 1) // return 0 if it manages to obtain the __redfstMutex
 #define UNLOCK(x) do{(x)=0;}while(0)
 
-#ifdef REDFST_STATIC
-uint64_t __redfstTime0; // timer is set to last reset
-#endif
-
 void (*__redfst_energy_update)();
 void (*__redfst_energy_update_one)(cpu_t *c);
 int  (*__redfst_energy_init)();

@@ -11,8 +11,8 @@ extern int gRedfstCurrentFreq[REDFST_MAX_THREADS];
 extern redfst_region_t gRedfstRegion[REDFST_MAX_THREADS][REDFST_MAX_REGIONS];
 extern uint64_t gRedfstSlowRegions;
 extern uint64_t gRedfstFastRegions;
+extern uint64_t __redfstTime0;
 extern int gRedfstThreadCount;
-
 #define FREQ_HIGH gFreq[1]
 #define FREQ_LOW  gFreq[0]
 
