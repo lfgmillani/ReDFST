@@ -5,6 +5,7 @@
 #include "config.h"
 extern __thread int tRedfstCpu;
 extern __thread int tRedfstPrevId;
+extern char *__redfstPrintBuf;
 extern int gFreq[2];
 extern int gRedfstCurrentId[REDFST_MAX_THREADS];
 extern int gRedfstCurrentFreq[REDFST_MAX_THREADS];

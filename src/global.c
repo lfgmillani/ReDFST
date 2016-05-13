@@ -5,7 +5,7 @@
 #include "global.h"
 __thread int tRedfstCpu;
 __thread int tRedfstPrevId;
-
+char *__redfstPrintBuf=0;
 int gFreq[2];
 int gRedfstCurrentId[REDFST_MAX_THREADS];
 int gRedfstCurrentFreq[REDFST_MAX_THREADS];

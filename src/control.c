@@ -5,6 +5,7 @@
 #include "config.h"
 #include "util.h"
 #include "macros.h"
+#include "global.h"
 #include "energy.h"
 #include "control.h"
 
@@ -70,7 +71,6 @@ static inline
 #endif
 void __redfst_print(){
 /* print current value of energy counters */
-	static char *buf = 0;
 	cpu_t *c;
 	double pkg, pp0, dram;
 	double totalPkg, totalPp0, totalDram;
@@ -80,8 +80,8 @@ void __redfst_print(){
 	totalPkg = totalPp0 = totalDram = 0;
 	__redfst_safe_update();
 	t = (__redfst_time_now() - __redfstTime0) * 1e-9;
-	if(!buf){
-		buf = malloc((__redfstNcpus+1) * 3 * 32);
+	if(!__redfstPrintBuf){
+		__redfstPrintBuf = malloc((__redfstNcpus+1) * 3 * 32);
 	}
 	n = 0;
 	for(i=0; i < __redfstNcpus; ++i){
@@ -92,10 +92,10 @@ void __redfst_print(){
 		totalPkg += pkg;
 		totalPp0 += pp0;
 		totalDram += dram;
-		n += sprintf(buf+n,"%lf, %lf, %lf, ",pkg,pp0,dram);
+		n += sprintf(__redfstPrintBuf+n,"%lf, %lf, %lf, ",pkg,pp0,dram);
 	}
-	sprintf(buf+n,"%lf, %lf, %lf, %lf\n",totalPkg,totalPp0,totalDram,t);
-	fprintf(__redfst_fd,buf);
+	sprintf(__redfstPrintBuf+n,"%lf, %lf, %lf, %lf\n",totalPkg,totalPp0,totalDram,t);
+	fprintf(__redfst_fd,__redfstPrintBuf);
 }
 
 
