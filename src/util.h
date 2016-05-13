@@ -1,6 +1,7 @@
 #ifndef UTIL_H
 #define UTIL_H
 #include <stdint.h>
+#include "config.h"
 #ifdef REDFST_STATIC
 #include "util.c"
 #else
