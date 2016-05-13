@@ -3,7 +3,7 @@
 #endif
 #include <time.h>
 #include <stdint.h>
-#include "redfst/util.h"
+#include "config.h"
 
 #ifdef REDFST_STATIC
 static
