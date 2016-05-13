@@ -17,7 +17,9 @@ libredfst.so : $(OBJS)
 #	 $(AR) rcs $@ $(OBJS)
 
 redfst-static.h: util.c control.c region.c region-all.h
-	sh headerfun > $@
+	if $(CC) $(CFLAGS) -dM -E config.h | grep REDFST_FUN_IN_H > /dev/null; then\
+		sh headerfun > $@;\
+	fi
 
 %.o : %.c redfst-static.h
 	$(CC) $(CFLAGS) $(OPENMP) -fPIC -c $<
