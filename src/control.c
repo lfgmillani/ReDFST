@@ -68,7 +68,7 @@ void redfst_reset(){
 #ifdef REDFST_FUN_IN_H
 static inline
 #endif
-void redfst_print(){
+void __redfst_print(){
 /* print current value of energy counters */
 	static char *buf = 0;
 	cpu_t *c;
