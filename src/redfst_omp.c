@@ -8,6 +8,10 @@
 #include "redfst_omp.h"
 #ifdef REDFST_OMP
 static void redfst_omp_init_check(){
+	// if we're not changing the frequency, threads are free to move around
+	if(FREQ_LOW == FREQ_HIGH
+	|| (!gRedfstSlowRegions && !gRedfstFastRegions))
+		return;
 	if(omp_proc_bind_true != omp_get_proc_bind()){
 		fprintf(stderr,"You must set OMP_PROC_BIND=TRUE to use libredfst. Aborting.\n");
 		exit(1);
