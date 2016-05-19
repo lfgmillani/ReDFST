@@ -169,8 +169,9 @@ static void get_default_cpus(){
 			if(N){
 				b = 10 * b + c - '0';
 			}else if(','==c || !c){
-				if(a>b)
+				if(a>b){
 					a^=b; b^=a; a^=b;
+				}
 				for(; a<=b; ++a)
 					APPEND(a);
 				st = 0;
