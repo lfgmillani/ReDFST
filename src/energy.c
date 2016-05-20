@@ -13,6 +13,7 @@
 #endif
 #include "util.h"
 #include "msr.h"
+#include "likwid.h"
 #include "macros.h"
 #include "control.h"
 #include "hw.h"
@@ -279,6 +280,14 @@ void redfst_energy_init(){
 		__redfst_energy_update_one = redfst_msr_update_one;
 		__redfst_energy_init       = redfst_msr_init;
 		__redfst_energy_end        = redfst_msr_end;
+#if 1
+	}else if(!redfst_likwid_init()){
+		redfstEnergySupport = 2;
+		__redfst_energy_update     = redfst_likwid_update;
+		__redfst_energy_update_one = redfst_likwid_update_one;
+		__redfst_energy_init       = redfst_likwid_init;
+		__redfst_energy_end        = redfst_likwid_end;
+#endif
 	}else{
 		redfstEnergySupport = 0;
 		__redfst_energy_update     = dummy;
