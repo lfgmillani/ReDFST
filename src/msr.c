@@ -58,7 +58,6 @@ int redfst_msr_init(){
 		sprintf(buf,"/dev/cpu/%d/msr",socket_to_logical_core(__redfstCpu[i].id));
 		c->fd = open(buf,O_RDONLY);
 		if(c->fd < 0){
-			fprintf(__redfst_fd, "Failed to open %s\n",buf);
 			__redfstCpu[i].fd = 0;
 			while(i--){
 				close(__redfstCpu[i].fd);
