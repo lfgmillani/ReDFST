@@ -43,6 +43,13 @@ int redfst_support(){
 	return redfstEnergySupport;
 }
 
+#ifdef REDFST_FUN_IN_H
+static inline
+#endif
+int redfst_ncpus(){
+	return __redfstNcpus;
+}
+
 static void safe_force_update(){
 	while(REDFST_UNLIKELY(LOCK(__redfstMutex)))
 		;
