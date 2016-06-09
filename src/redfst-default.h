@@ -10,6 +10,7 @@ void redfst_reset(void);
 void __redfst_print(void);
 void redfst_get(double *dst, int cpu);
 void redfst_get_all(double *dst);
+int  redfst_ncpus();
 #include <stdio.h>
 extern FILE *__redfst_fd;
 #define redfst_print() __redfst_print()
