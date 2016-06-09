@@ -59,6 +59,7 @@ else(REDFST_STATIC)
   install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/redfst-default.h DESTINATION include RENAME redfst.h)
 endif(REDFST_STATIC)
 
-
-configure_file("${CMAKE_HOME_DIRECTORY}/config.h.in" "${CMAKE_BINARY_DIR}/config.h" @ONLY IMMEDIATE)
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/redfst-default.h" DESTINATION "${CMAKE_BINARY_DIR}/src")
+file(RENAME "${CMAKE_BINARY_DIR}/src/redfst-default.h" "${CMAKE_BINARY_DIR}/src/redfst.h")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.in" "${CMAKE_BINARY_DIR}/config.h" @ONLY IMMEDIATE)
 
