@@ -25,9 +25,6 @@ set(LIBREDFST_SOURCES
   show.c
   util.c)
 
-set(LIBREDFST_HEADERS
-  redfst.h)
-
 #maximum number of code regions; as 64bit integers are used with this, it cannot be higher than 64.
 set(REDFSTLIB_MAX_REGIONS 64)
 #maximum number of threads supported
@@ -52,15 +49,16 @@ include_directories(${CMAKE_BINARY_DIR})
 if(REDFST_STATIC)
   add_library(libredfst_static STATIC ${LIBREDFST_SOURCES})
   set_target_properties(libredfst_static PROPERTIES OUTPUT_NAME redfst)
-    target_link_libraries(libredfst_static cpufreq)
+    target_link_libraries(libredfst_static cpupower)
   install(TARGETS libredfst_static DESTINATION lib)
 else(REDFST_STATIC)
   add_library(libredfst_dynamic SHARED ${LIBREDFST_SOURCES})
   set_target_properties(libredfst_dynamic PROPERTIES OUTPUT_NAME redfst)
-  target_link_libraries(libredfst_dynamic cpufreq)
+  target_link_libraries(libredfst_dynamic cpupower)
   install(TARGETS libredfst_dynamic DESTINATION lib)
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/redfst-default.h DESTINATION include RENAME redfst.h)
 endif(REDFST_STATIC)
 
-install(FILES ${LIBREDFST_HEADERS} DESTINATION include)
 
 configure_file("${CMAKE_HOME_DIRECTORY}/config.h.in" "${CMAKE_BINARY_DIR}/config.h" @ONLY IMMEDIATE)
+
