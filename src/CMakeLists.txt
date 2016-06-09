@@ -20,6 +20,7 @@ set(LIBREDFST_SOURCES
   global.c
   hw.c
   init.c
+  likwid.c
   monitor.c
   msr.c
   perf.c
