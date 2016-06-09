@@ -15,15 +15,22 @@
 cmake_minimum_required(VERSION 2.8)
 
 set(LIBREDFST_SOURCES
+  control.c
+  energy.c
   global.c
+  hw.c
   init.c
   monitor.c
+  msr.c
   perf.c
   profile.c
   redfst_omp.c
+  region-all.c
   region.c
   show.c
-  util.c)
+  trace.c
+  util.c
+)
 
 #maximum number of code regions; as 64bit integers are used with this, it cannot be higher than 64.
 set(REDFSTLIB_MAX_REGIONS 64)
