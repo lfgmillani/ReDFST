@@ -14,7 +14,8 @@
 # along with ReDFST. If not, see <http://www.gnu.org/licenses/>.
 cmake_minimum_required(VERSION 2.8)
 
-include_directories(${CMAKE_SOURCE_DIR}/src/libredfst)
+include_directories(${CMAKE_BINARY_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/src)
 link_directories(${CMAKE_BINARY_DIR}/src/libredfst)
 add_executable(redfst_example example.c)
 if(REDFST_STATIC)
