@@ -68,7 +68,6 @@ typedef struct {
     AccessErrorType errorcode; /* Only in replies - 0 if no error. */
 } AccessDataRecord;
 
-
 static int lik_init(void)
 {
 	/* Check the function of the daemon here */
@@ -108,6 +107,11 @@ static int lik_init(void)
 				return -1;
 			}
 		}
+	}
+	// is the daemon alive?
+	if(0 > kill(pid, 0)){
+		close(socket_fd);
+		return -1;
 	}
 	return socket_fd;
 }
