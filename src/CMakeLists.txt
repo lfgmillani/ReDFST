@@ -45,7 +45,7 @@ set(REDFSTLIB_CPU1 1)
 #if defined, all calls to redfst_region(_all) are traced
 set(REDFSTLIB_TRACE OFF)
 
-include_directories(${CMAKE_BINARY_DIR})
+include_directories(${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 if(REDFST_STATIC)
   add_library(libredfst_static STATIC ${LIBREDFST_SOURCES})
   set_target_properties(libredfst_static PROPERTIES OUTPUT_NAME redfst)
