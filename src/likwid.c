@@ -68,7 +68,6 @@ typedef struct {
     AccessErrorType errorcode; /* Only in replies - 0 if no error. */
 } AccessDataRecord;
 
-
 static int lik_init(void)
 {
 	/* Check the function of the daemon here */
@@ -109,6 +108,11 @@ static int lik_init(void)
 			}
 		}
 	}
+	// is the daemon alive?
+	if(0 > kill(pid, 0)){
+		close(socket_fd);
+		return -1;
+	}
 	return socket_fd;
 }
 
@@ -127,8 +131,6 @@ static void readall(int fd, void *buf, int count){
 			count -= n;
 			buf += n;
 		}
-		if(count)
-			printf("!");
 	}
 }
 
@@ -140,8 +142,6 @@ static void writeall(int fd, const void *buf, int count){
 			count -= n;
 			buf += n;
 		}
-		if(count)
-			printf("!");
 	}
 }
 
