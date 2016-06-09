@@ -16,7 +16,7 @@ cmake_minimum_required(VERSION 2.8)
 
 include_directories(${CMAKE_BINARY_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/src)
-link_directories(${CMAKE_BINARY_DIR}/src/libredfst)
+link_directories(${CMAKE_BINARY_DIR}/src)
 add_executable(redfst_example example.c)
 if(REDFST_STATIC)
   add_dependencies(redfst_example libredfst_static)
