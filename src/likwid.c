@@ -127,8 +127,6 @@ static void readall(int fd, void *buf, int count){
 			count -= n;
 			buf += n;
 		}
-		if(count)
-			printf("!");
 	}
 }
 
@@ -140,8 +138,6 @@ static void writeall(int fd, const void *buf, int count){
 			count -= n;
 			buf += n;
 		}
-		if(count)
-			printf("!");
 	}
 }
 
