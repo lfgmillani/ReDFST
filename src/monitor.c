@@ -4,7 +4,7 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <pthread.h>
-#include <macros.h>
+#include "macros.h"
 #include "perf.h"
 #include "global.h"
 #include "config.h"

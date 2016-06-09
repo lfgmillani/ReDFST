@@ -9,7 +9,7 @@
 #include <linux/perf_event.h>
 #include <asm/unistd.h>
 #include <sched.h>
-#include <macros.h>
+#include "macros.h"
 #include "config.h"
 #include "perf.h"
 #include "monitor.h"

@@ -9,7 +9,7 @@
 #include <sched.h>
 #include <sys/types.h>
 #include <sys/syscall.h>
-#include <macros.h>
+#include "macros.h"
 #include "global.h"
 #include "perf.h"
 #include "monitor.h"

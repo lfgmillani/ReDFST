@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <omp.h>
-#include <macros.h>
+#include "macros.h"
 #include "config.h"
 #include "init.h"
 #include "global.h"
