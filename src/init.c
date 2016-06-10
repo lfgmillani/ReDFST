@@ -49,6 +49,8 @@ static int get_freq(int isHigh){
 		f = fopen(s, "rt");
 	}
 	if(!f){
+		if(!gRedfstSlowRegions && !gRedfstFastRegions) // no regions specified so we don't change the frequency
+			return 0;
 		fprintf(stderr,"ReDFST: Failed to get %s cpu frequency. Please specify it with REDFST_%s\n",
 		        isHigh?"max":"min", isHigh?"HIGH":"LOW");
 		exit(1);
@@ -108,8 +110,14 @@ static uint64_t list_to_bitmask(const char *envname){
 static void from_env(){
 	const char *s;
 
-	FREQ_LOW = FREQ_HIGH = 0;
 
+	gRedfstSlowRegions = list_to_bitmask("REDFST_SLOWREGIONS");
+	gRedfstFastRegions = list_to_bitmask("REDFST_FASTREGIONS");
+	if(gRedfstSlowRegions&gRedfstFastRegions){
+		fprintf(stderr, "The same region cannot be slow and fast. Verify REDFST_SLOWREGIONS and REDFST_FASTREGIONS.\n");
+	}
+
+	FREQ_LOW = FREQ_HIGH = 0;
 	env2i(&FREQ_HIGH,"REDFST_HIGH");
 	env2i(&FREQ_LOW,"REDFST_LOW");
 	if(!FREQ_HIGH)
@@ -117,11 +125,6 @@ static void from_env(){
 	if(!FREQ_LOW)
 		FREQ_LOW = get_freq(0);
 
-	gRedfstSlowRegions = list_to_bitmask("REDFST_SLOWREGIONS");
-	gRedfstFastRegions = list_to_bitmask("REDFST_FASTREGIONS");
-	if(gRedfstSlowRegions&gRedfstFastRegions){
-		fprintf(stderr, "The same region cannot be slow and fast. Verify REDFST_SLOWREGIONS and REDFST_FASTREGIONS.\n");
-	}
 	if((s=getenv("REDFST_MONITOR"))){
 		if(*s&&*s!='0'&&*s!='F'&&*s!='f'){
 			gCfg.monitor = 1;
