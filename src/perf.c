@@ -87,7 +87,7 @@ float redfst_perf_get_miss_rate(redfst_perf_t *p){
 }
 
 void redfst_perf_init(){
-	memset(gFd,0,sizeof(gFd));
+	memset(gFd,-1,sizeof(gFd));
 }
 
 void redfst_perf_init_worker(){
@@ -113,7 +113,7 @@ void redfst_perf_init_worker(){
 void redfst_perf_shutdown(){
 	int i;
 	for(i=0;i<REDFST_LEN(gFd);++i)
-		if(gFd[i])
+		if(gFd[i] > 0)
 			close(gFd[i]);
 }
 
