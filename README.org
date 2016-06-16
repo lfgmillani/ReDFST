@@ -267,9 +267,9 @@ permissions to ~/sys/devices/system/cpu/cpu*/cpufreq/scaling_setspeed~.
      "here,cpuX.pkg,cpuX.pp0,cpuX.dram,...,total.pkg,total.pp0,total.dram,time"
 - ~void redfst_get(double *dst, int cpu)~  :: write into dst the
      energy counters of the given cpu:\\
-     dst[3*cpu + 0] = cpu.pkg\\
-     dst[3*cpu + 1] = cpu.pp0\\
-     dst[3*cpu + 2] = cpu.dram
+     dst[0] = cpu.pkg\\
+     dst[1] = cpu.pp0\\
+     dst[2] = cpu.dram
 - ~void redfst_get_all(double *dst)~ :: write into dst the energy
      counters of each cpu, followed by the execution time in
      seconds:\\
