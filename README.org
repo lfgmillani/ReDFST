@@ -59,9 +59,9 @@ The functions used to measure energy consumption are:
      then outputs the current value of the counters.
 - ~void redfst_get(double *dst, int cpu)~  :: Write into dst the energy counters
     of the given cpu:\\
-    dst[0] = cpu.pkg\\
-    dst[1] = cpu.pp0\\
-    dst[2] = cpu.dram
+    =dst[0]= = cpu.pkg\\
+    =dst[1]= = cpu.pp0\\
+    =dst[2]= = cpu.dram
 - ~void redfst_get_all(double *dst)~ :: Write into dst the energy counters
      of each cpu, followed by the execution time in seconds:\\
      dst = {\\
