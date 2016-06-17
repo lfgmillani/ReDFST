@@ -19,53 +19,53 @@
 
 /* This naming with AccessType and AccessMode is admittedly a bit confusing */
 typedef enum {
-    DAEMON_AM_DIRECT = 0,
-    DAEMON_AM_ACCESS_D
+	DAEMON_AM_DIRECT = 0,
+	DAEMON_AM_ACCESS_D
 } AccessMode;
 
 typedef enum {
-    DAEMON_READ = 0,
-    DAEMON_WRITE,
-    DAEMON_EXIT
+	DAEMON_READ = 0,
+	DAEMON_WRITE,
+	DAEMON_EXIT
 } AccessType;
 
 typedef enum {
-    DAEMON_AD_PCI_R3QPI_LINK_0 = 0,
-    DAEMON_AD_PCI_R3QPI_LINK_1,
-    DAEMON_AD_PCI_R2PCIE,
-    DAEMON_AD_PCI_IMC_CH_0,
-    DAEMON_AD_PCI_IMC_CH_1,
-    DAEMON_AD_PCI_IMC_CH_2,
-    DAEMON_AD_PCI_IMC_CH_3,
-    DAEMON_AD_PCI_HA,
-    DAEMON_AD_PCI_QPI_PORT_0,
-    DAEMON_AD_PCI_QPI_PORT_1,
-    DAEMON_AD_PCI_QPI_MASK_PORT_0,
-    DAEMON_AD_PCI_QPI_MASK_PORT_1,
-    DAEMON_AD_PCI_QPI_MISC_PORT_0,
-    DAEMON_AD_PCI_QPI_MISC_PORT_1,
-    DAEMON_AD_MSR
+	DAEMON_AD_PCI_R3QPI_LINK_0 = 0,
+	DAEMON_AD_PCI_R3QPI_LINK_1,
+	DAEMON_AD_PCI_R2PCIE,
+	DAEMON_AD_PCI_IMC_CH_0,
+	DAEMON_AD_PCI_IMC_CH_1,
+	DAEMON_AD_PCI_IMC_CH_2,
+	DAEMON_AD_PCI_IMC_CH_3,
+	DAEMON_AD_PCI_HA,
+	DAEMON_AD_PCI_QPI_PORT_0,
+	DAEMON_AD_PCI_QPI_PORT_1,
+	DAEMON_AD_PCI_QPI_MASK_PORT_0,
+	DAEMON_AD_PCI_QPI_MASK_PORT_1,
+	DAEMON_AD_PCI_QPI_MISC_PORT_0,
+	DAEMON_AD_PCI_QPI_MISC_PORT_1,
+	DAEMON_AD_MSR
 } AccessDevice;
 
 typedef enum {
-    ERR_NOERROR = 0,  /* no error */
-    ERR_UNKNOWN,      /* unknown command */
-    ERR_RESTREG,      /* attempt to access restricted MSR */
-    ERR_OPENFAIL,     /* failure to open msr files */
-    ERR_RWFAIL,       /* failure to read/write msr */
-    ERR_DAEMONBUSY,   /* daemon already has another client */
-    ERR_LOCKED,       /* access to HPM is locked */
-    ERR_UNSUPPORTED,   /* unsupported processor */
-    ERR_NODEV /* No such device */
+	ERR_NOERROR = 0,  /* no error */
+	ERR_UNKNOWN,      /* unknown command */
+	ERR_RESTREG,      /* attempt to access restricted MSR */
+	ERR_OPENFAIL,     /* failure to open msr files */
+	ERR_RWFAIL,       /* failure to read/write msr */
+	ERR_DAEMONBUSY,   /* daemon already has another client */
+	ERR_LOCKED,       /* access to HPM is locked */
+	ERR_UNSUPPORTED,   /* unsupported processor */
+	ERR_NODEV /* No such device */
 } AccessErrorType;
 
 typedef struct {
-    uint32_t cpu;
-    uint32_t reg;
-    uint64_t data;
-    AccessDevice device;
-    AccessType type;
-    AccessErrorType errorcode; /* Only in replies - 0 if no error. */
+	uint32_t cpu;
+	uint32_t reg;
+	uint64_t data;
+	AccessDevice device;
+	AccessType type;
+	AccessErrorType errorcode; /* Only in replies - 0 if no error. */
 } AccessDataRecord;
 
 static int lik_init(void)

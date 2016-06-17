@@ -159,33 +159,33 @@ void redfst_profile_graph_save(){
 
 void redfst_profile_save(){
 	redfst_region_t hist[REDFST_MAX_REGIONS] = {0,};
-  redfst_region_t *m;
-  FILE *fp;
-  uint64_t totTime,totRef,totMiss;
-  int cpu;
-  int region;
+	redfst_region_t *m;
+	FILE *fp;
+	uint64_t totTime,totRef,totMiss;
+	int cpu;
+	int region;
 	redfst_profile_load_impl(hist);
 	fp = fopen(gProfileFname, "wt");
 	if(!fp){
 		fprintf(stderr, "failed to open profile file \"%s\"\n",gProfileFname);
 		return;
 	}
-  for(region=0;region<REDFST_MAX_REGIONS;++region){
-    totTime = totRef = totMiss = 0;
-    for(cpu=0;cpu<gRedfstThreadCount;++cpu){
-      m = &gRedfstRegion[cpu][region];
-      totTime += m->time;
-      totRef += m->perf.refs;
-      totMiss += m->perf.miss;
-    }
+	for(region=0;region<REDFST_MAX_REGIONS;++region){
+		totTime = totRef = totMiss = 0;
+		for(cpu=0;cpu<gRedfstThreadCount;++cpu){
+			m = &gRedfstRegion[cpu][region];
+			totTime += m->time;
+			totRef += m->perf.refs;
+			totMiss += m->perf.miss;
+		}
 		totTime -= (gRedfstThreadCount-1) * hist[region].time;
 		totRef  -= (gRedfstThreadCount-1) * hist[region].perf.refs;
 		totMiss -= (gRedfstThreadCount-1) * hist[region].perf.miss;
 		totTime /= 2;
 		totRef  /= 2;
 		totMiss /= 2;
-    if(totTime)
-      fprintf(fp,"%d;%"PRIu64";%"PRIu64";%"PRIu64"\n",region,totTime,totRef,totMiss);
-  }
-  fclose(fp);
+		if(totTime)
+			fprintf(fp,"%d;%"PRIu64";%"PRIu64";%"PRIu64"\n",region,totTime,totRef,totMiss);
+	}
+	fclose(fp);
 }

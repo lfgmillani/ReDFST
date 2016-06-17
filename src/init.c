@@ -155,32 +155,32 @@ redfst_init(){
 
 void redfst_thread_init(int cpu){
 /* must be called by every thread at the beginning of execution exactly once */
-  uint64_t timeNow;
+	uint64_t timeNow;
 #ifndef REDFST_OMP
-  cpu_set_t set;
+	cpu_set_t set;
 
-  CPU_ZERO(&set);
-  CPU_SET(cpu, &set);
-  sched_setaffinity(syscall(SYS_gettid), sizeof(set), &set);
+	CPU_ZERO(&set);
+	CPU_SET(cpu, &set);
+	sched_setaffinity(syscall(SYS_gettid), sizeof(set), &set);
 #endif
-  timeNow = __redfst_time_now();
-  tRedfstCpu = cpu;
-  tRedfstPrevId = 0;
+	timeNow = __redfst_time_now();
+	tRedfstCpu = cpu;
+	tRedfstPrevId = 0;
 #ifdef REDFST_FREQ_PER_CORE
-  gRedfstCurrentFreq[cpu] = FREQ_HIGH;
+	gRedfstCurrentFreq[cpu] = FREQ_HIGH;
 	cpufreq_set_frequency(cpu, FREQ_HIGH);
 #else
 	if(REDFST_CPU0 == cpu || REDFST_CPU1 == cpu){
-  	gRedfstCurrentFreq[cpu] = FREQ_HIGH;
+		gRedfstCurrentFreq[cpu] = FREQ_HIGH;
 		cpufreq_set_frequency(cpu, FREQ_HIGH);
 	}else{
-  	gRedfstCurrentFreq[cpu] = FREQ_LOW;
+		gRedfstCurrentFreq[cpu] = FREQ_LOW;
 		cpufreq_set_frequency(cpu, FREQ_LOW);
 	}
 #endif
 	gRedfstRegion[cpu][0].timeStarted = timeNow;
 	__sync_fetch_and_add(&gRedfstThreadCount, 1);
-  redfst_perf_init_worker();
+	redfst_perf_init_worker();
 }
 
 #ifdef REDFST_OMP
