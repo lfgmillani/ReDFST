@@ -28,7 +28,7 @@ cfg_t gCfg = {0,};
 static void env2i(int *dst, const char *envname){
 	char *s,*r;
 	long x;
-	s = getenv(envname);            
+	s = getenv(envname);
 	if(!s||!*s)
 		return;
 	x = strtol(s,&r,10); 
