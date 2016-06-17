@@ -72,7 +72,7 @@ event_init(struct perf_event_attr *p, uint64_t event){
 void redfst_perf_read(int cpu, redfst_perf_t *p){
 	struct read_format r;
 	int i;
-	if(REDFST_UNLIKELY(!gFd[cpu])){
+	if(REDFST_UNLIKELY(0 > gFd[cpu])){
 		for(i=0;i<REDFST_PERF_NUM_EVENTS;++i)
 			p->events[i] = 0;
 	}else{
