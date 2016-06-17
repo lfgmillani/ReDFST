@@ -107,6 +107,7 @@ void redfst_perf_init_worker(){
 		}
 		ioctl(fd[i], PERF_EVENT_IOC_RESET, 0);
 	}
+	ioctl(fd[0], PERF_EVENT_IOC_RESET, 0);
 	ioctl(fd[0], PERF_EVENT_IOC_ENABLE, 0);
 	gFd[cpu] = fd[0];
 }
