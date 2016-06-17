@@ -8,6 +8,7 @@
 #include <signal.h>
 #include <sched.h>
 #include "energy.h"
+#include "util.h"
 
 #define MSR_RAPL_POWER_UNIT	   0x606
 #define MSR_PKG_ENERGY_STATUS  0x611
@@ -73,6 +74,7 @@ static int lik_init(void)
 	/* Check the function of the daemon here */
 	struct sockaddr_un address;
 	struct sigaction sa;
+	uint64_t t0,t1;
 	size_t address_length;
 	pid_t pid;
 	int socket_fd = -1;
@@ -99,19 +101,17 @@ static int lik_init(void)
 	address.sun_family = AF_LOCAL;
 	address_length = sizeof(address);
 	snprintf(address.sun_path, sizeof(address.sun_path), "/tmp/likwid-%d", pid);
+	t0 = __redfst_time_now();
 	for(i=0; connect(socket_fd, (struct sockaddr *) &address, address_length); ++i){
-	  if(i > 8192){ // too many failures, is the daemon still alive?
+		if(i > 256){ // too many failures
 			i = 0;
-			if(0 > kill(pid, 0)){
+			t1 = __redfst_time_now();
+			if(t1-t0 > 1e9){
 				close(socket_fd);
+				kill(pid, SIGKILL);
 				return -1;
 			}
 		}
-	}
-	// is the daemon alive?
-	if(0 > kill(pid, 0)){
-		close(socket_fd);
-		return -1;
 	}
 	return socket_fd;
 }
