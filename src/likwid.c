@@ -5,6 +5,7 @@
 #include <math.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <fcntl.h>
 #include <signal.h>
 #include <sched.h>
 #include "energy.h"
@@ -98,6 +99,7 @@ static int lik_init(void)
 		return -1;
 	}
 
+	fcntl(socket_fd, F_SETFL, O_NONBLOCK);
 	address.sun_family = AF_LOCAL;
 	address_length = sizeof(address);
 	snprintf(address.sun_path, sizeof(address.sun_path), "/tmp/likwid-%d", pid);
