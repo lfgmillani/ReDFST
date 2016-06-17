@@ -25,6 +25,8 @@ typedef struct{
 }cfg_t;
 cfg_t gCfg = {0,};
 
+static char gInitStatus = 0;
+
 static void env2i(int *dst, const char *envname){
 	char *s,*r;
 	long x;
@@ -132,6 +134,9 @@ static void from_env(){
 void __attribute__((constructor))
 redfst_init(){
 /* must be called exactly once at the beginning of execution and before redfst_thread_init */	
+	if(1 == gInitStatus)
+		return;
+	gInitStatus = 1;
 	memset(gRedfstCurrentId,0,sizeof(gRedfstCurrentId));
 	memset(gRedfstCurrentFreq,0,sizeof(gRedfstCurrentFreq));
 	memset(gRedfstRegion,0,sizeof(gRedfstRegion));
@@ -198,6 +203,9 @@ static void redfst_region_final(){
 void __attribute__((destructor))
 redfst_close(){
 /* must be called at the end of execution */
+	if(1 != gInitStatus)
+		return;
+	gInitStatus = 2;
 	redfst_region_final();
 
 	if(gCfg.monitor){
