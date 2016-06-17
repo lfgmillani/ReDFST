@@ -86,7 +86,7 @@ static int lik_init(void)
 	pid = fork();
 	if(pid == 0){
 		execlp("likwid-accessD", "likwid-accessD", NULL);
-		exit(1);
+		_Exit(1);
 	}else if (pid < 0){
 		return -1;
 	}
