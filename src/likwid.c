@@ -72,12 +72,12 @@ static int lik_init(void)
 {
 	/* Check the function of the daemon here */
 	struct sockaddr_un address;
+	struct sigaction sa;
 	size_t address_length;
 	pid_t pid;
 	int socket_fd = -1;
 	int i;
 
-	struct sigaction sa;
 	sa.sa_handler = SIG_IGN;
 	sa.sa_flags = SA_NOCLDWAIT;
 	sigemptyset(&sa.sa_mask);
