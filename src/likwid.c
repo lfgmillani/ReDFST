@@ -186,9 +186,9 @@ void redfst_likwid_update(){
 	readall(__redfstCpu[0].fd, d, sizeof(d));
 	for(i=0; i < __redfstNcpus; ++i){
 		c = __redfstCpu+i;
-		update(&c->pkg,  &c->pkgPrev,  d[0].data);
-		update(&c->pp0,  &c->pp0Prev,  d[1].data);
-		update(&c->dram, &c->dramPrev, d[2].data);
+		update(&c->pkg,  &c->pkgPrev,  d[3*i+0].data);
+		update(&c->pp0,  &c->pp0Prev,  d[3*i+1].data);
+		update(&c->dram, &c->dramPrev, d[3*i+2].data);
 	}
 }
 
