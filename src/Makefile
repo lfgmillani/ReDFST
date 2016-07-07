@@ -6,6 +6,7 @@ LDFLAGS =
 SRCS = perf.c redfst_omp.c init.c region.c region-all.c global.c profile.c monitor.c energy.c msr.c likwid.c control.c hw.c trace.c util.c
 OBJS = $(SRCS:.c=.o)
 TARGET = libredfst.so #libredfst.a
+TESTS = test0 test1
 .PHONY: all clean install test
 all: $(SRCS) $(OBJS) $(TARGET)
 
@@ -32,7 +33,7 @@ install: $(TARGET)
 		install -m 644 -D redfst-default.h "$(DESTDIR)/$(PREFIX)/include/redfst.h";\
 	fi
 
-test0: test0.c libredfst.so
+$(TESTS): %: %.c libredfst.so
 	if ld -lcpupower 2> /dev/null; then\
 		$(CC) $(CFLAGS) -Wl,-rpath="`pwd`" $< -o $@ -I. -L. -lredfst -lcpupower -lm;\
 	else\
@@ -41,9 +42,22 @@ test0: test0.c libredfst.so
 
 # test0 tests the timing
 # energy readings are not validated
-test: test0
+# test1 tests frequency scaling
+test: $(TESTS)
 	env OMP_PROC_BIND=TRUE ./tester ./test0 < test0.answer
+	rm test1.answer 2> /dev/null || true;\
+	i=0;\
+	for x in $$(cat $$(find /sys 2>&-|grep scaling_available_frequencies | head -n1) | sort -n); do\
+		export REDFST_$$x=$$i;\
+		echo $$x >> test1.answer;\
+		i=$$(( i + 1 ));\
+	done;\
+	for i in $$(seq $$i 63); do\
+		echo $$x >> test1.answer;\
+	done;\
+	env OMP_PROC_BIND=TRUE ./test1 > test1.out
+	diff test1.out test1.answer
 	echo All tests passed
 
 clean:
-	rm -fr $(OBJS) $(TARGET) test0
+	rm -fr $(OBJS) $(TARGET) $(TESTS)
