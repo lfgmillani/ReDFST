@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <sched.h>
+#include <errno.h>
 #include "energy.h"
 #include "util.h"
 
@@ -192,8 +193,45 @@ void redfst_likwid_update(){
 	}
 }
 
+static int redfst_likwid_safe_read(cpu_t *c, int reg){
+	AccessDataRecord d;
+	void *p;
+	int count;
+	int n;
+	int i;
+	lik_data_init(&d, c->id, reg);
+	// write
+	count = sizeof(d);
+	p = &d;
+	while(count){
+		n = write(c->fd, p, count);
+		if(n > 0){
+			count -= n;
+			p += n;
+		}else{
+			exit(1);
+		}
+	}
+	// read
+	count = sizeof(d);
+	p = &d;
+	while(count){
+		n = read(c->fd, p, count);
+		if(n > 0){
+			count -= n;
+			p += n;
+		}else if(0 == n){
+			return 0;
+		}else if(EAGAIN == errno || EWOULDBLOCK == errno){
+			;
+		}
+	}
+	return d.data;
+}
+
 int redfst_likwid_init(){
 	cpu_t *c;
+	uint64_t k;
 	int fd;
 	int i;
 	fd = lik_init();
@@ -202,7 +240,14 @@ int redfst_likwid_init(){
 	for(i=0; i < __redfstNcpus; ++i){
 		c = __redfstCpu + i;
 		c->fd = fd;
-		c->unit = pow(0.5,(double)((( lik_read(c, MSR_RAPL_POWER_UNIT) )>>8)&0x1f));
+		k = redfst_likwid_safe_read(c, MSR_RAPL_POWER_UNIT);
+		if(!k){
+			while(i>=0)
+				__redfstCpu[i--].fd = 0;
+			close(fd);
+			return -1;
+		}
+		c->unit = pow(0.5,(double)((( k )>>8)&0x1f));
 		redfst_likwid_update_one(c); // save current value - it doesn't start at zero
 		c->pkg = c->pp0 = c->dram = 0;
 	}
