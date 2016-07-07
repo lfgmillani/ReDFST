@@ -203,10 +203,8 @@ Let's run the code region /1/ at 2.0GHz frequency and the code region
 /2/ at the 1.5GHz:
 
 #+BEGIN_SRC sh
-export REDFST_HIGH=2000000
-export REDFST_LOW=1500000
-export REDFST_FASTREGIONS=1
-export REDFST_SLOWREGIONS=2
+export REDFST_2000000=1
+export REDFST_1500000=2
 export OMP_PROC_BIND=TRUE
 ./example2
 #+END_SRC
