@@ -39,7 +39,7 @@ test0: libredfst.so test0.c
 		$(CC) $(CFLAGS) -Wl,-rpath="`pwd`" test0.c -o $@ -I. -L. -lredfst -lcpufreq  -lm;\
 	fi
 
-# this only tests the timing
+# test0 tests the timing
 # energy readings are not validated
 test: test0
 	env OMP_PROC_BIND=TRUE ./tester ./test0 < test0.answer
