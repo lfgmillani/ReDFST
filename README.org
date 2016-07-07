@@ -209,13 +209,12 @@ export OMP_PROC_BIND=TRUE
 ./example2
 #+END_SRC
 
-The frequency for the *fast* regions is given by the variable
-=REDFST_HIGH=. Likewise, the frequency to be used in the *slow*
-regions is given by the variable =REDFST_LOW=. The set of *fast*
-(*slow*) regions is given by =REDFST_FASTREGIONS=
-(=REDFST_SLOWREGIONS=) as a list in the format region[,region...]
-(example: 1,3,4). The use of =OMP_PROC_BIND= to bind the threads to
-cores is obligatory.
+The pairing (/frequency/, /region(s)/) is given by the environment
+variable =REDFST_FREQUENCY=REGIONS=, where /FREQUENCY/ is the
+frequency in KHz, and /REGIONS/ is a set. The set is in the format
+region[,region...]  (example: 1,2,4-6 means the regions 1, 2, 4, 5 and
+6). The use of =OMP_PROC_BIND= to bind the threads to cores is
+obligatory.
 
 For ReDFST to change the frequency it requires permissions and the use
 of the userspace governor. You can see which governor you're using with:
@@ -287,17 +286,11 @@ The following variables are accepted by libredfst. Besides them,
      consumption measured
 - ~REDFST_OUT~ :: Energy measurements are output to this file
 - ~REDFST_HEADER~ :: If defined, write a CSV header to ~REDFST_OUT~
-- ~REDFST_LOW~  :: Frequency to use on slow regions. Example: 1500000
-     (for 1.5GHz)
-- ~REDFST_HIGH~ :: Frequency for the fast regions. Example: 2000000 (for
-     2.0GHz)
-- ~REDFST_SLOWREGIONS~ :: Set of regions which will trigger the low
-     frequency. The regions are given as a comma-separated
-     list. Example: to use the regions 1, 3 and 4, this variable
-     should be set to *1,3,4*.  The 63th region is entered when the
-     program finishes. The other regions are user-defined.
-- ~REDFST_FASTREGIONS~ :: Regions which will trigger the high
-     frequency. See ~REDFST_SLOWREGIONS~.
+- ~REDFST_FREQUENCY~ :: Defines a frequency/regions pairing. The
+     regions are given as a comma-separated list. Example:
+     REDFST_2000000=0,4-6 will execute regions 0, 4, 5 and 6 at 2GHz.
+     The 63th region is entered when the program finishes. The other
+     regions are user-defined.
 - ~REDFST_MONITOR~ :: If defined to anything other than "0", "F" or
      "f", dumps some execution information to the file
      "monitor.csv". This file contains a table with the following
