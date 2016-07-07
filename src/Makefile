@@ -32,11 +32,11 @@ install: $(TARGET)
 		install -m 644 -D redfst-default.h "$(DESTDIR)/$(PREFIX)/include/redfst.h";\
 	fi
 
-test0: libredfst.so test0.c
+test0: test0.c libredfst.so
 	if ld -lcpupower 2> /dev/null; then\
-		$(CC) $(CFLAGS) -Wl,-rpath="`pwd`" test0.c -o $@ -I. -L. -lredfst -lcpupower -lm;\
+		$(CC) $(CFLAGS) -Wl,-rpath="`pwd`" $< -o $@ -I. -L. -lredfst -lcpupower -lm;\
 	else\
-		$(CC) $(CFLAGS) -Wl,-rpath="`pwd`" test0.c -o $@ -I. -L. -lredfst -lcpufreq  -lm;\
+		$(CC) $(CFLAGS) -Wl,-rpath="`pwd`" $< -o $@ -I. -L. -lredfst -lcpufreq  -lm;\
 	fi
 
 # test0 tests the timing
