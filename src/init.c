@@ -27,103 +27,156 @@ cfg_t gCfg = {0,};
 
 static char gInitStatus = 0;
 
-static void env2i(int *dst, const char *envname){
-	char *s,*r;
-	long x;
-	s = getenv(envname);
-	if(!s||!*s)
-		return;
-	x = strtol(s,&r,10); 
-	if(*r || x > INT_MAX){
-		fprintf(stderr,"invalid value for %s: \"%s\"\n",envname,s);
-		exit(1);
-	}
-	*dst = (int)x;
-}
-
-static int get_freq(int isHigh){
-	char s[128];
-	FILE *f;
-	sprintf(s, "/sys/devices/system/cpu/cpufreq/policy0/scaling_%s_freq", isHigh?"max":"min");
-	f = fopen(s, "rt");
-	if(!f){
-		sprintf(s, "/sys/devices/system/cpu/cpu0/cpufreq/scaling_%s_freq", isHigh?"max":"min");
-		f = fopen(s, "rt");
-	}
-	if(!f){
-		fprintf(stderr,"ReDFST: Failed to get %s cpu frequency. Please specify it with REDFST_%s\n",
-		        isHigh?"max":"min", isHigh?"HIGH":"LOW");
-		exit(1);
-	}
-	fread(s, 1, sizeof(s), f);
-	fclose(f);
-	return atoi(s);
-}
-
-static uint64_t list_to_bitmask(const char *envname){
-	char *s;
-	uint64_t mask;
-	uint64_t n;
+static int * str_list_to_int_array(const char *s){
+/*
+	Given a list of natural numbers 's' in the format '1,2-3', where ','
+	separates two numbers and 'a-b' means all numbers from 'a' to 'b'
+	(inclusive; a<=b), return a new array with all those numbers in the order they
+	appear. The last element of the array is -1. Return 0 on empty list or error.
+*/
+	int *a;
+	int alloc;
+	int count;
+	int l, r;
 	char c;
-	char st = 0;
-	s = getenv(envname);
+	char st;
+
 	if(!s||!*s)
 		return 0;
-	mask = 0;
+
+	count = 0;
+	alloc = 32;
+	a = malloc(alloc*sizeof(*a));
+
 	st = 0;
 	do{
-		c=*s++;
+		c = *s++;
 		switch(st){
 		case 0:
 			if(c >= '0' && c <= '9'){
-				n = c - '0';
+				l = c - '0';
 				++st;
 			}else{
-				fprintf(stderr, "invalid value for %s: \"%s\"\n", envname, s);
-				exit(1);
+				free(a);
+				return 0;
 			}
 			break;
 		case 1:
 			if(c >= '0' && c <= '9'){
-				n = 10 * n + c - '0';
-				if(n > REDFST_MAX_REGIONS-1){
-					fprintf(stderr, "invalid value for %s: the maximum region number is %d\n", envname, REDFST_MAX_REGIONS-1);
-					exit(1);
+				l = 10 * l + c - '0';
+			}else if(','==c || !c){
+				if(count == alloc){
+					alloc += 32;
+					a = realloc(a, alloc * sizeof(*a));
 				}
-			}else if(c==','||!c){
-				n = 1ULL << n;
-				if(mask & n){
-					fprintf(stderr, "invalid value for %s: repeated regions found\n", envname);
-					exit(1);
-				}
-				mask |= n;
+				a[count++] = l;
 				--st;
+			}else if('-'==c){
+				++st;
 			}else{
-				fprintf(stderr, "invalid value for %s: \"%s\"\n", envname, s);
-				exit(1);
+				free(a);
+				return 0;
 			}
+			break;
+		case 2:
+			if(c >= '0' && c <= '9'){
+				r = c - '0';
+				++st;
+			}else{
+				free(a);
+				return 0;
+			}
+			break;
+		case 3:
+			if(c >= '0' && c <= '9'){
+				r = 10 * r + c - '0';
+			}else if(','==c || !c){
+				if(l > r){
+					free(a);
+					return 0;
+				}
+				do{
+					if(count == alloc){
+						alloc += 32;
+						a = realloc(a, alloc*sizeof(*a));
+					}
+					a[count++] = l;
+				}while(++l<=r);
+				st = 0;
+			}else{
+				free(a);
+				return 0;
+			}
+			break;
 		}
 	}while(c);
-	return mask;
+	if(count == alloc)
+		a = realloc(a, ++alloc*sizeof(*a));
+	a[count++] = -1;
+	return a;
+}
+
+
+static void from_env_region_freq_mapping(){
+	extern char **environ;
+	char **e,*s;
+	int *a;
+	int i;
+	int nfreq;
+	int freq;
+	uint8_t id;
+	REDFST_CASSERT(REDFST_MAX_NFREQS >= 0 && REDFST_MAX_NFREQS <= 0xff);
+	gRedfstMinFreq = INT_MAX;
+	gRedfstMaxFreq = 0;
+
+	nfreq = 1; // start at 1 as gRedfstFreq[0] is 0 (that is, no freq change)
+	for(e=environ; *e; ++e){
+		if(strncmp("REDFST_",*e,7))
+			continue;
+		freq = 0;
+		for(s = *e + 7; *s && *s!='='; ++s){
+			if('0' > *s || '9' < *s)
+				break;
+			freq = 10 * freq + *s - '0';
+		}
+		if('=' != *s++)
+			continue;
+		for(id = 0; id < nfreq && gRedfstFreq[id] != freq; ++id)
+			;
+		if(id == nfreq){ // new freq
+			if(nfreq == REDFST_MAX_NFREQS - 1){
+				fprintf(stderr, "REDFST: number of different frequencies used is above the limit of %d\n", REDFST_MAX_NFREQS);
+				exit(1);
+			}
+			gRedfstFreq[nfreq++] = freq;
+			if(freq && freq < gRedfstMinFreq)
+				gRedfstMinFreq = freq;
+			if(freq && freq > gRedfstMaxFreq)
+				gRedfstMaxFreq = freq;
+		}
+		if(s&&*s){
+			a = str_list_to_int_array(s);
+			if(!a){
+				fprintf(stderr, "REDFST: Failed to parse %s\n", *e);
+				exit(1);
+			}
+			for(i=0; a[i] >= 0; ++i){
+				if(gRedfstRegionFreqId[a[i]]){
+					fprintf(stderr, "REDFST: Region %d has two frequencies: %d and %d\n", a[i],
+					        gRedfstFreq[id], gRedfstFreq[gRedfstRegionFreqId[a[i]]]);
+					exit(1);
+				}
+				gRedfstRegionFreqId[a[i]] = id;
+			}
+			free(a);
+		}
+	}
 }
 
 static void from_env(){
-	const char *s;
+	char *s;
+	from_env_region_freq_mapping();
 
-	FREQ_LOW = FREQ_HIGH = 0;
-
-	env2i(&FREQ_HIGH,"REDFST_HIGH");
-	env2i(&FREQ_LOW,"REDFST_LOW");
-	if(!FREQ_HIGH)
-		FREQ_HIGH = get_freq(1);
-	if(!FREQ_LOW)
-		FREQ_LOW = get_freq(0);
-
-	gRedfstSlowRegions = list_to_bitmask("REDFST_SLOWREGIONS");
-	gRedfstFastRegions = list_to_bitmask("REDFST_FASTREGIONS");
-	if(gRedfstSlowRegions&gRedfstFastRegions){
-		fprintf(stderr, "The same region cannot be slow and fast. Verify REDFST_SLOWREGIONS and REDFST_FASTREGIONS.\n");
-	}
 	if((s=getenv("REDFST_MONITOR"))){
 		if(*s&&*s!='0'&&*s!='F'&&*s!='f'){
 			gCfg.monitor = 1;
@@ -140,10 +193,11 @@ redfst_init(){
 	memset(gRedfstCurrentId,0,sizeof(gRedfstCurrentId));
 	memset(gRedfstCurrentFreq,0,sizeof(gRedfstCurrentFreq));
 	memset(gRedfstRegion,0,sizeof(gRedfstRegion));
-	gRedfstSlowRegions = 0;
-	gRedfstFastRegions = 0;
+	memset(gRedfstRegionFreqId,0,sizeof(gRedfstRegionFreqId));
+	memset(gRedfstFreq,0,sizeof(gRedfstFreq));
+	gRedfstMinFreq = 0;
+	gRedfstMaxFreq = 0;
 	gRedfstThreadCount = 0;
-	gFreq[0] = gFreq[1] = 0;
 	from_env();
 	redfst_energy_init();
 	redfst_perf_init();
@@ -172,15 +226,15 @@ void redfst_thread_init(int cpu){
 	tRedfstCpu = cpu;
 	tRedfstPrevId = 0;
 #ifdef REDFST_FREQ_PER_CORE
-	gRedfstCurrentFreq[cpu] = FREQ_HIGH;
-	cpufreq_set_frequency(cpu, FREQ_HIGH);
+	gRedfstCurrentFreq[cpu] = gRedfstMaxFreq;
+	cpufreq_set_frequency(cpu, gRedfstMaxFreq);
 #else
 	if(REDFST_CPU0 == cpu || REDFST_CPU1 == cpu){
-		gRedfstCurrentFreq[cpu] = FREQ_HIGH;
-		cpufreq_set_frequency(cpu, FREQ_HIGH);
+		gRedfstCurrentFreq[cpu] = gRedfstMaxFreq;
+		cpufreq_set_frequency(cpu, gRedfstMaxFreq);
 	}else{
-		gRedfstCurrentFreq[cpu] = FREQ_LOW;
-		cpufreq_set_frequency(cpu, FREQ_LOW);
+		gRedfstCurrentFreq[cpu] = gRedfstMinFreq;
+		cpufreq_set_frequency(cpu, gRedfstMinFreq);
 	}
 #endif
 	gRedfstRegion[cpu][0].timeStarted = timeNow;

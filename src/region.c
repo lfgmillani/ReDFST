@@ -21,18 +21,9 @@ static inline redfst_region_t * region_get(int cpu, int id){
 	return &gRedfstRegion[cpu][id];
 }
 
-#define REDFST_ID_IS_FAST(id) (gRedfstFastRegions&(1LL<<(id)))
-#define REDFST_ID_IS_SLOW(id) (gRedfstSlowRegions&(1LL<<(id)))
 static int redfst_freq_get(redfst_region_t *m, int id){
-	if(REDFST_ID_IS_FAST(id))
-		return FREQ_HIGH;
-	else if(REDFST_ID_IS_SLOW(id))
-		return FREQ_LOW;
-	return 0;
+	return gRedfstFreq[ gRedfstRegionFreqId[id] ];
 }
-#undef REDFST_IS_FAST
-#undef REDFST_IS_SLOW
-
 
 static void redfst_region_impl(int id, int cpu){
 	redfst_region_t *m;

@@ -12,6 +12,11 @@
 #define REDFST_MAX_THREADS 32
 
 /*
+	meximum number of different cpu frequencies
+*/
+#define REDFST_MAX_NFREQS 32
+
+/*
 	polling frequency for the monitor
 */
 #define REDFST_MONITOR_FREQUENCY 100

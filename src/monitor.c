@@ -14,7 +14,11 @@
 
 typedef struct{
 	redfst_perf_t events[REDFST_MAX_THREADS];
-	uint64_t freq;
+#ifdef REDFST_FREQ_PER_CORE
+	int freq[REDFST_MAX_THREADS];
+#else
+	int freq[REDFST_MAX_CPUS];
+#endif
 	uint8_t region[REDFST_MAX_REGIONS];
 	int status;
 }monitor_t;
@@ -38,24 +42,6 @@ void redfst_monitor_set_status(int n){
 	gRedfstMonitorStatus = n;
 }
 
-static void freq_encode(uint64_t *dst, int *src){
-	uint64_t n = 0;
-	int i;
-	REDFST_CASSERT(REDFST_LEN(gFreq)==2);
-	REDFST_CASSERT(REDFST_MAX_THREADS<=64);
-	for(i=0;i<REDFST_MAX_THREADS;++i){
-		n |= (src[i] == FREQ_HIGH) << i;
-	}
-	*dst = n;
-}
-
-static void freq_decode(int *dst, uint64_t src){
-	int i;
-	for(i=0;i<REDFST_MAX_THREADS;++i){
-		dst[i] = (src&(1LL<<i)) ? FREQ_HIGH : FREQ_LOW;
-	}
-}
-
 static inline void monitor_poll(){
 	int i;
 	if(REDFST_UNLIKELY(gI == gLen)){
@@ -67,7 +53,17 @@ static inline void monitor_poll(){
 		redfst_perf_read(i, gMon[gI].events+i);
 		gMon[gI].region[i] = gRedfstCurrentId[i];
 	}
-	freq_encode(&gMon[gI].freq, gRedfstCurrentFreq);
+#ifdef REDFST_FREQ_PER_CORE
+	for(i = 0; i < REDFST_MAX_THREADS; ++i)
+		gMon[gI].freq[i] = gRedfstCurrentFreq[i];
+#else
+#ifdef REDFST_CPU2
+#error "only 2 cpus supported with per-cpu frequency scaling"
+#endif
+	REDFST_CASSERT(2 == sizeof(gMon[0].freq)/sizeof(*gMon[0].freq));
+	gMon[gI].freq[0] = gRedfstCurrentFreq[REDFST_CPU0];
+	gMon[gI].freq[1] = gRedfstCurrentFreq[REDFST_CPU1];
+#endif
 	++gI;
 }
 
@@ -96,7 +92,6 @@ void redfst_monitor_end(){
 }
 
 void redfst_monitor_show(){
-	int freq[REDFST_MAX_THREADS];
 	FILE *f;
 	monitor_t *m;
 	int i,j,k;
@@ -120,9 +115,21 @@ void redfst_monitor_show(){
 		fprintf(f,"\n");
 		fprintf(f,"%d", i * REDFST_MONITOR_PERIOD);
 		fprintf(f,";%d",m->status);
-		freq_decode(freq, m->freq);
+#ifdef REDFST_FREQ_PER_CORE
 		for(j = 0; j < gRedfstThreadCount; ++j)
-			fprintf(f,";%d",freq[j]);
+			fprintf(f,";%d",m->freq[j]);
+#else
+		REDFST_CASSERT(2 == sizeof(gMon[0].freq)/sizeof(*gMon[0].freq));
+		for(j = 0; j < gRedfstThreadCount; ++j){
+			if(j == REDFST_CPU0){
+				fprintf(f,";%d",m->freq[0]);
+			}else if(j == REDFST_CPU1){
+				fprintf(f,";%d",m->freq[1]);
+			}else{
+				fprintf(f,";%d",0);
+			}
+		}
+#endif
 		for(j = 0; j < gRedfstThreadCount; ++j)
 			fprintf(f,";%d",m->region[j]);
 		for(j=0; j<gRedfstThreadCount; ++j)
