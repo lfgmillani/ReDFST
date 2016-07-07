@@ -20,11 +20,11 @@ typedef struct{
 }monitor_t;
 
 static char * gRedfstMonitorEventName[REDFST_PERF_NUM_EVENTS] = {
-  "refs",
-  "misses",
-//  "stalled",
-  "cycles",
-  "instr",
+	"refs",
+	"misses",
+//	"stalled",
+	"cycles",
+	"instr",
 };
 static monitor_t *gMon = (void*)0xdeadbabe;
 static int gI = 0;

@@ -25,10 +25,12 @@ typedef struct{
 }cfg_t;
 cfg_t gCfg = {0,};
 
+static char gInitStatus = 0;
+
 static void env2i(int *dst, const char *envname){
 	char *s,*r;
 	long x;
-	s = getenv(envname);            
+	s = getenv(envname);
 	if(!s||!*s)
 		return;
 	x = strtol(s,&r,10); 
@@ -135,6 +137,9 @@ static void from_env(){
 void __attribute__((constructor))
 redfst_init(){
 /* must be called exactly once at the beginning of execution and before redfst_thread_init */	
+	if(1 == gInitStatus)
+		return;
+	gInitStatus = 1;
 	memset(gRedfstCurrentId,0,sizeof(gRedfstCurrentId));
 	memset(gRedfstCurrentFreq,0,sizeof(gRedfstCurrentFreq));
 	memset(gRedfstRegion,0,sizeof(gRedfstRegion));
@@ -158,32 +163,32 @@ redfst_init(){
 
 void redfst_thread_init(int cpu){
 /* must be called by every thread at the beginning of execution exactly once */
-  uint64_t timeNow;
+	uint64_t timeNow;
 #ifndef REDFST_OMP
-  cpu_set_t set;
+	cpu_set_t set;
 
-  CPU_ZERO(&set);
-  CPU_SET(cpu, &set);
-  sched_setaffinity(syscall(SYS_gettid), sizeof(set), &set);
+	CPU_ZERO(&set);
+	CPU_SET(cpu, &set);
+	sched_setaffinity(syscall(SYS_gettid), sizeof(set), &set);
 #endif
-  timeNow = __redfst_time_now();
-  tRedfstCpu = cpu;
-  tRedfstPrevId = 0;
+	timeNow = __redfst_time_now();
+	tRedfstCpu = cpu;
+	tRedfstPrevId = 0;
 #ifdef REDFST_FREQ_PER_CORE
-  gRedfstCurrentFreq[cpu] = FREQ_HIGH;
+	gRedfstCurrentFreq[cpu] = FREQ_HIGH;
 	cpufreq_set_frequency(cpu, FREQ_HIGH);
 #else
 	if(REDFST_CPU0 == cpu || REDFST_CPU1 == cpu){
-  	gRedfstCurrentFreq[cpu] = FREQ_HIGH;
+		gRedfstCurrentFreq[cpu] = FREQ_HIGH;
 		cpufreq_set_frequency(cpu, FREQ_HIGH);
 	}else{
-  	gRedfstCurrentFreq[cpu] = FREQ_LOW;
+		gRedfstCurrentFreq[cpu] = FREQ_LOW;
 		cpufreq_set_frequency(cpu, FREQ_LOW);
 	}
 #endif
 	gRedfstRegion[cpu][0].timeStarted = timeNow;
 	__sync_fetch_and_add(&gRedfstThreadCount, 1);
-  redfst_perf_init_worker();
+	redfst_perf_init_worker();
 }
 
 #ifdef REDFST_OMP
@@ -201,6 +206,9 @@ static void redfst_region_final(){
 void __attribute__((destructor))
 redfst_close(){
 /* must be called at the end of execution */
+	if(1 != gInitStatus)
+		return;
+	gInitStatus = 2;
 	redfst_region_final();
 
 	if(gCfg.monitor){

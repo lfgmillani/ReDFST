@@ -21,16 +21,16 @@
 
 static int const gRedfstPerfEventCode[REDFST_PERF_NUM_EVENTS] = {
 #ifdef CACHE_IS_LL
-        PERF_COUNT_HW_CACHE_REFERENCES,
-        PERF_COUNT_HW_CACHE_MISSES,
+	PERF_COUNT_HW_CACHE_REFERENCES,
+	PERF_COUNT_HW_CACHE_MISSES,
 #else // will break event_init if you're not careful
 			// also this is not finished so right now it does not works
 				(PERF_COUNT_HW_CACHE_L1D) | ((PERF_COUNT_HW_CACHE_OP_READ)<<8) | (PERF_COUNT_HW_CACHE_RESULT_ACCESS<<16),
 				(PERF_COUNT_HW_CACHE_L1D) | ((PERF_COUNT_HW_CACHE_OP_READ)<<8) | (PERF_COUNT_HW_CACHE_RESULT_MISS  <<16),
 #endif
-//        PERF_COUNT_HW_STALLED_CYCLES_FRONTEND,
-        PERF_COUNT_HW_CPU_CYCLES,
-        PERF_COUNT_HW_INSTRUCTIONS,
+//	PERF_COUNT_HW_STALLED_CYCLES_FRONTEND,
+	PERF_COUNT_HW_CPU_CYCLES,
+	PERF_COUNT_HW_INSTRUCTIONS,
 };
 
 
@@ -72,7 +72,7 @@ event_init(struct perf_event_attr *p, uint64_t event){
 void redfst_perf_read(int cpu, redfst_perf_t *p){
 	struct read_format r;
 	int i;
-	if(REDFST_UNLIKELY(!gFd[cpu])){
+	if(REDFST_UNLIKELY(0 > gFd[cpu])){
 		for(i=0;i<REDFST_PERF_NUM_EVENTS;++i)
 			p->events[i] = 0;
 	}else{
@@ -87,7 +87,7 @@ float redfst_perf_get_miss_rate(redfst_perf_t *p){
 }
 
 void redfst_perf_init(){
-	memset(gFd,0,sizeof(gFd));
+	memset(gFd,-1,sizeof(gFd));
 }
 
 void redfst_perf_init_worker(){
@@ -101,11 +101,13 @@ void redfst_perf_init_worker(){
 	fd[0] = -1;
 	for(i=0;i<REDFST_PERF_NUM_EVENTS;++i){
 		if(0 > (fd[i] = perf_event_open(events+i, 0, cpu, fd[0], 0))){
-			fprintf(stderr, "failed to open perf event\n");
-			exit(1);
+			while(i)
+				close(fd[i]);
+			return;
 		}
 		ioctl(fd[i], PERF_EVENT_IOC_RESET, 0);
 	}
+	ioctl(fd[0], PERF_EVENT_IOC_RESET, 0);
 	ioctl(fd[0], PERF_EVENT_IOC_ENABLE, 0);
 	gFd[cpu] = fd[0];
 }
@@ -113,7 +115,7 @@ void redfst_perf_init_worker(){
 void redfst_perf_shutdown(){
 	int i;
 	for(i=0;i<REDFST_LEN(gFd);++i)
-		if(gFd[i])
+		if(gFd[i] > 0)
 			close(gFd[i]);
 }
 
