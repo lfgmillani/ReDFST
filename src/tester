@@ -16,12 +16,13 @@ outfile=$(mktemp)
 errfile=$(mktemp)
 enefile=$(mktemp)
 $1 1>"$outfile" 2>"$errfile" 3>"$enefile"
+retval=$?
 out=$(cat "$outfile")
 err=$(cat "$errfile")
 ene=$(cat "$enefile")
 rm "$outfile" "$errfile" "$enefile"
 
-if [[ 0 -ne $? ]]; then
+if [[ 0 -ne $retval ]]; then
 	echo "invalid retval"
 	r=1
 fi
