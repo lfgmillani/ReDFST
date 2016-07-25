@@ -3,6 +3,7 @@ CC = gcc
 CFLAGS = -Wall -Os -march=native -mtune=native -I.
 OPENMP = -fopenmp
 LDFLAGS = 
+CPUFREQ := $(shell if ldconfig -p | grep cpupower >/dev/null; then echo cpupower; else echo cpufreq; fi)
 SRCS = perf.c redfst_omp.c init.c region.c region-all.c global.c profile.c monitor.c energy.c powercap.c msr.c likwid.c control.c hw.c trace.c util.c
 OBJS = $(SRCS:.c=.o)
 TARGET = libredfst.so #libredfst.a
@@ -10,7 +11,7 @@ TARGET = libredfst.so #libredfst.a
 all: $(SRCS) $(OBJS) $(TARGET)
 
 libredfst.so : $(OBJS)
-	$(CC) $(CFLAGS) $(OPENMP) -shared $(OBJS) $(LDFLAGS) -o $@
+	$(CC) $(CFLAGS) $(OPENMP) -shared $(OBJS) $(LDFLAGS) -o $@ -lm -l$(CPUFREQ)
 
 # currently broken
 #libredfst.a : $(OBJS)
@@ -33,11 +34,7 @@ install: $(TARGET)
 	fi
 
 test0: test0.c libredfst.so
-	if ld -lcpupower 2> /dev/null; then\
-		$(CC) $(CFLAGS) -Wl,-rpath="`pwd`" $< -o $@ -I. -L. -lredfst -lcpupower -lm;\
-	else\
-		$(CC) $(CFLAGS) -Wl,-rpath="`pwd`" $< -o $@ -I. -L. -lredfst -lcpufreq  -lm;\
-	fi
+	$(CC) $(CFLAGS) -Wl,-rpath="`pwd`" $< -o $@ -I. -L. -lredfst
 
 # test0 tests the timing
 # energy readings are not validated
