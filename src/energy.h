@@ -17,7 +17,8 @@ extern cpu_t *__redfstCpu;
 extern cpu_t **gCpuId2Cpu;
 extern volatile int __redfstMutex;
 extern FILE *__redfst_fd;
-extern int redfstEnergySupport;
+typedef enum {REDFST_NONE, REDFST_POWERCAP, REDFST_MSR, REDFST_LIKWID} redfst_support_t;
+extern redfst_support_t redfstEnergySupport;
 
 void redfst_energy_init();
 int redfst_cpus(const int *cpus);
