@@ -7,7 +7,7 @@ typedef struct{
 	uint32_t pkgPrev, pp0Prev, dramPrev;
 	double unit;
 	int id;
-	int fd;
+	int fd[3];
 }cpu_t;
 
 extern void (*__redfst_energy_update)();
