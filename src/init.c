@@ -131,7 +131,10 @@ static void from_env(){
 	}
 }
 
-void __attribute__((constructor))
+void
+#ifdef REDFST_AUTO_INIT
+__attribute__((constructor))
+#endif
 redfst_init(){
 /* must be called exactly once at the beginning of execution and before redfst_thread_init */	
 	if(1 == gInitStatus)
@@ -200,7 +203,10 @@ static void redfst_region_final(){
 }
 #endif
 
-void __attribute__((destructor))
+void
+#ifdef REDFST_AUTO_INIT
+__attribute__((destructor))
+#endif
 redfst_close(){
 /* must be called at the end of execution */
 	if(1 != gInitStatus)

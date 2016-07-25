@@ -45,4 +45,11 @@
 */
 //#define REDFST_TRACE
 
+/*
+	if defined, the library is automatically initialized
+	without it, you must call redfst_init before using the library
+	this may not work well with threading libraries
+*/
+//#define REDFST_AUTO_INIT
+
 #endif

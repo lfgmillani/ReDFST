@@ -3,6 +3,7 @@
 #ifdef __cplusplus
 extern "C"{
 #endif
+void redfst_init();
 void redfst_monitor_set_status(int n);
 void redfst_region(int id);
 void redfst_region_all(int id);
