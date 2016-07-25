@@ -4,7 +4,7 @@
 #include "config.h"
 typedef struct{
 	uint64_t pkg, pp0, dram;
-	uint32_t pkgPrev, pp0Prev, dramPrev;
+	uint64_t pkgPrev, pp0Prev, dramPrev;
 	double unit;
 	int id;
 	int fd[3];

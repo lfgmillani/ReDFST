@@ -166,11 +166,11 @@ void redfst_likwid_update_one(cpu_t *c){
 	lik_data_init(d+0, c->id, MSR_PKG_ENERGY_STATUS);
 	lik_data_init(d+1, c->id, MSR_PP0_ENERGY_STATUS);
 	lik_data_init(d+2, c->id, MSR_DRAM_ENERGY_STATUS);
-	update(&c->pkg,  &c->pkgPrev,  d[0].data);
-	update(&c->pp0,  &c->pp0Prev,  d[1].data);
-	update(&c->dram, &c->dramPrev, d[2].data);
 	writeall(*c->fd, d, sizeof(d));
 	readall(*c->fd, d, sizeof(d));
+	update(&c->pkg,  (uint32_t*)&c->pkgPrev,  d[0].data);
+	update(&c->pp0,  (uint32_t*)&c->pp0Prev,  d[1].data);
+	update(&c->dram, (uint32_t*)&c->dramPrev, d[2].data);
 }
 
 void redfst_likwid_update(){
@@ -187,9 +187,9 @@ void redfst_likwid_update(){
 	readall(*__redfstCpu[0].fd, d, sizeof(d));
 	for(i=0; i < __redfstNcpus; ++i){
 		c = __redfstCpu+i;
-		update(&c->pkg,  &c->pkgPrev,  d[3*i+0].data);
-		update(&c->pp0,  &c->pp0Prev,  d[3*i+1].data);
-		update(&c->dram, &c->dramPrev, d[3*i+2].data);
+		update(&c->pkg,  (uint32_t*)&c->pkgPrev,  d[3*i+0].data);
+		update(&c->pp0,  (uint32_t*)&c->pp0Prev,  d[3*i+1].data);
+		update(&c->dram, (uint32_t*)&c->dramPrev, d[3*i+2].data);
 	}
 }
 
