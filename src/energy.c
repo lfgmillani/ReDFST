@@ -299,6 +299,8 @@ void redfst_energy_init(){
 		}
 	}
 
+	if(REDFST_NONE != redfstEnergySupport)
+		redfst_dev_init(0);
 	redfst_reset();
 
 	pthread_create(&t,0,redfst_energy_loop,0);

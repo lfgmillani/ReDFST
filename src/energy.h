@@ -1,7 +1,9 @@
 #ifndef REDFST_ENERGY_H
 #define REDFST_ENERGY_H
+#include <stdio.h>
 #include <stdint.h>
 #include "config.h"
+
 typedef struct{
 	uint64_t pkg, pp0, dram;
 	uint64_t pkgPrev, pp0Prev, dramPrev;
@@ -9,6 +11,17 @@ typedef struct{
 	int id;
 	int fd[3];
 }cpu_t;
+
+#ifdef REDFST_FUN_IN_H
+typedef struct{
+  char **name;
+  float *energy;
+  double time;
+  int count;
+}redfst_dev_t;
+#else
+#include "redfst-default.h"
+#endif
 
 extern void (*__redfst_energy_update)();
 extern void (*__redfst_energy_update_one)(cpu_t *c);

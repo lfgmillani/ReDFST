@@ -2,6 +2,7 @@
 #define GLOBAL_H
 #include <stdint.h>
 #include "region_types.h"
+#include "energy.h"
 #include "config.h"
 extern __thread int tRedfstCpu;
 extern __thread int tRedfstPrevId;
@@ -14,6 +15,7 @@ extern uint64_t gRedfstSlowRegions;
 extern uint64_t gRedfstFastRegions;
 extern uint64_t __redfstTime0;
 extern int gRedfstThreadCount;
+extern redfst_dev_t *gRedfstDev;
 #define FREQ_HIGH gFreq[1]
 #define FREQ_LOW  gFreq[0]
 
