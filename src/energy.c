@@ -12,6 +12,7 @@
 #include "redfst-default.h"
 #endif
 #include "util.h"
+#include "powercap.h"
 #include "msr.h"
 #include "likwid.h"
 #include "macros.h"
@@ -274,7 +275,13 @@ void redfst_energy_init(){
 	create_cpu_mapping();
 
 	// initialize measurement functions
-	if(!redfst_msr_init()){
+	if(!redfst_powercap_init()){
+		redfstEnergySupport = REDFST_POWERCAP;
+		__redfst_energy_update     = redfst_powercap_update;
+		__redfst_energy_update_one = redfst_powercap_update_one;
+		__redfst_energy_init       = redfst_powercap_init;
+		__redfst_energy_end        = redfst_powercap_end;
+	}else if(!redfst_msr_init()){
 		redfstEnergySupport = REDFST_MSR;
 		__redfst_energy_update     = redfst_msr_update;
 		__redfst_energy_update_one = redfst_msr_update_one;
