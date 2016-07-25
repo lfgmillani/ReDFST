@@ -198,7 +198,6 @@ static int redfst_likwid_safe_read(cpu_t *c, int reg){
 	void *p;
 	int count;
 	int n;
-	int i;
 	lik_data_init(&d, c->id, reg);
 	// write
 	count = sizeof(d);
