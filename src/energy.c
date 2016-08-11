@@ -41,7 +41,7 @@ FILE *__redfst_fd;
 #ifdef REDFST_FUN_IN_H
 static inline
 #endif
-int redfst_support(){
+redfst_support_t redfst_support(){
 	return redfstEnergySupport;
 }
 

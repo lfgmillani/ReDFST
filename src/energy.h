@@ -19,6 +19,7 @@ typedef struct{
   double time;
   int count;
 }redfst_dev_t;
+typedef enum {REDFST_NONE, REDFST_POWERCAP, REDFST_MSR, REDFST_LIKWID} redfst_support_t;
 #else
 #include "redfst-default.h"
 #endif
@@ -30,7 +31,6 @@ extern cpu_t *__redfstCpu;
 extern cpu_t **gCpuId2Cpu;
 extern volatile int __redfstMutex;
 extern FILE *__redfst_fd;
-typedef enum {REDFST_NONE, REDFST_POWERCAP, REDFST_MSR, REDFST_LIKWID} redfst_support_t;
 extern redfst_support_t redfstEnergySupport;
 
 void redfst_energy_init();
