@@ -159,9 +159,8 @@ redfst_dev_t * redfst_dev_init(redfst_dev_t *d){
 	p += d->count * sizeof(*d->name);
 	for(i=0; i < d->count; ++i, p+=16)
 		d->name[i] = p;
-	for(i=0; i < d->count; ++i){
-		sprintf(d->name[i], "cpu.%d.%s", i/3, name[i&3]);
-	}
+	for(i=0; i < d->count; ++i)
+		sprintf(d->name[i], "cpu.%d.%s", i/3, name[i%(sizeof(name)/sizeof(*name))]);
 	return d;
 }
 
