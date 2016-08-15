@@ -24,6 +24,7 @@ set(LIBREDFST_SOURCES
   monitor.c
   msr.c
   perf.c
+  powercap.c
   profile.c
   redfst_omp.c
   region-all.c
