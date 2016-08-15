@@ -153,14 +153,6 @@ static void update(uint64_t *total, uint32_t *prev, uint32_t now){
 	*prev = now;
 }
 
-static uint64_t lik_read(cpu_t *c, int reg){
-	AccessDataRecord d;
-	lik_data_init(&d, c->id, reg);
-	writeall(c->fd, &d, sizeof(d));
-	readall(c->fd, &d, sizeof(d));
-	return d.data;
-}
-
 void redfst_likwid_update_one(cpu_t *c){
 	AccessDataRecord d[3];
 	lik_data_init(d+0, c->id, MSR_PKG_ENERGY_STATUS);
