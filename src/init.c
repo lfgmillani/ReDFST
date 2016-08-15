@@ -192,7 +192,7 @@ void redfst_thread_init(int cpu){
 		}
 	}else{
 		gRedfstCurrentFreq[cpu] = FREQ_LOW;
-		cpufreq_set_frequency(cpu, FREQ_LOW){
+		if(cpufreq_set_frequency(cpu, FREQ_LOW)){
 			fprintf(stderr, "ReDFST: Failed to set cpu %d frequency to %d. Aborting.\n", cpu, FREQ_LOW);
 			exit(1);
 		}
