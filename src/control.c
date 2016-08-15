@@ -97,7 +97,7 @@ void __redfst_print(){
 #ifdef REDFST_FUN_IN_H
 static inline
 #endif
-void redfst_get(double *dst, int cpu){
+void redfst_get_legacy(double *dst, int cpu){
 /*
 	write into dst the energy consumed by each cpu:
 	dst[0] = cpu.pkg
@@ -117,7 +117,7 @@ void redfst_get(double *dst, int cpu){
 #ifdef REDFST_FUN_IN_H
 static inline
 #endif
-void redfst_get_all(double *dst){
+void redfst_get_all_legacy(double *dst){
 /*
 	write into dst the energy consumed by each cpu:
 	dst[0+3*cpu]   = pkg.cpu
@@ -135,6 +135,65 @@ void redfst_get_all(double *dst){
 		*dst++ = c->dram * c->unit;
 	}
 	*dst = (__redfst_time_now() - __redfstTime0) * 1e-9;
+}
+
+#ifdef REDFST_FUN_IN_H
+static
+#endif
+redfst_dev_t * redfst_dev_init(redfst_dev_t *d){
+	static const char *name[] = {"pkg","pp0","dram"};
+	void *p;
+	int i;
+	if(d){
+		p = malloc(                          __redfstNcpus*3*(16+sizeof(*d->name)+sizeof(*d->energy)));
+	}else if(gRedfstDev){
+		return gRedfstDev;
+	}else{
+		d = gRedfstDev = malloc(sizeof(*d) + __redfstNcpus*3*(16+sizeof(*d->name)+sizeof(*d->energy)));
+		p = ((void*)d) + sizeof(*d);
+	}
+	d->count = 3*__redfstNcpus;
+	d->energy = p;
+	p += d->count * sizeof(*d->energy);
+	d->name = p;
+	p += d->count * sizeof(*d->name);
+	for(i=0; i < d->count; ++i, p+=16)
+		d->name[i] = p;
+	for(i=0; i < d->count; ++i){
+		sprintf(d->name[i], "cpu.%d.%s", i/3, name[i&3]);
+	}
+	return d;
+}
+
+#ifdef REDFST_FUN_IN_H
+static
+#endif
+void redfst_dev_destroy(redfst_dev_t *d){
+/* frees the contents of d. the caller is responsible for freeing d. */
+	if(d == gRedfstDev){
+		free(gRedfstDev);
+		gRedfstDev = 0;
+	}else if(d->energy != ((void*)d)+sizeof(*d))
+		free(d->energy);
+}
+
+#ifdef REDFST_FUN_IN_H
+static inline
+#endif
+redfst_dev_t * redfst_get(redfst_dev_t *dev){
+	cpu_t *c;
+	int i;
+	if(!dev)
+		dev = redfst_dev_init(0);
+	__redfst_safe_update();
+	for(i=0; i < __redfstNcpus; ++i){
+		c = __redfstCpu + i;
+		dev->energy[3*i+0] = c->pkg  * c->unit;
+		dev->energy[3*i+1] = c->pp0  * c->unit;
+		dev->energy[3*i+2] = c->dram * c->unit;
+	}
+	dev->time = (__redfst_time_now() - __redfstTime0) * 1e-9;
+	return dev;
 }
 
 #undef REDFST_LOCK

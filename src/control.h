@@ -13,13 +13,15 @@ void redfst_reset();
 void __redfst_print();
 /* writes into dst the values of pkg, pp0 and dram of the given cpu
    dst = {cpu.PKG, cpu.PP0, cpu.DRAM} */
-void redfst_get(double *dst, int cpu);
+void redfst_get_legacy(double *dst, int cpu);
 /* writes into dst the values of pkg, pp0 and dram for each cpu, followed
    by the total energy for pkg, pp0 and dram, and execution time in seconds
    dst = {cpu0.PKG, cpu0.PP0, cpu0.DRAM,
           ...,
           cpuN.PKG, cpuN.PP0, cpuN.DRAM,
           TIME} */
-void redfst_get_all(double *dst);
+void redfst_get_all_legacy(double *dst);
+redfst_dev_t * redfst_get(redfst_dev_t *dev);
+redfst_dev_t * redfst_dev_init(redfst_dev_t *dev);
 #endif
 #endif

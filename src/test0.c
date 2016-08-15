@@ -7,6 +7,7 @@
 #endif
 
 int main(){
+	redfst_init();
 	redfst_reset();
 	usleep(300000);
 	redfst_print(); // .3

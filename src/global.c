@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdint.h>
 #include "region.h"
+#include "energy.h"
 #include "config.h"
 #include "global.h"
 __thread int tRedfstCpu;
@@ -14,3 +15,4 @@ uint64_t gRedfstSlowRegions;
 uint64_t gRedfstFastRegions;
 uint64_t __redfstTime0;
 int gRedfstThreadCount;
+redfst_dev_t *gRedfstDev=0;

@@ -153,24 +153,16 @@ static void update(uint64_t *total, uint32_t *prev, uint32_t now){
 	*prev = now;
 }
 
-static uint64_t lik_read(cpu_t *c, int reg){
-	AccessDataRecord d;
-	lik_data_init(&d, c->id, reg);
-	writeall(c->fd, &d, sizeof(d));
-	readall(c->fd, &d, sizeof(d));
-	return d.data;
-}
-
 void redfst_likwid_update_one(cpu_t *c){
 	AccessDataRecord d[3];
 	lik_data_init(d+0, c->id, MSR_PKG_ENERGY_STATUS);
 	lik_data_init(d+1, c->id, MSR_PP0_ENERGY_STATUS);
 	lik_data_init(d+2, c->id, MSR_DRAM_ENERGY_STATUS);
-	writeall(c->fd, d, sizeof(d));
-	readall(c->fd, d, sizeof(d));
-	update(&c->pkg,  &c->pkgPrev,  d[0].data);
-	update(&c->pp0,  &c->pp0Prev,  d[1].data);
-	update(&c->dram, &c->dramPrev, d[2].data);
+	writeall(*c->fd, d, sizeof(d));
+	readall(*c->fd, d, sizeof(d));
+	update(&c->pkg,  (uint32_t*)&c->pkgPrev,  d[0].data);
+	update(&c->pp0,  (uint32_t*)&c->pp0Prev,  d[1].data);
+	update(&c->dram, (uint32_t*)&c->dramPrev, d[2].data);
 }
 
 void redfst_likwid_update(){
@@ -183,13 +175,13 @@ void redfst_likwid_update(){
 		lik_data_init(d+3*i+1, c->id, MSR_PP0_ENERGY_STATUS);
 		lik_data_init(d+3*i+2, c->id, MSR_DRAM_ENERGY_STATUS);
 	}
-	writeall(__redfstCpu[0].fd, d, sizeof(d));
-	readall(__redfstCpu[0].fd, d, sizeof(d));
+	writeall(*__redfstCpu[0].fd, d, sizeof(d));
+	readall(*__redfstCpu[0].fd, d, sizeof(d));
 	for(i=0; i < __redfstNcpus; ++i){
 		c = __redfstCpu+i;
-		update(&c->pkg,  &c->pkgPrev,  d[3*i+0].data);
-		update(&c->pp0,  &c->pp0Prev,  d[3*i+1].data);
-		update(&c->dram, &c->dramPrev, d[3*i+2].data);
+		update(&c->pkg,  (uint32_t*)&c->pkgPrev,  d[3*i+0].data);
+		update(&c->pp0,  (uint32_t*)&c->pp0Prev,  d[3*i+1].data);
+		update(&c->dram, (uint32_t*)&c->dramPrev, d[3*i+2].data);
 	}
 }
 
@@ -198,13 +190,12 @@ static int redfst_likwid_safe_read(cpu_t *c, int reg){
 	void *p;
 	int count;
 	int n;
-	int i;
 	lik_data_init(&d, c->id, reg);
 	// write
 	count = sizeof(d);
 	p = &d;
 	while(count){
-		n = write(c->fd, p, count);
+		n = write(*c->fd, p, count);
 		if(n > 0){
 			count -= n;
 			p += n;
@@ -216,7 +207,7 @@ static int redfst_likwid_safe_read(cpu_t *c, int reg){
 	count = sizeof(d);
 	p = &d;
 	while(count){
-		n = read(c->fd, p, count);
+		n = read(*c->fd, p, count);
 		if(n > 0){
 			count -= n;
 			p += n;
@@ -239,11 +230,11 @@ int redfst_likwid_init(){
 		return -1;
 	for(i=0; i < __redfstNcpus; ++i){
 		c = __redfstCpu + i;
-		c->fd = fd;
+		*c->fd = fd;
 		k = redfst_likwid_safe_read(c, MSR_RAPL_POWER_UNIT);
 		if(!k){
 			while(i>=0)
-				__redfstCpu[i--].fd = 0;
+				*__redfstCpu[i--].fd = 0;
 			close(fd);
 			return -1;
 		}
@@ -256,8 +247,8 @@ int redfst_likwid_init(){
 
 void redfst_likwid_end(){
 	int i;
-	kill(__redfstCpu[0].fd,SIGKILL);
+	kill(*__redfstCpu[0].fd,SIGKILL);
 	for(i=0;i<__redfstNcpus;++i)
-		__redfstCpu[i].fd = 0;
+		*__redfstCpu[i].fd = 0;
 }
 

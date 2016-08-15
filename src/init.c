@@ -134,7 +134,10 @@ static void from_env(){
 	}
 }
 
-void __attribute__((constructor))
+void
+#ifdef REDFST_AUTO_INIT
+__attribute__((constructor))
+#endif
 redfst_init(){
 /* must be called exactly once at the beginning of execution and before redfst_thread_init */	
 	if(1 == gInitStatus)
@@ -176,14 +179,23 @@ void redfst_thread_init(int cpu){
 	tRedfstPrevId = 0;
 #ifdef REDFST_FREQ_PER_CORE
 	gRedfstCurrentFreq[cpu] = FREQ_HIGH;
-	cpufreq_set_frequency(cpu, FREQ_HIGH);
+	if(cpufreq_set_frequency(cpu, FREQ_HIGH)){
+		fprintf(stderr, "ReDFST: Failed to set cpu %d frequency to %d. Aborting.\n", cpu, FREQ_HIGH);
+		exit(1);
+	}
 #else
 	if(REDFST_CPU0 == cpu || REDFST_CPU1 == cpu){
 		gRedfstCurrentFreq[cpu] = FREQ_HIGH;
-		cpufreq_set_frequency(cpu, FREQ_HIGH);
+		if(cpufreq_set_frequency(cpu, FREQ_HIGH)){
+			fprintf(stderr, "ReDFST: Failed to set cpu %d frequency to %d. Aborting.\n", cpu, FREQ_HIGH);
+			exit(1);
+		}
 	}else{
 		gRedfstCurrentFreq[cpu] = FREQ_LOW;
-		cpufreq_set_frequency(cpu, FREQ_LOW);
+		cpufreq_set_frequency(cpu, FREQ_LOW){
+			fprintf(stderr, "ReDFST: Failed to set cpu %d frequency to %d. Aborting.\n", cpu, FREQ_LOW);
+			exit(1);
+		}
 	}
 #endif
 	gRedfstRegion[cpu][0].timeStarted = timeNow;
@@ -203,7 +215,10 @@ static void redfst_region_final(){
 }
 #endif
 
-void __attribute__((destructor))
+void
+#ifdef REDFST_AUTO_INIT
+__attribute__((destructor))
+#endif
 redfst_close(){
 /* must be called at the end of execution */
 	if(1 != gInitStatus)
