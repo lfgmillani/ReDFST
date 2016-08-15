@@ -176,14 +176,23 @@ void redfst_thread_init(int cpu){
 	tRedfstPrevId = 0;
 #ifdef REDFST_FREQ_PER_CORE
 	gRedfstCurrentFreq[cpu] = FREQ_HIGH;
-	cpufreq_set_frequency(cpu, FREQ_HIGH);
+	if(cpufreq_set_frequency(cpu, FREQ_HIGH)){
+		fprintf(stderr, "ReDFST: Failed to set cpu %d frequency to %d. Aborting.\n", cpu, FREQ_HIGH);
+		exit(1);
+	}
 #else
 	if(REDFST_CPU0 == cpu || REDFST_CPU1 == cpu){
 		gRedfstCurrentFreq[cpu] = FREQ_HIGH;
-		cpufreq_set_frequency(cpu, FREQ_HIGH);
+		if(cpufreq_set_frequency(cpu, FREQ_HIGH)){
+			fprintf(stderr, "ReDFST: Failed to set cpu %d frequency to %d. Aborting.\n", cpu, FREQ_HIGH);
+			exit(1);
+		}
 	}else{
 		gRedfstCurrentFreq[cpu] = FREQ_LOW;
-		cpufreq_set_frequency(cpu, FREQ_LOW);
+		cpufreq_set_frequency(cpu, FREQ_LOW){
+			fprintf(stderr, "ReDFST: Failed to set cpu %d frequency to %d. Aborting.\n", cpu, FREQ_LOW);
+			exit(1);
+		}
 	}
 #endif
 	gRedfstRegion[cpu][0].timeStarted = timeNow;
