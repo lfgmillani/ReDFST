@@ -64,6 +64,8 @@ The functions used to measure energy consumption are:
      the passed value is NULL, a new device will be allocated and it's
      the caller's responsibility to free it. After use,
      ~redfst_dev_destroy~ should be called.
+- ~void redfst_dev_destroy(redfst_dev_t *dev)~ :: Frees internal data
+     allocated by ~redfst_dev_init~.
 - ~void redfst_get(double *dst, int cpu)~  :: Write into dst the energy counters
     of the given cpu:\\
     =dst[0]= = cpu.pkg\\
@@ -273,6 +275,8 @@ permissions to ~/sys/devices/system/cpu/cpu*/cpufreq/scaling_setspeed~.
      the passed value is NULL, a new device will be allocated and it's
      the caller's responsibility to free it. After use,
      ~redfst_dev_destroy~ should be called.
+- ~void redfst_dev_destroy(redfst_dev_t *dev)~ :: Frees internal data
+     allocated by ~redfst_dev_init~.
 - ~void redfst_get(double *dst, int cpu)~  :: write into dst the
      energy counters of the given cpu:\\
      dst[0] = cpu.pkg\\
