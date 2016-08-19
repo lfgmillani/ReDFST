@@ -140,40 +140,40 @@ void redfst_get_all_legacy(double *dst){
 #ifdef REDFST_FUN_IN_H
 static
 #endif
-redfst_dev_t * redfst_dev_init(redfst_dev_t *d){
+redfst_dev_t * redfst_dev_init(redfst_dev_t *dev){
 	static const char *name[] = {"pkg","pp0","dram"};
 	void *p;
 	int i;
-	if(d){
-		p = malloc(                          __redfstNcpus*3*(16+sizeof(*d->name)+sizeof(*d->energy)));
+	if(dev){
+		p = malloc(                          __redfstNcpus*3*(16+sizeof(*dev->name)+sizeof(*dev->energy)));
 	}else if(gRedfstDev){
 		return gRedfstDev;
 	}else{
-		d = gRedfstDev = malloc(sizeof(*d) + __redfstNcpus*3*(16+sizeof(*d->name)+sizeof(*d->energy)));
-		p = ((void*)d) + sizeof(*d);
+		dev = gRedfstDev = malloc(sizeof(*dev) + __redfstNcpus*3*(16+sizeof(*dev->name)+sizeof(*dev->energy)));
+		p = ((void*)dev) + sizeof(*dev);
 	}
-	d->count = 3*__redfstNcpus;
-	d->energy = p;
-	p += d->count * sizeof(*d->energy);
-	d->name = p;
-	p += d->count * sizeof(*d->name);
-	for(i=0; i < d->count; ++i, p+=16)
-		d->name[i] = p;
-	for(i=0; i < d->count; ++i)
-		sprintf(d->name[i], "cpu.%d.%s", i/3, name[i%(sizeof(name)/sizeof(*name))]);
-	return d;
+	dev->count = 3*__redfstNcpus;
+	dev->energy = p;
+	p += dev->count * sizeof(*dev->energy);
+	dev->name = p;
+	p += dev->count * sizeof(*dev->name);
+	for(i=0; i < dev->count; ++i, p+=16)
+		dev->name[i] = p;
+	for(i=0; i < dev->count; ++i)
+		sprintf(dev->name[i], "cpu.%d.%s", i/3, name[i%(sizeof(name)/sizeof(*name))]);
+	return dev;
 }
 
 #ifdef REDFST_FUN_IN_H
 static
 #endif
-void redfst_dev_destroy(redfst_dev_t *d){
+void redfst_dev_destroy(redfst_dev_t *dev){
 /* frees the contents of d. the caller is responsible for freeing d. */
-	if(d == gRedfstDev){
+	if(dev == gRedfstDev){
 		free(gRedfstDev);
 		gRedfstDev = 0;
-	}else if(d->energy != ((void*)d)+sizeof(*d))
-		free(d->energy);
+	}else if(dev->energy != ((void*)dev)+sizeof(*dev))
+		free(dev->energy);
 }
 
 #ifdef REDFST_FUN_IN_H

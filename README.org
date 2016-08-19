@@ -54,25 +54,35 @@ if(!redfst_cpus(cpus))
 #+end_src
 
 The functions used to measure energy consumption are:
-- ~int redfst_support()~ :: Returns 1 if measuring energy is possible on the system, or 0 otherwise
+- ~int redfst_support()~ :: Returns the type of energy measuring
+     support available. Possible values: =REDFST_NONE=,
+     =REDFST_POWERCAP=, =REDFST_MSR=, =REDFST_LIKWID=.
 - ~int redfst_cpus(const int *cpus)~ :: Sets which cpus will have
     their energy measured. The array should end with -1.
 - ~void redfst_reset()~ :: Zeroes the energy counters.
 - ~void redfst_print()~ :: Output the current value of the counters.
 - ~void redfst_printf(...)~ :: Calls printf with the given arguments
      then outputs the current value of the counters.
-- ~void redfst_get(double *dst, int cpu)~  :: Write into dst the energy counters
-    of the given cpu:\\
-    =dst[0]= = cpu.pkg\\
-    =dst[1]= = cpu.pp0\\
-    =dst[2]= = cpu.dram
-- ~void redfst_get_all(double *dst)~ :: Write into dst the energy counters
-     of each cpu, followed by the execution time in seconds:\\
-     dst = {\\
-       cpu0.pkg, cpu0.pp0, cpu0.dram,\\
-       ... ,\\
-       cpuN.pkg, cpuN.pp0, cpuN.dram,\\
-       time}
+- ~redfst_dev_t * redfst_dev_init(redfst_dev_t *d)~ :: Initializes the
+     passed device structure, which is used to store energy data. If
+     the passed value is NULL, a new device will be allocated and it's
+     the caller's responsibility to free it. After use,
+     ~redfst_dev_destroy~ should be called.
+- ~void redfst_dev_destroy(redfst_dev_t *dev)~ :: Frees internal data
+     allocated by ~redfst_dev_init~.
+- ~redfst_dev_t * redfst_get(redfst_dev_t *dev)~  :: Write the current
+     value of the energy counters into dev. If dev is NULL, a pointer
+     to an internal structure will be returned and this pointer should
+     not be freed. If dev is non-NULL, it must first be initialized by
+     calling ~redfst_dev_init~, and before being freed it must be
+     passed to ~redfst_dev_destroy~. ~redfst_dev_t~ is a structure
+     with the following members:
+  - char **name :: Array with the names of the energy
+       counters. Example: {"cpu.0.pkg", "cpu.0.pp0", "cpu.0.dram",
+       "cpu.1.pkg", "cpu.1.pp0", "cpu.1.dram"}.
+  - float *energy :: Array of energy counters, in Joules.
+  - double time :: Seconds passed since last call to ~redfst_reset~.
+  - int count :: Number of energy counters.
 
 Sample code:
 #+BEGIN_SRC C
@@ -254,9 +264,9 @@ sudo cpupower frequency-set -c all -g userspace
 Besides using the userspace governor you also need read/write
 permissions to ~/sys/devices/system/cpu/cpu*/cpufreq/scaling_setspeed~.
 ** API
-- ~int redfst_support()~ :: Returns 1 if measuring energy consumption
-     if there is support for reading energy consumption or 0
-     otherwise.
+- ~int redfst_support()~ :: Returns the type of energy measuring
+     support available. Possible values: =REDFST_NONE=,
+     =REDFST_POWERCAP=, =REDFST_MSR=, =REDFST_LIKWID=.
 - ~int redfst_cpus(const int *cpus)~ :: Sets which cpus will have
      their energy measured. The array /cpus/ should end with -1.
 - ~void redfst_reset()~ :: Reset the energy counters.
@@ -265,19 +275,26 @@ permissions to ~/sys/devices/system/cpu/cpu*/cpufreq/scaling_setspeed~.
      then print the energy counters. Example:
      redfst_print("%s,","here") will output
      "here,cpuX.pkg,cpuX.pp0,cpuX.dram,...,total.pkg,total.pp0,total.dram,time"
-- ~void redfst_get(double *dst, int cpu)~  :: write into dst the
-     energy counters of the given cpu:\\
-     =dst[0]= = cpu.pkg\\
-     =dst[1]= = cpu.pp0\\
-     =dst[2]= = cpu.dram
-- ~void redfst_get_all(double *dst)~ :: write into dst the energy
-     counters of each cpu, followed by the execution time in
-     seconds:\\
-     dst = {\\
-       cpu0.pkg, cpu0.pp0, cpu0.dram,\\
-       ... ,\\
-       cpuN.pkg, cpuN.pp0, cpuN.dram,\\
-       time}
+- ~redfst_dev_t * redfst_dev_init(redfst_dev_t *d)~ :: Initializes the
+     passed device structure, which is used to store energy data. If
+     the passed value is NULL, a new device will be allocated and it's
+     the caller's responsibility to free it. After use,
+     ~redfst_dev_destroy~ should be called.
+- ~void redfst_dev_destroy(redfst_dev_t *dev)~ :: Frees internal data
+     allocated by ~redfst_dev_init~.
+- ~redfst_dev_t * redfst_get(redfst_dev_t *dev)~  :: Write the current
+     value of the energy counters into dev. If dev is NULL, a pointer
+     to an internal structure will be returned and this pointer should
+     not be freed. If dev is non-NULL, it must first be initialized by
+     calling ~redfst_dev_init~, and before being freed it must be
+     passed to ~redfst_dev_destroy~. ~redfst_dev_t~ is a structure
+     with the following members:
+  - char \*\*name :: Array with the names of the energy
+       counters. Example: {"cpu.0.pkg", "cpu.0.pp0", "cpu.0.dram",
+       "cpu.1.pkg", "cpu.1.pp0", "cpu.1.dram"}.
+  - float \*energy :: Array of energy counters, in Joules.
+  - double time :: Seconds passed since last call to ~redfst_reset~.
+  - int count :: Number of energy counters.
 - ~void redfst_region(int id)~ :: Set the code region of the calling
      core to "id". May trigger a frequency change.
 - ~void redfst_region_all(int id)~ :: Set the code region of all cores
