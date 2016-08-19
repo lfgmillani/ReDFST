@@ -66,11 +66,19 @@ The functions used to measure energy consumption are:
      ~redfst_dev_destroy~ should be called.
 - ~void redfst_dev_destroy(redfst_dev_t *dev)~ :: Frees internal data
      allocated by ~redfst_dev_init~.
-- ~void redfst_get(double *dst, int cpu)~  :: Write into dst the energy counters
-    of the given cpu:\\
-    =dst[0]= = cpu.pkg\\
-    =dst[1]= = cpu.pp0\\
-    =dst[2]= = cpu.dram
+- ~redfst_dev_t * redfst_get(redfst_dev_t *dev)~  :: Write the current
+     value of the energy counters into dev. If dev is NULL, a pointer
+     to an internal structure will be returned and this pointer should
+     not be freed. If dev is non-NULL, it must first be initialized by
+     calling ~redfst_dev_init~, and before being freed it must be
+     passed to ~redfst_dev_destroy~. ~redfst_dev_t~ is a structure
+     with the following members:
+  - char **name :: Array with the names of the energy
+       counters. Example: {"cpu.0.pkg", "cpu.0.pp0", "cpu.0.dram",
+       "cpu.1.pkg", "cpu.1.pp0", "cpu.1.dram"}.
+  - float *energy :: Array of energy counters, in Joules.
+  - double time :: Seconds passed since last call to ~redfst_reset~.
+  - int count :: Number of energy counters.
 
 Sample code:
 #+BEGIN_SRC C
@@ -270,11 +278,19 @@ permissions to ~/sys/devices/system/cpu/cpu*/cpufreq/scaling_setspeed~.
      ~redfst_dev_destroy~ should be called.
 - ~void redfst_dev_destroy(redfst_dev_t *dev)~ :: Frees internal data
      allocated by ~redfst_dev_init~.
-- ~void redfst_get(double *dst, int cpu)~  :: write into dst the
-     energy counters of the given cpu:\\
-     dst[0] = cpu.pkg\\
-     dst[1] = cpu.pp0\\
-     dst[2] = cpu.dram
+- ~redfst_dev_t * redfst_get(redfst_dev_t *dev)~  :: Write the current
+     value of the energy counters into dev. If dev is NULL, a pointer
+     to an internal structure will be returned and this pointer should
+     not be freed. If dev is non-NULL, it must first be initialized by
+     calling ~redfst_dev_init~, and before being freed it must be
+     passed to ~redfst_dev_destroy~. ~redfst_dev_t~ is a structure
+     with the following members:
+  - char \*\*name :: Array with the names of the energy
+       counters. Example: {"cpu.0.pkg", "cpu.0.pp0", "cpu.0.dram",
+       "cpu.1.pkg", "cpu.1.pp0", "cpu.1.dram"}.
+  - float \*energy :: Array of energy counters, in Joules.
+  - double time :: Seconds passed since last call to ~redfst_reset~.
+  - int count :: Number of energy counters.
 - ~void redfst_region(int id)~ :: Set the code region of the calling
      core to "id". May trigger a frequency change.
 - ~void redfst_region_all(int id)~ :: Set the code region of all cores
