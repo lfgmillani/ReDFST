@@ -71,13 +71,6 @@ The functions used to measure energy consumption are:
     =dst[0]= = cpu.pkg\\
     =dst[1]= = cpu.pp0\\
     =dst[2]= = cpu.dram
-- ~void redfst_get_all(double *dst)~ :: Write into dst the energy counters
-     of each cpu, followed by the execution time in seconds:\\
-     dst = {\\
-       cpu0.pkg, cpu0.pp0, cpu0.dram,\\
-       ... ,\\
-       cpuN.pkg, cpuN.pp0, cpuN.dram,\\
-       time}
 
 Sample code:
 #+BEGIN_SRC C
@@ -282,14 +275,6 @@ permissions to ~/sys/devices/system/cpu/cpu*/cpufreq/scaling_setspeed~.
      dst[0] = cpu.pkg\\
      dst[1] = cpu.pp0\\
      dst[2] = cpu.dram
-- ~void redfst_get_all(double *dst)~ :: write into dst the energy
-     counters of each cpu, followed by the execution time in
-     seconds:\\
-     dst = {\\
-       cpu0.pkg, cpu0.pp0, cpu0.dram,\\
-       ... ,\\
-       cpuN.pkg, cpuN.pp0, cpuN.dram,\\
-       time}
 - ~void redfst_region(int id)~ :: Set the code region of the calling
      core to "id". May trigger a frequency change.
 - ~void redfst_region_all(int id)~ :: Set the code region of all cores
