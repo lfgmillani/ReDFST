@@ -324,9 +324,9 @@ The following variables are accepted by libredfst. Besides them,
   - time :: When the data was measured. This is sort of a guess, and
        depends on usleep not screwing up too much. If you want
        something less imprecise you'll have to change the function
-       energy_monitor_loop on the file monitor.c.
+       =redfst_monitor_loop= on the file monitor.c.
   - status :: Integer you can manually set by calling the function
-       energy_monitor_set_status(int n). You can, for instance, set it
+       =redfst_monitor_set_status(int n)=. You can, for instance, set it
        to 0 on the portions of the code you're not interested in.
   - freqN :: Frequency of the *N*-th core.
   - regionN :: Current region of the *N*-th thread, which corresponds
