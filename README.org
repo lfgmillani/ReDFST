@@ -50,7 +50,9 @@ if(!redfst_cpus(cpus))
 #+end_src
 
 The functions used to measure energy consumption are:
-- ~int redfst_support()~ :: Returns 1 if measuring energy is possible on the system, or 0 otherwise
+- ~int redfst_support()~ :: Returns the type of energy measuring
+     support available. Possible values: =REDFST_NONE=,
+     =REDFST_POWERCAP=, =REDFST_MSR=, =REDFST_LIKWID=.
 - ~int redfst_cpus(const int *cpus)~ :: Sets which cpus will have
     their energy measured. The array should end with -1.
 - ~void redfst_reset()~ :: Zeroes the energy counters.
@@ -250,9 +252,9 @@ sudo cpupower frequency-set -c all -g userspace
 Besides using the userspace governor you also need read/write
 permissions to ~/sys/devices/system/cpu/cpu*/cpufreq/scaling_setspeed~.
 ** API
-- ~int redfst_support()~ :: Returns 1 if measuring energy consumption
-     if there is support for reading energy consumption or 0
-     otherwise.
+- ~int redfst_support()~ :: Returns the type of energy measuring
+     support available. Possible values: =REDFST_NONE=,
+     =REDFST_POWERCAP=, =REDFST_MSR=, =REDFST_LIKWID=.
 - ~int redfst_cpus(const int *cpus)~ :: Sets which cpus will have
      their energy measured. The array /cpus/ should end with -1.
 - ~void redfst_reset()~ :: Reset the energy counters.
