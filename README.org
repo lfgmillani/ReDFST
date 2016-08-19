@@ -59,6 +59,11 @@ The functions used to measure energy consumption are:
 - ~void redfst_print()~ :: Output the current value of the counters.
 - ~void redfst_printf(...)~ :: Calls printf with the given arguments
      then outputs the current value of the counters.
+- ~redfst_dev_t * redfst_dev_init(redfst_dev_t *d)~ :: Initializes the
+     passed device structure, which is used to store energy data. If
+     the passed value is NULL, a new device will be allocated and it's
+     the caller's responsibility to free it. After use,
+     ~redfst_dev_destroy~ should be called.
 - ~void redfst_get(double *dst, int cpu)~  :: Write into dst the energy counters
     of the given cpu:\\
     =dst[0]= = cpu.pkg\\
@@ -263,6 +268,11 @@ permissions to ~/sys/devices/system/cpu/cpu*/cpufreq/scaling_setspeed~.
      then print the energy counters. Example:
      redfst_print("%s,","here") will output
      "here,cpuX.pkg,cpuX.pp0,cpuX.dram,...,total.pkg,total.pp0,total.dram,time"
+- ~redfst_dev_t * redfst_dev_init(redfst_dev_t *d)~ :: Initializes the
+     passed device structure, which is used to store energy data. If
+     the passed value is NULL, a new device will be allocated and it's
+     the caller's responsibility to free it. After use,
+     ~redfst_dev_destroy~ should be called.
 - ~void redfst_get(double *dst, int cpu)~  :: write into dst the
      energy counters of the given cpu:\\
      dst[0] = cpu.pkg\\
