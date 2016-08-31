@@ -28,9 +28,9 @@ redfst-static.h: util.c control.c region.c region-all.h
 install: $(TARGET)
 	install -m 644 -D libredfst.so "$(DESTDIR)/$(PREFIX)/lib/libredfst.so"
 	if $(CC) $(CFLAGS) -dM -E config.h | grep REDFST_FUN_IN_H > /dev/null; then\
-		install -m 644 -D redfst-static.h "$(DESTDIR)/$(PREFIX)/include/redfst.h";\
+		install -m 644 -D redfst-static.h "$(DESTDIR)/$(PREFIX)/usr/include/redfst.h";\
 	else\
-		install -m 644 -D redfst-default.h "$(DESTDIR)/$(PREFIX)/include/redfst.h";\
+		install -m 644 -D redfst-default.h "$(DESTDIR)/$(PREFIX)/usr/include/redfst.h";\
 	fi
 
 test0: test0.c libredfst.so
