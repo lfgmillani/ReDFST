@@ -52,4 +52,9 @@
 */
 //#define REDFST_AUTO_INIT
 
+/*
+	if defined, frequency scaling is enabled. depends on libcpufreq or libcpupower.
+*/
+#define REDFST_FREQ
+
 #endif

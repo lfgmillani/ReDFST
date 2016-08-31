@@ -4,7 +4,9 @@
 #include <time.h>
 #include <stdint.h>
 #include <inttypes.h>
+#ifdef REDFST_FREQ
 #include <cpufreq.h>
+#endif
 #include "macros.h"
 #include "region.h"
 #include "perf.h"
@@ -71,7 +73,9 @@ static void redfst_region_impl(int id, int cpu){
 #endif
 	if(REDFST_UNLIKELY(freq && freq != gRedfstCurrentFreq[cpu])){
 		gRedfstCurrentFreq[cpu] = freq;
+#ifdef REDFST_FREQ
 		cpufreq_set_frequency(cpu, freq);
+#endif
 	}
 }
 

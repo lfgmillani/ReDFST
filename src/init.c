@@ -5,7 +5,9 @@
 #include <stdint.h>
 #include <limits.h>
 #include <unistd.h>
+#ifdef REDFST_FREQ
 #include <cpufreq.h>
+#endif
 #include <sched.h>
 #include <sys/types.h>
 #include <sys/syscall.h>
@@ -41,6 +43,7 @@ static void env2i(int *dst, const char *envname){
 	*dst = (int)x;
 }
 
+#ifdef REDFST_FREQ
 static int get_freq(int isHigh){
 	char s[128];
 	FILE *f;
@@ -59,6 +62,7 @@ static int get_freq(int isHigh){
 	fclose(f);
 	return atoi(s);
 }
+#endif
 
 static uint64_t list_to_bitmask(const char *envname){
 	char *s;
@@ -114,10 +118,14 @@ static void from_env(){
 
 	env2i(&FREQ_HIGH,"REDFST_HIGH");
 	env2i(&FREQ_LOW,"REDFST_LOW");
+#ifdef REDFST_FREQ
 	if(!FREQ_HIGH)
 		FREQ_HIGH = get_freq(1);
 	if(!FREQ_LOW)
 		FREQ_LOW = get_freq(0);
+#else
+	FREQ_LOW = FREQ_HIGH = 0;
+#endif
 
 	gRedfstSlowRegions = list_to_bitmask("REDFST_SLOWREGIONS");
 	gRedfstFastRegions = list_to_bitmask("REDFST_FASTREGIONS");
@@ -174,6 +182,9 @@ void redfst_thread_init(int cpu){
 	timeNow = __redfst_time_now();
 	tRedfstCpu = cpu;
 	tRedfstPrevId = 0;
+#ifndef REDFST_FREQ
+	gRedfstCurrentFreq[cpu] = 0;
+#else
 #ifdef REDFST_FREQ_PER_CORE
 	gRedfstCurrentFreq[cpu] = FREQ_HIGH;
 	if(cpufreq_set_frequency(cpu, FREQ_HIGH)){
@@ -194,6 +205,7 @@ void redfst_thread_init(int cpu){
 			exit(1);
 		}
 	}
+#endif
 #endif
 	gRedfstRegion[cpu][0].timeStarted = timeNow;
 	__sync_fetch_and_add(&gRedfstThreadCount, 1);
