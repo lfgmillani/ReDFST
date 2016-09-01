@@ -1,0 +1,32 @@
+#!/bin/sh
+if [[ $# -ne 1 || ($1 -ne 0 && $1 -ne 1) ]]; then
+	echo -e "usage: $0 [0|1]\n  0 - disable hyperthreading\n  1 - enable  hyperthreading"
+	echo "cpu0  enabled"
+	for y in $(ls -d /sys/devices/system/cpu/cpu* | grep "[0-9]$" | grep -v "cpu0$"); do
+		if [[ 0 -eq $(cat $y/online) ]]; then
+			echo "cpu$(sed "s/.*cpu//" <<< "$y") disabled"
+		else
+			echo "cpu$(sed "s/.*cpu//" <<< "$y")  enabled"
+		fi
+	done
+	exit 1
+fi
+if [[ 0 -eq $1 ]]; then
+	# cpu0 is always on
+	x=$(cat /sys/devices/system/cpu/cpu0/topology/thread_siblings)
+
+	for y in $(ls -d /sys/devices/system/cpu/cpu* | grep "[0-9]$" | grep -v "cpu0$"); do
+		m=$(cat ${y}/topology/thread_siblings 2>&-)
+		if ! grep "$m" <<< "$x" > /dev/null; then
+			echo 1 | sudo tee $y/online >/dev/null || echo Failed && exit 1
+			x="$x|$m"
+		else
+			echo 0 | sudo tee $y/online >/dev/null || echo Failed && exit 1
+		fi
+	done
+else
+	for y in $(ls -d /sys/devices/system/cpu/cpu* | grep "[0-9]$" | grep -v "cpu0$"); do
+		echo 1 | sudo tee $y/online > /dev/null || echo Failed && exit 1
+	done
+fi
+exit

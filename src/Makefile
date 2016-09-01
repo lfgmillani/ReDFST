@@ -26,6 +26,7 @@ redfst-static.h: util.c control.c region.c region-all.h
 	$(CC) $(CFLAGS) $(OPENMP) -fPIC -c $<
 
 install: $(TARGET)
+	install -m 755 -D tools/htset "$(DESTDIR)/$(PREFIX)/bin/htset"
 	install -m 644 -D libredfst.so "$(DESTDIR)/$(PREFIX)/lib/libredfst.so"
 	if $(CC) $(CFLAGS) -dM -E config.h | grep REDFST_FUN_IN_H > /dev/null; then\
 		install -m 644 -D redfst-static.h "$(DESTDIR)/$(PREFIX)/usr/include/redfst.h";\
