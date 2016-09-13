@@ -101,7 +101,7 @@ void redfst_perf_init_worker(){
 	fd[0] = -1;
 	for(i=0;i<REDFST_PERF_NUM_EVENTS;++i){
 		if(0 > (fd[i] = perf_event_open(events+i, 0, cpu, fd[0], 0))){
-			while(i)
+			while(i--)
 				close(fd[i]);
 			return;
 		}
